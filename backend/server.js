@@ -5,27 +5,29 @@ import mongoose from "mongoose";
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 9098;
+const server = express();
 
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',')
 
-app.get("/", (req, res) => {
-  res.send("Benvenuto nel backend di PetCare!");
+server.use(cors({
+   origin: allowedOrigins
+}));
+
+server.use(express.json());
+
+try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Connesso a MongoDB");
+} catch (error) {
+    console.error("Errore connessione MongoDB:", error);
+}
+
+server.get("/", (req, res) => {
+    res.status(200).json({
+        message: "Benvenuto nel server di PetCare!"
+    });
 });
 
-
-mongoose
-  .connect(process.env.MONGODB_URL)
-  .then(() => {
-    console.log("MongoDB collegato:", mongoose.connection.name);
-
-    app.listen(PORT, () => {
-      console.log(`Server avviato sulla porta ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error("Errore di connessione a MongoDB:", error.message);
-  });
-
+server.listen(process.env.PORT, () => {
+    console.log(`Server up and running on port ${process.env.PORT}`);
+});
