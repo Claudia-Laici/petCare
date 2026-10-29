@@ -1,0 +1,91 @@
+.login-page {
+  background-color: #f5f3ed;
+  color: #263b35;
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.login-brand {
+  color: #246b5c;
+  letter-spacing: -1px;
+}
+
+.login-subtitle {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.login-title {
+  color: #263b35;
+}
+
+.login-card {
+  border-color: #e9e8e0;
+  border-radius: 20px;
+}
+
+.login-card .form-label {
+  color: #344a43;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.login-card .form-control {
+  min-height: 48px;
+  border-color: #dfe4dc;
+  border-radius: 10px;
+  background-color: #fdfdfb;
+}
+
+.login-card .form-control:focus {
+  border-color: #398777;
+  box-shadow: 0 0 0 0.2rem rgba(57, 135, 119, 0.15);
+}
+
+.login-button {
+  min-height: 48px;
+  border-color: #246b5c;
+  border-radius: 10px;
+  background-color: #246b5c;
+  color: #fff;
+  font-weight: 700;
+}
+
+.login-button:hover:not(:disabled) {
+  border-color: #1c574b;
+  background-color: #1c574b;
+}
+
+.login-footer {
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.paw-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  margin: 1.5rem auto;
+}
+
+.paw-line {
+  flex: 1;
+  height: 2px;
+  background-color: #246b5c;
+}
+
+.paw-divider-image {
+  display: block;
+  width: 100px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  display: block;
+  width: 90%;
+  height: auto;
+  margin: 0 auto;
+}
+

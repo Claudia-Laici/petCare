@@ -100,7 +100,6 @@ export const validateAndUploadMedicalDocument = async (req, res, next) => {
       uploadStream.end(req.file.buffer);
     });
 
-    // Conserviamo i dati restituiti da Cloudinary
     req.file.path = uploadResult.secure_url;
     req.file.filename = uploadResult.public_id;
     req.file.format = uploadResult.format;

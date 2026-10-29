@@ -10,62 +10,68 @@ const speciesEnum = [
   "other",
 ];
 
-const petSchema = new mongoose.Schema({
-  species: {
-    type: String,
-    enum: speciesEnum,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  cover: {
-    type: String,
-    default: null,
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  breed: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  qrToken: {
-    type: String,
-    unique: true,
-    sparse: true,
-  },
-  healthCard: {
-    allergies: {
-      type: [String],
-      default: [],
+const petSchema = new mongoose.Schema(
+  {
+    species: {
+      type: String,
+      enum: speciesEnum,
+      required: true,
     },
-    medicalConditions: {
-      type: [String],
-      default: [],
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    emergencyNotes: {
+    birthDate: {
+      type: Date,
+      default: null,
+    },
+    sex: {
+      type: String,
+      enum: ["male", "female", "unknown"],
+      default: "unknown",
+    },
+    sterilized: {
+      type: Boolean,
+      default: false,
+    },
+    microchipNumber: {
       type: String,
       trim: true,
       default: "",
     },
-    publicPhone: {
+    cover: {
+      type: String,
+      default: null,
+    },
+    coverPublicId: {
+      type: String,
+      default: null,
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    breed: {
       type: String,
       trim: true,
       default: "",
     },
-    publicTherapies: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Therapy",
-      },
-    ],
+    healthCard: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "HealthCard",
+      default: null,
+    },
+    qr: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PetQr",
+      default: null,
+    },
   },
-});
+  { timestamps: true },
+);
+
+petSchema.index({ owner: 1 });
 
 export default mongoose.model("Pet", petSchema, "pets");

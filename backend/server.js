@@ -13,6 +13,7 @@ import AuthRouter from "./routes/auth.js";
 import { auth } from "./middlewares/auth.js";
 import TherapyRouter from "./routes/therapies.js";
 import MedicalDocumentRouter from "./routes/medicalDocuments.js";
+import PublicRouter from "./routes/public.js";
 
 dotenv.config();
 
@@ -36,6 +37,10 @@ server.use(
 );
 
 server.use(express.json());
+server.use((req, res, next) => {
+  req.body ??= {};
+  next();
+});
 
 try {
   await mongoose.connect(process.env.MONGO_URL);
@@ -54,8 +59,7 @@ server.get("/", (req, res) => {
 // Rotte pubbliche
 server.use("/auth", AuthRouter)
 server.post("/users", createUser);
-
-
+server.use("/public", PublicRouter);
 
 // Middleware globale
 server.use(auth);

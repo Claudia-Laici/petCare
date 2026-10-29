@@ -1,0 +1,70 @@
+
+.loading-page {
+  background-color: #f5f3ed;
+  color: #263b35;
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.loading-content {
+  width: min(85%, 320px);
+}
+
+.loading-paw {
+  display: inline-block;
+  font-size: 3.5rem;
+  animation: loading-bounce 1s ease-in-out infinite;
+}
+
+.loading-brand {
+  color: #246b5c;
+  font-size: 2rem;
+  letter-spacing: -1px;
+}
+
+.loading-message {
+  color: #64766e;
+  font-size: 0.95rem;
+}
+
+.loading-track {
+  width: 150px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: #dfe8df;
+}
+
+.loading-progress {
+  width: 40%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: #398777;
+  animation: loading-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes loading-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(-5deg);
+  }
+}
+
+@keyframes loading-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(375%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-paw,
+  .loading-progress {
+    animation: none;
+  }
+}

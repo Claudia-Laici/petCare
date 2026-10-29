@@ -139,28 +139,34 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+
 export const deleteUser = async (req, res, next) => {
-  let session;
-
   try {
-    session = await mongoose.startSession();
-
     const userId = req.user._id;
 
-    await session.withTransaction(async () => {
-      await Pet.deleteMany({ owner: userId }, { session });
+    const user = await User.findById(userId);
 
-      await User.findByIdAndDelete(userId, { session });
-    });
+    if (!user) {
+      return res.status(404).json({
+        message: "Utente non trovato",
+      });
+    }
 
-    res.status(200).json({
+    const pets = await Pet.find({ owner: userId });
+
+    for (const pet of pets) {
+      await deletePetCascade(pet);
+    }
+
+    await PetShare.deleteMany({ user: userId });
+
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({
       message: "Account eliminato con successo",
     });
-  } catch (e) {
-    next(e);
-  } finally {
-    if (session) {
-      await session.endSession();
-    }
+  } catch (error) {
+    next(error);
   }
 };
+

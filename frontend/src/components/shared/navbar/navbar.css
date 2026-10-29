@@ -1,0 +1,22 @@
+.home-header {
+  background-color: #fff;
+}
+
+.logo-img {
+  display: block;
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+}
+
+.nav-text {
+  white-space: nowrap;
+  color: #7b7e7b;
+  font-weight: 600;
+}
+
+.nav-text:hover {
+    color: #246b5c;
+}
+
+

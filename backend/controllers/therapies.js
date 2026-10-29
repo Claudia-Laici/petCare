@@ -1,6 +1,13 @@
 import Therapy from "../modules/therapies/Therapy.js";
 import Pet from "../modules/pets/Pet.js";
 import { getTherapyStatus } from "../utils/therapyStatus.js";
+import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
+import HealthCard from "../modules/healthcards/HealthCard.js";
+
+const withStatus = (therapy) => ({
+  ...therapy.toObject(),
+  status: getTherapyStatus(therapy),
+});
 
 export const createTherapy = async (req, res, next) => {
   try {
@@ -11,19 +18,15 @@ export const createTherapy = async (req, res, next) => {
       frequency,
       startDate,
       endDate,
+      nextReminderDate,
       veterinarian,
       notes,
     } = req.body;
 
-    const existingPet = await Pet.findOne({
-      _id: pet,
-      owner: req.user._id,
-    });
+    const existingPet = await getPetWithAccess(pet, req.user._id, "editor");
 
     if (!existingPet) {
-      return res.status(404).json({
-        message: "Animale non trovato",
-      });
+      return res.status(404).json({ message: "Animale non trovato" });
     }
 
     const therapy = new Therapy({
@@ -33,16 +36,14 @@ export const createTherapy = async (req, res, next) => {
       frequency,
       startDate,
       endDate: endDate || null,
+      nextReminderDate: nextReminderDate || null,
       veterinarian,
       notes,
     });
 
     const savedTherapy = await therapy.save();
 
-    res.status(201).json({
-      ...savedTherapy.toObject(),
-      status: getTherapyStatus(savedTherapy),
-    });
+    res.status(201).json(withStatus(savedTherapy));
   } catch (e) {
     next(e);
   }
@@ -50,19 +51,13 @@ export const createTherapy = async (req, res, next) => {
 
 export const getTherapies = async (req, res, next) => {
   try {
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
+    const petIds = await getAccessiblePetIds(req.user._id);
 
-    const therapies = await Therapy.find({
-      pet: { $in: petIds },
-    }).sort({ startDate: -1 });
+    const therapies = await Therapy.find({ pet: { $in: petIds } }).sort({
+      startDate: -1,
+    });
 
-    const result = therapies.map((therapy) => ({
-      ...therapy.toObject(),
-      status: getTherapyStatus(therapy),
-    }));
-
-    res.status(200).json(result);
+    res.status(200).json(therapies.map(withStatus));
   } catch (e) {
     next(e);
   }
@@ -70,26 +65,19 @@ export const getTherapies = async (req, res, next) => {
 
 export const getTherapyById = async (req, res, next) => {
   try {
-    const { therapyId } = req.params;
-
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
-
-    const therapy = await Therapy.findOne({
-      _id: therapyId,
-      pet: { $in: petIds },
-    });
+    const therapy = await Therapy.findById(req.params.therapyId);
 
     if (!therapy) {
-      return res.status(404).json({
-        message: "Terapia non trovata",
-      });
+      return res.status(404).json({ message: "Terapia non trovata" });
     }
 
-    res.status(200).json({
-      ...therapy.toObject(),
-      status: getTherapyStatus(therapy),
-    });
+    const pet = await getPetWithAccess(therapy.pet, req.user._id, "viewer");
+
+    if (!pet) {
+      return res.status(404).json({ message: "Terapia non trovata" });
+    }
+
+    res.status(200).json(withStatus(therapy));
   } catch (e) {
     next(e);
   }
@@ -97,22 +85,27 @@ export const getTherapyById = async (req, res, next) => {
 
 export const updateTherapy = async (req, res, next) => {
   try {
-    const { therapyId } = req.params;
-    const { name, dosage, frequency, startDate, endDate, veterinarian, notes } =
-      req.body;
+    const {
+      name,
+      dosage,
+      frequency,
+      startDate,
+      endDate,
+      nextReminderDate,
+      veterinarian,
+      notes,
+    } = req.body;
 
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
-
-    const therapy = await Therapy.findOne({
-      _id: therapyId,
-      pet: { $in: petIds },
-    });
+    const therapy = await Therapy.findById(req.params.therapyId);
 
     if (!therapy) {
-      return res.status(404).json({
-        message: "Terapia non trovata",
-      });
+      return res.status(404).json({ message: "Terapia non trovata" });
+    }
+
+    const pet = await getPetWithAccess(therapy.pet, req.user._id, "editor");
+
+    if (!pet) {
+      return res.status(404).json({ message: "Terapia non trovata" });
     }
 
     if (name !== undefined) therapy.name = name;
@@ -121,17 +114,14 @@ export const updateTherapy = async (req, res, next) => {
     if (startDate !== undefined) therapy.startDate = startDate;
     if (veterinarian !== undefined) therapy.veterinarian = veterinarian;
     if (notes !== undefined) therapy.notes = notes;
-
-    if (endDate !== undefined) {
-      therapy.endDate = endDate || null;
+    if (endDate !== undefined) therapy.endDate = endDate || null;
+    if (nextReminderDate !== undefined) {
+      therapy.nextReminderDate = nextReminderDate || null;
     }
 
     const updatedTherapy = await therapy.save();
 
-    res.status(200).json({
-      ...updatedTherapy.toObject(),
-      status: getTherapyStatus(updatedTherapy),
-    });
+    res.status(200).json(withStatus(updatedTherapy));
   } catch (e) {
     next(e);
   }
@@ -139,25 +129,26 @@ export const updateTherapy = async (req, res, next) => {
 
 export const deleteTherapy = async (req, res, next) => {
   try {
-    const { therapyId } = req.params;
-
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
-
-    const therapy = await Therapy.findOneAndDelete({
-      _id: therapyId,
-      pet: { $in: petIds },
-    });
+    const therapy = await Therapy.findById(req.params.therapyId);
 
     if (!therapy) {
-      return res.status(404).json({
-        message: "Terapia non trovata",
-      });
+      return res.status(404).json({ message: "Terapia non trovata" });
     }
 
-    res.status(200).json({
-      message: "Terapia eliminata con successo",
-    });
+    const pet = await getPetWithAccess(therapy.pet, req.user._id, "editor");
+
+    if (!pet) {
+      return res.status(404).json({ message: "Terapia non trovata" });
+    }
+
+    await HealthCard.updateOne(
+      { pet: therapy.pet },
+      { $pull: { publicTherapies: therapy._id } },
+    );
+
+    await therapy.deleteOne();
+
+    res.status(200).json({ message: "Terapia eliminata con successo" });
   } catch (e) {
     next(e);
   }

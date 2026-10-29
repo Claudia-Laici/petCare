@@ -22,10 +22,6 @@ MedicalDocumentRouter.get("/:id", getMedicalDocumentById);
 
 MedicalDocumentRouter.post(
   "/",
-  (req, res, next) => {
-    console.log("POST /medical-documents raggiunta");
-    next();
-  },
   uploadMedicalDocument.single("document"),
   validateAndUploadMedicalDocument,
   createMedicalDocument,

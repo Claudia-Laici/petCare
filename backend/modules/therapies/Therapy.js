@@ -40,6 +40,10 @@ const therapySchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    nextReminderDate: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

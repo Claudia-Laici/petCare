@@ -19,6 +19,13 @@ const vaccinationSchema = new mongoose.Schema(
     nextDueDate: {
       type: Date,
       default: null,
+      validate: {
+        validator: function (value) {
+          return !value || value >= this.dateAdministered;
+        },
+        message:
+          "La prossima scadenza deve essere successiva alla data di somministrazione",
+      },
     },
     veterinarian: {
       type: String,

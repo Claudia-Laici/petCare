@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import MedicalDocument from "../modules/medicalDocuments/MedicalDocument.js";
+import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
 import Pet from "../modules/pets/Pet.js";
 
 const removeUploadedFile = async (file) => {
@@ -20,7 +21,6 @@ const removeUploadedFile = async (file) => {
 };
 
 export const createMedicalDocument = async (req, res, next) => {
-  console.log("Utente autenticato:", req.user?._id);
   try {
     const { pet, title, documentType, documentDate, description } = req.body;
 
@@ -30,10 +30,7 @@ export const createMedicalDocument = async (req, res, next) => {
       });
     }
 
-    const existingPet = await Pet.findOne({
-      _id: pet,
-      owner: req.user._id,
-    });
+    const existingPet = await getPetWithAccess(pet, req.user._id, "editor");
 
     if (!existingPet) {
       await removeUploadedFile(req.file);
@@ -69,33 +66,28 @@ export const createMedicalDocument = async (req, res, next) => {
   }
 };
 
-
 export const getMedicalDocuments = async (req, res, next) => {
   try {
     const { petId } = req.query;
+    let petIds;
 
     if (petId) {
-      const existingPet = await Pet.findOne({
-        _id: petId,
-        owner: req.user._id,
-      });
+      const pet = await getPetWithAccess(petId, req.user._id, "viewer");
 
-      if (!existingPet) {
+      if (!pet) {
         return res.status(404).json({
           message: "Animale non trovato",
         });
       }
+
+      petIds = [pet._id];
+    } else {
+      petIds = await getAccessiblePetIds(req.user._id);
     }
 
-    const filters = {
-      uploadedBy: req.user._id,
-    };
-
-    if (petId) {
-      filters.pet = petId;
-    }
-
-    const documents = await MedicalDocument.find(filters)
+    const documents = await MedicalDocument.find({
+      pet: { $in: petIds },
+    })
       .select("-publicId -fileUrl")
       .sort({ documentDate: -1, createdAt: -1 });
 
@@ -105,15 +97,21 @@ export const getMedicalDocuments = async (req, res, next) => {
   }
 };
 
-
 export const getMedicalDocumentById = async (req, res, next) => {
   try {
-    const document = await MedicalDocument.findOne({
-      _id: req.params.id,
-      uploadedBy: req.user._id,
-    }).select("-publicId -fileUrl");
+    const document = await MedicalDocument.findById(req.params.id).select(
+      "-publicId -fileUrl",
+    );
 
     if (!document) {
+      return res.status(404).json({
+        message: "Documento medico non trovato",
+      });
+    }
+
+    const pet = await getPetWithAccess(document.pet, req.user._id, "viewer");
+
+    if (!pet) {
       return res.status(404).json({
         message: "Documento medico non trovato",
       });
@@ -125,13 +123,9 @@ export const getMedicalDocumentById = async (req, res, next) => {
   }
 };
 
-
 export const deleteMedicalDocument = async (req, res, next) => {
   try {
-    const document = await MedicalDocument.findOne({
-      _id: req.params.id,
-      uploadedBy: req.user._id,
-    });
+    const document = await MedicalDocument.findById(req.params.id);
 
     if (!document) {
       return res.status(404).json({
@@ -139,14 +133,22 @@ export const deleteMedicalDocument = async (req, res, next) => {
       });
     }
 
-    const result = await cloudinary.uploader.destroy(
-      document.publicId,
-      {
-        resource_type: "image",
-        type: "authenticated",
-        invalidate: true,
-      },
-    );
+    const pet = await Pet.findOne({
+      _id: document.pet,
+      owner: req.user._id,
+    });
+
+    if (!pet) {
+      return res.status(404).json({
+        message: "Documento medico non trovato",
+      });
+    }
+
+    const result = await cloudinary.uploader.destroy(document.publicId, {
+      resource_type: "image",
+      type: "authenticated",
+      invalidate: true,
+    });
 
     if (result.result !== "ok") {
       return res.status(502).json({
@@ -165,15 +167,19 @@ export const deleteMedicalDocument = async (req, res, next) => {
   }
 };
 
-
 export const getMedicalDocumentAccessUrl = async (req, res, next) => {
   try {
-    const document = await MedicalDocument.findOne({
-      _id: req.params.id,
-      uploadedBy: req.user._id,
-    });
+    const document = await MedicalDocument.findById(req.params.id);
 
     if (!document) {
+      return res.status(404).json({
+        message: "Documento medico non trovato",
+      });
+    }
+
+    const pet = await getPetWithAccess(document.pet, req.user._id, "viewer");
+
+    if (!pet) {
       return res.status(404).json({
         message: "Documento medico non trovato",
       });
@@ -199,5 +205,3 @@ export const getMedicalDocumentAccessUrl = async (req, res, next) => {
     next(error);
   }
 };
-
-

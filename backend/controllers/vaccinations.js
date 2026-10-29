@@ -1,4 +1,5 @@
 import Vaccination from "../modules/vaccinations/Vaccination.js";
+import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
 import Pet from "../modules/pets/Pet.js";
 
 export const createVaccination = async (req, res, next) => {
@@ -6,10 +7,7 @@ export const createVaccination = async (req, res, next) => {
     const { pet, name, dateAdministered, nextDueDate, veterinarian, notes } =
       req.body;
 
-    const existingPet = await Pet.findOne({
-      _id: pet,
-      owner: req.user._id,
-    });
+    const existingPet = await getPetWithAccess(pet, req.user._id, "editor");
 
     if (!existingPet) {
       return res.status(404).json({
@@ -36,8 +34,7 @@ export const createVaccination = async (req, res, next) => {
 
 export const getVaccinations = async (req, res, next) => {
   try {
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
+    const petIds = await getAccessiblePetIds(req.user._id);
 
     const { status } = req.query;
     const filter = {
@@ -74,20 +71,16 @@ export const getVaccinations = async (req, res, next) => {
 
 export const getVaccinationById = async (req, res, next) => {
   try {
-    const { vaccinationId } = req.params;
-
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
-
-    const vaccination = await Vaccination.findOne({
-      _id: vaccinationId,
-      pet: { $in: petIds },
-    });
+    const vaccination = await Vaccination.findById(req.params.vaccinationId);
 
     if (!vaccination) {
-      return res.status(404).json({
-        message: "Vaccinazione non trovata",
-      });
+      return res.status(404).json({ message: "Vaccinazione non trovata" });
+    }
+
+    const pet = await getPetWithAccess(vaccination.pet, req.user._id, "viewer");
+
+    if (!pet) {
+      return res.status(404).json({ message: "Vaccinazione non trovata" });
     }
 
     res.status(200).json(vaccination);
@@ -98,22 +91,19 @@ export const getVaccinationById = async (req, res, next) => {
 
 export const updateVaccination = async (req, res, next) => {
   try {
-    const { vaccinationId } = req.params;
     const { name, dateAdministered, nextDueDate, veterinarian, notes } =
       req.body;
 
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
-
-    const vaccination = await Vaccination.findOne({
-      _id: vaccinationId,
-      pet: { $in: petIds },
-    });
+    const vaccination = await Vaccination.findById(req.params.vaccinationId);
 
     if (!vaccination) {
-      return res.status(404).json({
-        message: "Vaccinazione non trovata",
-      });
+      return res.status(404).json({ message: "Vaccinazione non trovata" });
+    }
+
+    const pet = await getPetWithAccess(vaccination.pet, req.user._id, "editor");
+
+    if (!pet) {
+      return res.status(404).json({ message: "Vaccinazione non trovata" });
     }
 
     if (name !== undefined) vaccination.name = name;
@@ -134,21 +124,19 @@ export const updateVaccination = async (req, res, next) => {
 
 export const deleteVaccination = async (req, res, next) => {
   try {
-    const { vaccinationId } = req.params;
-
-    const pets = await Pet.find({ owner: req.user._id }).select("_id");
-    const petIds = pets.map((pet) => pet._id);
-
-    const vaccination = await Vaccination.findOneAndDelete({
-      _id: vaccinationId,
-      pet: { $in: petIds },
-    });
+    const vaccination = await Vaccination.findById(req.params.vaccinationId);
 
     if (!vaccination) {
-      return res.status(404).json({
-        message: "Vaccinazione non trovata",
-      });
+      return res.status(404).json({ message: "Vaccinazione non trovata" });
     }
+
+    const pet = await getPetWithAccess(vaccination.pet, req.user._id, "editor");
+
+    if (!pet) {
+      return res.status(404).json({ message: "Vaccinazione non trovata" });
+    }
+
+    await vaccination.deleteOne();
 
     res.status(200).json({
       message: "Vaccinazione eliminata con successo",
@@ -157,4 +145,3 @@ export const deleteVaccination = async (req, res, next) => {
     next(e);
   }
 };
-
