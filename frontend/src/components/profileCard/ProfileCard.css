@@ -1,0 +1,54 @@
+.profile-card {
+  background-color: #2e7b6b;
+}
+
+.profile-card-glow {
+  background-color: #226255;
+  opacity: 0.25;
+  filter: blur(40px);
+  transform: translateX(30%);
+  pointer-events: none;
+}
+
+.profile-card-avatar {
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-card-label {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+.profile-card-badge {
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.profile-card-edit {
+  color: #212529;
+  background-color: #fff;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.profile-card-edit:hover {
+  color: #212529;
+  background-color: #f0f3f1;
+}
+
+.profile-card-edit:active {
+  transform: scale(0.98);
+}
+
+.profile-card-save {
+  background-color: #246b5c;
+  border-color: #246b5c;
+  color: #fff;
+}
+
+.profile-card-save:hover {
+  background-color: #1c5549;
+  border-color: #1c5549;
+  color: #fff;
+}

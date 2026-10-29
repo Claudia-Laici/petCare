@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import User from "../modules/users/User.js";
 import Pet from "../modules/pets/Pet.js";
 

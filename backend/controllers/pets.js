@@ -5,6 +5,7 @@ import HealthCard from "../modules/healthcards/HealthCard.js";
 import PetQr from "../modules/petqrs/PetQr.js";
 import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
 import * as petService from "../services/petService.js";
+import { cloudinary } from "../middlewares/cloudinary.js";
 
 export const createPet = async (req, res, next) => {
   try {
@@ -260,5 +261,64 @@ export const getPublicPet = async (req, res, next) => {
     res.status(200).json(petService.toPublicJSON(qr.pet));
   } catch (e) {
     next(e);
+  }
+};
+
+export const authorizePetEditor = async (req, res, next) => {
+  try {
+    const pet = await getPetWithAccess(
+      req.params.petId,
+      req.user._id,
+      "editor",
+    );
+
+    if (!pet) {
+      return res.status(404).json({
+        message: "Animale non trovato",
+      });
+    }
+
+    req.pet = pet;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePetAvatar = async (req, res, next) => {
+  try {
+    const pet = req.pet;
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Seleziona un'immagine da caricare",
+      });
+    }
+
+    const oldPublicId = pet.coverPublicId;
+
+    pet.cover = req.file.path;
+    pet.coverPublicId = req.file.filename;
+
+    await pet.save();
+
+    if (oldPublicId && oldPublicId !== pet.coverPublicId) {
+      try {
+        await cloudinary.uploader.destroy(oldPublicId, {
+          resource_type: "image",
+        });
+      } catch (error) {
+        console.error(
+          "Impossibile eliminare la vecchia immagine:",
+          error,
+        );
+      }
+    }
+
+    return res.status(200).json(
+      await petService.petView(pet, req.user._id),
+    );
+  } catch (error) {
+    next(error);
   }
 };

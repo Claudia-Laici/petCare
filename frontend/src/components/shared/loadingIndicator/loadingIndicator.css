@@ -1,4 +1,3 @@
-
 .loading-page {
   background-color: #f5f3ed;
   color: #263b35;
@@ -16,6 +15,7 @@
 }
 
 .loading-brand {
+  margin-top: 1rem;
   color: #246b5c;
   font-size: 2rem;
   letter-spacing: -1px;
@@ -43,8 +43,9 @@
 }
 
 @keyframes loading-bounce {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
   }
 
   50% {
@@ -53,11 +54,11 @@
 }
 
 @keyframes loading-slide {
-  0% {
+  from {
     transform: translateX(-100%);
   }
 
-  100% {
+  to {
     transform: translateX(375%);
   }
 }

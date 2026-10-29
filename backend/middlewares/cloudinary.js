@@ -111,3 +111,5 @@ export const validateAndUploadMedicalDocument = async (req, res, next) => {
     next(error);
   }
 };
+
+export { cloudinary };

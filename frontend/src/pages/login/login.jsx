@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../utils/apiFetch";
 import pawDivider from "../../assets/decoration/pawDivider.png";
 import Logo from "../../assets/logo/Logo.webp";
-import LoadingIndicator from "../../components/shared/loadingIndicator/loadingIndicator";
-import "./login.css";
+import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();

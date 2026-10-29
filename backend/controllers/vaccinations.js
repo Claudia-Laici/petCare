@@ -1,6 +1,5 @@
 import Vaccination from "../modules/vaccinations/Vaccination.js";
 import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
-import Pet from "../modules/pets/Pet.js";
 
 export const createVaccination = async (req, res, next) => {
   try {

@@ -1,5 +1,4 @@
 import Therapy from "../modules/therapies/Therapy.js";
-import Pet from "../modules/pets/Pet.js";
 import { getTherapyStatus } from "../utils/therapyStatus.js";
 import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
 import HealthCard from "../modules/healthcards/HealthCard.js";

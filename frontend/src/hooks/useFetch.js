@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { apiFetch } from "../api/client";
+import { apiFetch } from "../utils/apiFetch.js";
 
 export const useFetch = (path) => {
   const [data, setData] = useState(null);

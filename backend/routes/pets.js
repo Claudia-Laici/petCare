@@ -10,7 +10,10 @@ import {
   unsharePet,
   disableQr,
   deletePet,
+  authorizePetEditor,
+  updatePetAvatar,
 } from "../controllers/pets.js";
+import { uploadPetAvatar } from "../middlewares/cloudinary.js";
 
 const PetRouter = express.Router();
 
@@ -21,6 +24,12 @@ PetRouter.get("/:petId", getPetById);
 
 PetRouter.patch("/:petId", updatePet);
 PetRouter.patch("/:petId/health-card", updateHealthCard);
+PetRouter.patch(
+  "/:petId/avatar",
+  authorizePetEditor,
+  uploadPetAvatar.single("avatar"),
+  updatePetAvatar,
+);
 
 PetRouter.post("/:petId/share", sharePet);
 PetRouter.post("/:petId/qr", enableQr);
