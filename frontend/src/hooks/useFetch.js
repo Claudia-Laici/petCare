@@ -27,7 +27,6 @@ export const useFetch = (path) => {
       }
     };
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
 
     return () => controller.abort();

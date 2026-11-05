@@ -1,0 +1,56 @@
+.health-records-card {
+  background-color: #fff;
+}
+
+.therapy-info {
+  min-width: 0;
+}
+
+.vaccination-date,
+.therapy-date {
+  font-size: 0.75rem;
+}
+
+.therapy-dosage {
+  font-size: 0.8rem;
+}
+
+.button-cards {
+  background-color: #2e7b6b;
+  border-color: #2e7b6b;
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.button-cards:hover {
+  background-color: #246355;
+  border-color: #246355 ;
+}
+
+.card-custom-footer {
+  background-color: #ffffff;
+  color: #2e7b6b;
+  border-bottom-left-radius: 1rem; 
+  border-bottom-right-radius: 1rem;
+  margin: -1.5rem;                
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  transition: background-color 0.35s ease-out, color 0.35s ease-out;
+}
+
+.card-custom-footer:hover {
+  background-color: #f2f2f2; 
+  color: #245e52;         
+}
+
+.card-custom-footer a {
+  color: #2e7b6b;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.card-custom-footer a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+

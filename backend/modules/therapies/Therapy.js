@@ -29,6 +29,12 @@ const therapySchema = new mongoose.Schema(
     endDate: {
       type: Date,
       default: null,
+      validate: {
+        validator(value) {
+          return !value || value >= this.startDate;
+        },
+        message: "La data di fine non può essere precedente a quella di inizio",
+      },
     },
     veterinarian: {
       type: String,

@@ -75,6 +75,8 @@ server.use("/therapies", TherapyRouter);
 
 server.use("/medical-documents", MedicalDocumentRouter);
 
+server.use("/:petId/shares", PetRouter);
+
 // Rotte non trovate
 server.use((req, res, next) => {
   res.status(404).json({

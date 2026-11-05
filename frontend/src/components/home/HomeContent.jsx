@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Row, Col, Alert } from "react-bootstrap";
+import { Row, Col, Alert, Container } from "react-bootstrap";
 import { useFetch } from "../../hooks/useFetch";
 import Sidebar from "../shared/aside/Sidebar";
 import ProfileCard from "../profileCard/ProfileCard";
-import PetFormModal from "../petFormModal/PetFormModal";
+import PetFormModal from "../profileCard/PetFormModal";
 import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
+import DashboardCards from "../dashboard/dashboardCard/DashboardCards";
 
 const HomeContent = () => {
   const { data: pets, isLoading, error, refetch } = useFetch("/pets");
@@ -59,38 +60,47 @@ const HomeContent = () => {
 
   return (
     <>
-      <Row className="g-4">
-        <Col xs={12} lg={3}>
-          <Sidebar
-            pets={petList}
-            selectedPetId={selectedPet?._id}
-            onSelectPet={setSelectedPetId}
-            onAddPet={openAddPet}
-          />
-        </Col>
-
-        <Col xs={12} lg={9}>
-          {selectedPet ? (
-            <ProfileCard
-              pet={selectedPet}
-              currentUserId={currentUser?._id}
-              onEdit={() => openEditPet(selectedPet)}
-              onDeleted={handlePetDeleted}
+      <Container>
+        <Row className="g-4">
+          <Col xs={12} lg={3}>
+            <Sidebar
+              pets={petList}
+              selectedPetId={selectedPet?._id}
+              onSelectPet={setSelectedPetId}
+              onAddPet={openAddPet}
             />
-          ) : (
-            <Alert variant="info" className="mt-3">
-              Non hai ancora animali registrati. Aggiungine uno per iniziare!
-            </Alert>
-          )}
-        </Col>
-      </Row>
+          </Col>
 
-      <PetFormModal
-        show={showPetModal}
-        onHide={() => setShowPetModal(false)}
-        pet={petToEdit}
-        onSaved={handlePetSaved}
-      />
+          <Col xs={12} lg={9}>
+            {selectedPet ? (
+              <>
+                <ProfileCard
+                  pet={selectedPet}
+                  currentUserId={currentUser?._id}
+                  onEdit={() => openEditPet(selectedPet)}
+                  onDeleted={handlePetDeleted}
+                />
+
+                <div className="mt-4">
+                  <DashboardCards pet={selectedPet} />
+                </div>
+
+              </>
+            ) : (
+              <Alert variant="info" className="mt-3">
+                Non hai ancora animali registrati. Aggiungine uno per iniziare!
+              </Alert>
+            )}
+          </Col>
+        </Row>
+
+        <PetFormModal
+          show={showPetModal}
+          onHide={() => setShowPetModal(false)}
+          pet={petToEdit}
+          onSaved={handlePetSaved}
+        />
+      </Container>
     </>
   );
 };

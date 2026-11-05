@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Pet from "../modules/pets/Pet.js";
 import PetShare from "../modules/petshares/PetShare.js";
 
-const ROLE_LEVEL = { viewer: 1, editor: 2 };
+const ROLE_LEVEL = { viewer: 1, editor: 2, owner: 3 };
 
 const notExpired = () => ({
   $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
@@ -28,4 +28,24 @@ export async function getAccessiblePetIds(userId) {
     PetShare.distinct("pet", { user: userId, ...notExpired() }),
   ]);
   return [...owned, ...shared];
+}
+
+export const getPetIdsForQuery = async (userId, petQuery) => {
+  const petIds = await getAccessiblePetIds(userId);
+
+  if (typeof petQuery !== "string") return petIds;
+
+  return petIds.filter((id) => String(id) === petQuery);
+};
+
+export async function getPetRole(pet, userId) {
+  if (String(pet.owner._id ?? pet.owner) === String(userId)) return "owner";
+
+  const share = await PetShare.findOne({
+    pet: pet._id,
+    user: userId,
+    ...notExpired(),
+  });
+
+  return share?.role ?? null;
 }

@@ -1,0 +1,36 @@
+.shared-with-card {
+  background-color: #fff;
+}
+
+.shared-with-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #faedcd;
+}
+
+.shared-with-info {
+  min-width: 0;
+}
+
+.shared-with-email {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.shared-with-expiration {
+  font-size: 0.7rem;
+}
+
+.shared-with-role {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.shared-with-invite {
+  background-color: #2e7b6b;
+  color: #ffffff;
+}
+
+.shared-with-invite:hover {
+  border-color: #d1dbd4;
+}

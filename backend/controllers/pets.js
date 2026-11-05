@@ -5,6 +5,8 @@ import HealthCard from "../modules/healthcards/HealthCard.js";
 import PetQr from "../modules/petqrs/PetQr.js";
 import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
 import * as petService from "../services/petService.js";
+import mongoose from "mongoose";
+import PetShare from "../modules/petshares/PetShare.js";
 import { cloudinary } from "../middlewares/cloudinary.js";
 
 export const createPet = async (req, res, next) => {
@@ -189,6 +191,16 @@ export const sharePet = async (req, res, next) => {
       return res.status(400).json({ message: "L'animale è già tuo" });
     }
 
+    if (expiresAt) {
+      const expires = new Date(expiresAt);
+
+      if (Number.isNaN(expires.getTime()) || expires <= new Date()) {
+        return res
+          .status(400)
+          .json({ message: "La data di scadenza non è valida" });
+      }
+    }
+
     await petService.grantAccess(pet, target._id, role, expiresAt);
 
     res.status(200).json(await petService.petView(pet, req.user._id));
@@ -208,6 +220,27 @@ export const unsharePet = async (req, res, next) => {
     await petService.revokeAccess(pet, req.params.userId);
 
     res.status(200).json({ message: "Accesso rimosso" });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getPetShares = async (req, res, next) => {
+  try {
+    const { petId } = req.params;
+
+    if (!mongoose.isValidObjectId(petId)) {
+      return res.status(400).json({ message: "Animale non valido" });
+    }
+
+    const pet = await Pet.findOne({ _id: petId, owner: req.user._id });
+    if (!pet) return res.status(404).json({ message: "Animale non trovato" });
+
+    const shares = await PetShare.find({ pet: pet._id })
+      .populate("user", "nome cognome email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(shares);
   } catch (e) {
     next(e);
   }
@@ -308,16 +341,11 @@ export const updatePetAvatar = async (req, res, next) => {
           resource_type: "image",
         });
       } catch (error) {
-        console.error(
-          "Impossibile eliminare la vecchia immagine:",
-          error,
-        );
+        console.error("Impossibile eliminare la vecchia immagine:", error);
       }
     }
 
-    return res.status(200).json(
-      await petService.petView(pet, req.user._id),
-    );
+    return res.status(200).json(await petService.petView(pet, req.user._id));
   } catch (error) {
     next(error);
   }

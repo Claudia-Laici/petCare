@@ -7,6 +7,7 @@ import Pet from "../modules/pets/Pet.js";
 import HealthCard from "../modules/healthcards/HealthCard.js";
 import PetQr from "../modules/petqrs/PetQr.js";
 import PetShare from "../modules/petshares/PetShare.js";
+import { getPetRole } from "../utils/petAccess.js";
 
 export const deletePetCascade = async (pet) => {
   const documents = await MedicalDocument.find({ pet: pet._id });
@@ -121,6 +122,8 @@ export async function petView(pet, userId) {
 
   const view = toJSONFor(pet, userId);
   const isOwner = String(pet.owner._id ?? pet.owner) === String(userId);
+
+  view.role = await getPetRole(pet, userId);
 
   if (isOwner) {
     view.sharedWith = await PetShare.find({ pet: pet._id })

@@ -12,6 +12,7 @@ import {
   deletePet,
   authorizePetEditor,
   updatePetAvatar,
+  getPetShares,
 } from "../controllers/pets.js";
 import { uploadPetAvatar } from "../middlewares/cloudinary.js";
 
@@ -21,6 +22,7 @@ PetRouter.post("/", createPet);
 
 PetRouter.get("/", getPets);
 PetRouter.get("/:petId", getPetById);
+PetRouter.get("/:petId/shares", getPetShares);
 
 PetRouter.patch("/:petId", updatePet);
 PetRouter.patch("/:petId/health-card", updateHealthCard);

@@ -1,6 +1,6 @@
 import Therapy from "../modules/therapies/Therapy.js";
 import { getTherapyStatus } from "../utils/therapyStatus.js";
-import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
+import { getPetWithAccess, getPetIdsForQuery } from "../utils/petAccess.js";
 import HealthCard from "../modules/healthcards/HealthCard.js";
 
 const withStatus = (therapy) => ({
@@ -50,7 +50,7 @@ export const createTherapy = async (req, res, next) => {
 
 export const getTherapies = async (req, res, next) => {
   try {
-    const petIds = await getAccessiblePetIds(req.user._id);
+    const petIds = await getPetIdsForQuery(req.user._id, req.query.pet);
 
     const therapies = await Therapy.find({ pet: { $in: petIds } }).sort({
       startDate: -1,

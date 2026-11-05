@@ -1,6 +1,5 @@
 .sidebar-container {
-  width: 280px;
-  flex-shrink: 0;
+  max-width: 100%;
 }
 
 .pet-item {

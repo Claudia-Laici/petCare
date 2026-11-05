@@ -1,0 +1,40 @@
+.recent-document-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #e8f0fe;
+}
+
+.recent-document-date {
+  font-size: 0.75rem;
+}
+
+.recent-document-options {
+  width: 60px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5rem;
+  background-color: #e8f2ef;
+  color: #2e7b6b;
+  border: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.recent-document-options:hover {
+  background-color: #2e7b6b;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.recent-document-options:active {
+  transform: scale(0.96);
+}
+
+.recent-document-options:focus-visible {
+  outline: 2px solid #2e7b6b;
+  outline-offset: 3px;
+}

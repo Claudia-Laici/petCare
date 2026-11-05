@@ -1,54 +1,98 @@
 .profile-card {
-  background-color: #2e7b6b;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(
+    115deg,
+    #2e7b6b 0%,
+    #286f61 60%,
+    #225e53 100%
+  );
+  padding: 5rem;
 }
 
-.profile-card-glow {
-  background-color: #226255;
-  opacity: 0.25;
-  filter: blur(40px);
-  transform: translateX(30%);
-  pointer-events: none;
+.profile-card-decoration {
+  position: absolute;
+  z-index: -1;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  right: -75px;
+  top: -145px;
+  background-color: rgb(255 255 255 / 7%);
+  box-shadow: 0 0 0 35px rgb(255 255 255 / 3%);
 }
 
 .profile-card-avatar {
+  width: 150px;
+  height: 150px;
   object-fit: cover;
-  flex-shrink: 0;
+  border: 3px solid rgb(255 255 255 / 90%);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
 }
 
 .profile-card-label {
-  font-size: 0.75rem;
-  letter-spacing: 1px;
+  display: block;
+  color: rgb(255 255 255 / 70%);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.3rem;
+}
+
+.profile-card-name {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  margin-bottom: 0.8rem;
 }
 
 .profile-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 20px;
   background-color: rgb(255 255 255 / 10%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
-.profile-card-edit {
-  color: #212529;
-  background-color: #fff;
+.profile-card-action {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 50%;
+  background-color: rgb(255 255 255 / 95%);
+  color: #286e60;
   transition:
     background-color 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease;
 }
 
-.profile-card-edit:hover {
-  color: #212529;
-  background-color: #f0f3f1;
+.profile-card-action:hover {
+  background-color: #e5f2ed;
+  color: #205c4e;
+  transform: translateY(-2px);
 }
 
-.profile-card-edit:active {
-  transform: scale(0.98);
+.profile-card-action:active {
+  transform: scale(0.95);
 }
 
-.profile-card-save {
-  background-color: #246b5c;
-  border-color: #246b5c;
+.profile-card-action-delete {
+  background-color: transparent;
   color: #fff;
 }
 
-.profile-card-save:hover {
-  background-color: #1c5549;
-  border-color: #1c5549;
-  color: #fff;
+.profile-card-action-delete:hover {
+  background-color: #fff;
+  color: #c03939;
 }

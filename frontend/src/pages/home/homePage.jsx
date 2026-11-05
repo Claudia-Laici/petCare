@@ -1,12 +1,13 @@
 import PetCareNavbar from "../../components/shared/navbar/Navbar";
+import Footer from "../../components/shared/footer/Footer";
 import HomeContent from "../../components/home/HomeContent";
-import "./Homepage.css";
 
 const Homepage = () => {
   return (
     <>
       <PetCareNavbar />
       <HomeContent />
+      <Footer />
     </>
   );
 };

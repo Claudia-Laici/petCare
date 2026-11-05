@@ -1,0 +1,1 @@
+export const isTherapyOngoing = (therapy) => therapy.status === "ongoing";

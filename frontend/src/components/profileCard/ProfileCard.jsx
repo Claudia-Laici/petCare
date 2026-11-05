@@ -1,96 +1,71 @@
 import { useState } from "react";
-import {
-  Alert,
-  Button,
-  Card,
-  Col,
-  Image,
-  Modal,
-  Row,
-  Spinner,
-} from "react-bootstrap";
+import { Alert, Button, Card, Image, Modal, Spinner } from "react-bootstrap";
 import { PencilFill, Trash3 } from "react-bootstrap-icons";
 import { apiFetch } from "../../utils/apiFetch";
+import { SPECIES } from "../../constants/pets";
+import petPlaceholder from "../../assets/petPlaceholder/petPlaceholder.webp";
 import "./ProfileCard.css";
-
-const speciesOptions = [
-  { value: "dog", label: "Cane" },
-  { value: "cat", label: "Gatto" },
-  { value: "rabbit", label: "Coniglio" },
-  { value: "bird", label: "Uccello" },
-  { value: "reptile", label: "Rettile" },
-  { value: "rodent", label: "Roditore" },
-  { value: "other", label: "Altro" },
-];
 
 const getAge = (birthDate) => {
   if (!birthDate) return null;
 
   const birth = new Date(birthDate);
-  if (Number.isNaN(birth.getTime())) return null;
-
   const today = new Date();
-  if (birth > today) return null;
 
-  let years = today.getFullYear() - birth.getFullYear();
-  let months = today.getMonth() - birth.getMonth();
+  if (Number.isNaN(birth.getTime()) || birth > today) return null;
 
-  if (today.getDate() < birth.getDate()) {
-    months -= 1;
-  }
+  let total =
+    (today.getFullYear() - birth.getFullYear()) * 12 +
+    (today.getMonth() - birth.getMonth());
 
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
+  if (today.getDate() < birth.getDate()) total -= 1;
 
-  if (years === 0 && months === 0) return "Meno di un mese";
+  if (total < 1) return "Meno di un mese";
 
-  if (years === 0) {
-    return `${months} ${months === 1 ? "mese" : "mesi"}`;
-  }
+  const years = Math.floor(total / 12);
+  const months = total % 12;
 
-  if (months === 0) {
-    return `${years} ${years === 1 ? "anno" : "anni"}`;
-  }
-
-  return `${years} ${years === 1 ? "anno" : "anni"} e ${months} ${
-    months === 1 ? "mese" : "mesi"
-  }`;
+  return [
+    years && `${years} ${years === 1 ? "anno" : "anni"}`,
+    months && `${months} ${months === 1 ? "mese" : "mesi"}`,
+  ]
+    .filter(Boolean)
+    .join(" e ");
 };
 
-const getSpeciesLabel = (species) =>
-  speciesOptions.find((option) => option.value === species)?.label ||
-  "Non specificata";
+const InfoBadge = ({ children, title }) => (
+  <span className="profile-card-badge" title={title}>
+    {children}
+  </span>
+);
 
 const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const petOwnerId = pet?.owner?._id ?? pet?.owner;
-
-  const isOwner =
-    currentUserId && petOwnerId && String(petOwnerId) === String(currentUserId);
-
   if (!pet) return null;
 
-  const avatarSrc =
-    pet.cover ||
-    "https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&auto=format&fit=crop&q=60";
+  const ownerId = pet.owner?._id ?? pet.owner;
+  const isOwner =
+    !!currentUserId && String(ownerId) === String(currentUserId);
 
   const age = getAge(pet.birthDate);
+
+  const openDeleteModal = () => {
+    setDeleteError("");
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => setShowDeleteModal(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
     setDeleteError("");
 
     try {
-      await apiFetch(`/pets/${pet._id}`, {
-        method: "DELETE",
-      });
-
-      setShowDeleteModal(false);
+      await apiFetch(`/pets/${pet._id}`, { method: "DELETE" });
+      closeDeleteModal();
       await onDeleted?.(pet._id);
     } catch (error) {
       setDeleteError(
@@ -103,102 +78,77 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
 
   return (
     <>
-      <Card className="profile-card border-0 shadow-sm rounded-4 p-4 text-white position-relative overflow-hidden mt-3">
-        <div className="profile-card-glow position-absolute top-0 end-0 h-100 w-50 rounded-pill pointer-events-none" />
+      <Card className="profile-card border-0 shadow-sm rounded-4 mt-3">
+        <div className="profile-card-decoration" aria-hidden="true" />
 
-        <Row className="align-items-center position-relative my-2">
-          <Col
-            xs={12}
-            md={8}
-            className="d-flex flex-column flex-md-row align-items-center gap-4 mb-3 mb-md-0"
-          >
-            <div className="text-center">
-              <Image
-                src={avatarSrc}
-                roundedCircle
-                width={90}
-                height={90}
-                className="profile-card-avatar object-fit-cover border border-3 border-white shadow-sm"
-                alt={`Foto di ${pet.name}`}
-              />
-            </div>
+        <div className="profile-card-content d-flex flex-column flex-sm-row align-items-center gap-3 gap-md-4">
 
-            <div className="profile-card-info text-center text-md-start">
-              <span className="profile-card-label d-block text-uppercase small opacity-75 mb-1">
-                Profilo sanitario
-              </span>
+          <Image
+            src={pet.cover || petPlaceholder}
+            roundedCircle
+            className="profile-card-avatar"
+            alt={`Foto di ${pet.name}`}
+          />
 
-              <h2 className="fw-bold mb-2 text-white">{pet.name}</h2>
+          <div className="profile-card-info flex-grow-1 text-center text-sm-start">
+            <span className="profile-card-label">
+              PROFILO SANITARIO
+            </span>
 
-              <div className="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 align-items-center small">
-                <span className="profile-card-badge rounded-pill px-3 py-1">
-                  {getSpeciesLabel(pet.species)}
-                </span>
+            <h2 className="profile-card-name">
+              {pet.name}
+            </h2>
 
-                {pet.breed && (
-                  <span className="profile-card-badge rounded-pill px-3 py-1">
-                    {pet.breed}
-                  </span>
-                )}
+            <div className="profile-card-badges d-flex flex-wrap justify-content-center justify-content-sm-start gap-2">
+              <InfoBadge>
+                {SPECIES[pet.species] ?? "Non specificata"}
+              </InfoBadge>
 
-                {age && (
-                  <span className="profile-card-badge rounded-pill px-3 py-1">
-                    {age}
-                  </span>
-                )}
+              {pet.breed && <InfoBadge>{pet.breed}</InfoBadge>}
 
-                {pet.weight && (
-                  <span className="profile-card-badge rounded-pill px-3 py-1">
-                    {pet.weight} kg
-                  </span>
-                )}
+              {age && <InfoBadge>{age}</InfoBadge>}
 
-                {pet.microchipNumber && (
-                  <span className="profile-card-badge rounded-pill px-3 py-1">
-                    Microchip {pet.microchipNumber}
-                  </span>
-                )}
-              </div>
-            </div>
-          </Col>
+              {pet.weight > 0 && (
+                <InfoBadge>{pet.weight} kg</InfoBadge>
+              )}
 
-          <Col
-            xs={12}
-            md={4}
-            className="d-flex justify-content-center justify-content-md-end align-items-center mt-3 mt-md-0"
-          >
-            <div className="d-flex flex-wrap justify-content-center gap-2">
-              <Button
-                variant="light"
-                className="profile-card-edit rounded-pill px-4 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm border-0"
-                onClick={onEdit}
-              >
-                <PencilFill size={14} />
-                <span>Modifica profilo</span>
-              </Button>
-
-              {isOwner && (
-                <Button
-                  variant="outline-light"
-                  className="rounded-pill px-3 py-2 d-flex align-items-center justify-content-center gap-2"
-                  onClick={() => {
-                    setDeleteError("");
-                    setShowDeleteModal(true);
-                  }}
-                >
-                  <Trash3 size={14} />
-                  <span>Elimina</span>
-                </Button>
+              {pet.microchipNumber && (
+                <InfoBadge title={pet.microchipNumber}>
+                  Microchip {pet.microchipNumber}
+                </InfoBadge>
               )}
             </div>
-          </Col>
-        </Row>
+          </div>
+
+          <div className="profile-card-actions d-flex align-items-center gap-2">
+            <Button
+              variant="light"
+              className="profile-card-action"
+              onClick={onEdit}
+              aria-label="Modifica profilo"
+              title="Modifica profilo"
+            >
+              <PencilFill size={15} />
+            </Button>
+
+            {isOwner && (
+              <Button
+                variant="light"
+                className="profile-card-action profile-card-action-delete"
+                onClick={openDeleteModal}
+                aria-label="Elimina animale"
+                title="Elimina animale"
+              >
+                <Trash3 size={15} />
+              </Button>
+            )}
+          </div>
+        </div>
       </Card>
+
       <Modal
         show={showDeleteModal}
-        onHide={() => {
-          if (!isDeleting) setShowDeleteModal(false);
-        }}
+        onHide={closeDeleteModal}
         centered
         backdrop={isDeleting ? "static" : true}
         keyboard={!isDeleting}
@@ -217,12 +167,13 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
           )}
 
           <p>
-            Vuoi davvero eliminare il profilo di <strong>{pet.name}</strong>?
+            Vuoi davvero eliminare il profilo di{" "}
+            <strong>{pet.name}</strong>?
           </p>
 
           <p className="text-danger small mb-0">
-            L'operazione eliminerà anche i dati sanitari e i documenti associati
-            al profilo. Non può essere annullata.
+            L'operazione eliminerà anche i dati sanitari e i documenti
+            associati al profilo. Non può essere annullata.
           </p>
         </Modal.Body>
 
@@ -230,7 +181,7 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
           <Button
             variant="outline-secondary"
             className="rounded-pill"
-            onClick={() => setShowDeleteModal(false)}
+            onClick={closeDeleteModal}
             disabled={isDeleting}
           >
             Annulla

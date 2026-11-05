@@ -6,21 +6,18 @@ import { Link } from "react-router-dom";
 import Logo from "../../../assets/logo/Logo.webp";
 import "./Navbar.css";
 
-const PetCareNavbar = ({ onLogout }) => {
+const PetCareNavbar = ({ onLogout, onAddPet }) => {
   return (
     <Navbar expand="lg" className="home-header border-bottom">
       <Container fluid className="px-4">
-
         <Navbar.Brand as={Link} to="/" className="mb-0">
           <img src={Logo} alt="PetCare" className="logo-img" />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="petcare-navbar-nav" />
-    
+
         <Navbar.Collapse id="petcare-navbar-nav">
           <div className="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1">
-
-            {/* Centro: link */}
             <Nav className="mx-lg-auto align-items-lg-center">
               <Nav.Link as={Link} to="/" className="nav-text">
                 Home
@@ -44,14 +41,23 @@ const PetCareNavbar = ({ onLogout }) => {
             </Nav>
 
             <div className="d-flex justify-content-lg-end mt-3 mt-lg-0 gap-2">
-              <Button variant="success" className="rounded-pill px-4" size="sm" onClick={onLogout}>
+              <Button
+                variant="success"
+                className="rounded-pill px-4"
+                size="sm"
+                onClick={onAddPet}
+              >
                 + Aggiungi Pet
               </Button>
-              <Button variant="outline-success" className="rounded-pill px-4" size="sm" onClick={onLogout}>
+              <Button
+                variant="outline-success"
+                className="rounded-pill px-4"
+                size="sm"
+                onClick={onLogout}
+              >
                 Esci
               </Button>
             </div>
-
           </div>
         </Navbar.Collapse>
       </Container>

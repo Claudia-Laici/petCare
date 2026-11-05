@@ -27,6 +27,10 @@ const vaccinationSchema = new mongoose.Schema(
           "La prossima scadenza deve essere successiva alla data di somministrazione",
       },
     },
+    isSingleDose: {
+  type: Boolean,
+  default: false,
+},
     veterinarian: {
       type: String,
       trim: true,
@@ -44,6 +48,9 @@ const vaccinationSchema = new mongoose.Schema(
     collection: "vaccinations",
   },
 );
+vaccinationSchema.pre("validate", function () {
+  if (this.isSingleDose) this.nextDueDate = null;
+});
 
 const Vaccination = mongoose.model("Vaccination", vaccinationSchema);
 

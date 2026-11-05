@@ -1,9 +1,9 @@
 import Vaccination from "../modules/vaccinations/Vaccination.js";
-import { getPetWithAccess, getAccessiblePetIds } from "../utils/petAccess.js";
+import { getPetWithAccess, getPetIdsForQuery } from "../utils/petAccess.js";
 
 export const createVaccination = async (req, res, next) => {
   try {
-    const { pet, name, dateAdministered, nextDueDate, veterinarian, notes } =
+    const { pet, name, dateAdministered, nextDueDate, isSingleDose, veterinarian, notes } =
       req.body;
 
     const existingPet = await getPetWithAccess(pet, req.user._id, "editor");
@@ -19,6 +19,7 @@ export const createVaccination = async (req, res, next) => {
       name,
       dateAdministered,
       nextDueDate,
+      isSingleDose,
       veterinarian,
       notes,
     });
@@ -33,12 +34,10 @@ export const createVaccination = async (req, res, next) => {
 
 export const getVaccinations = async (req, res, next) => {
   try {
-    const petIds = await getAccessiblePetIds(req.user._id);
+    const petIds = await getPetIdsForQuery(req.user._id, req.query.pet);
 
     const { status } = req.query;
-    const filter = {
-      pet: { $in: petIds },
-    };
+    const filter = { pet: { $in: petIds } };
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -90,7 +89,7 @@ export const getVaccinationById = async (req, res, next) => {
 
 export const updateVaccination = async (req, res, next) => {
   try {
-    const { name, dateAdministered, nextDueDate, veterinarian, notes } =
+    const { name, dateAdministered, nextDueDate, isSingleDose, veterinarian, notes } =
       req.body;
 
     const vaccination = await Vaccination.findById(req.params.vaccinationId);
@@ -111,6 +110,7 @@ export const updateVaccination = async (req, res, next) => {
     }
     if (nextDueDate !== undefined) vaccination.nextDueDate = nextDueDate;
     if (veterinarian !== undefined) vaccination.veterinarian = veterinarian;
+    if (isSingleDose !== undefined) vaccination.isSingleDose = isSingleDose;
     if (notes !== undefined) vaccination.notes = notes;
 
     const updatedVaccination = await vaccination.save();

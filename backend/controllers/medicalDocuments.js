@@ -68,7 +68,7 @@ export const createMedicalDocument = async (req, res, next) => {
 
 export const getMedicalDocuments = async (req, res, next) => {
   try {
-    const { petId } = req.query;
+    const { pet: petId } = req.query;
     let petIds;
 
     if (petId) {
