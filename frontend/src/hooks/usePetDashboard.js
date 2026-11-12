@@ -19,7 +19,7 @@ export const usePetDashboard = (pet) => {
   const petId = pet?._id;
   const isOwner = pet?.role === "owner";
 
-  const [activeModal, setActiveModal] = useState(null); 
+  const [activeModal, setActiveModal] = useState(null);
 
   const {
     data: vaccinations,
@@ -39,9 +39,10 @@ export const usePetDashboard = (pet) => {
     refetch: refetchDocuments,
   } = useFetch(petId ? `/medical-documents?pet=${petId}` : null);
 
-  const { 
-    data: shares, 
-    refetch: refetchShares, 
+  const {
+    data: shares,
+    isLoading: sharesLoading,
+    refetch: refetchShares,
   } = useFetch(petId && isOwner ? `/pets/${petId}/shares` : null);
 
   const petVaccinations = vaccinations ?? [];
@@ -52,11 +53,12 @@ export const usePetDashboard = (pet) => {
   const activeTherapies = petTherapies.filter(isTherapyOngoing);
 
   const upcomingTherapies = petTherapies.filter(
-    (therapy) => isTherapyOngoing(therapy) && isWithinNext30Days(therapy.endDate)
+    (therapy) =>
+      isTherapyOngoing(therapy) && isWithinNext30Days(therapy.endDate),
   );
 
   const upcomingVaccinations = petVaccinations.filter((vaccination) =>
-    isWithinNext30Days(vaccination.nextDueDate)
+    isWithinNext30Days(vaccination.nextDueDate),
   );
 
   return {
@@ -70,6 +72,7 @@ export const usePetDashboard = (pet) => {
       vaccinations: vaccinationsLoading,
       therapies: therapiesLoading,
       documents: documentsLoading,
+      shares: sharesLoading,
     },
     counts: {
       vaccinations: petVaccinations.length,

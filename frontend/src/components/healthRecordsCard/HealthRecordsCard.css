@@ -1,11 +1,3 @@
-.health-records-card {
-  background-color: #fff;
-}
-
-.therapy-info {
-  min-width: 0;
-}
-
 .vaccination-date,
 .therapy-date {
   font-size: 0.75rem;
@@ -13,18 +5,6 @@
 
 .therapy-dosage {
   font-size: 0.8rem;
-}
-
-.button-cards {
-  background-color: #2e7b6b;
-  border-color: #2e7b6b;
-  color: #ffffff;
-  transition: background-color 0.2s ease;
-}
-
-.button-cards:hover {
-  background-color: #246355;
-  border-color: #246355 ;
 }
 
 .card-custom-footer {

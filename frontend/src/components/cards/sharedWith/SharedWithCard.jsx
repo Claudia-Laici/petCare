@@ -1,8 +1,9 @@
-import { ListGroup, Button } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { PersonPlus, Person } from "react-bootstrap-icons";
 import { formatDate } from "../../../utils/dateUtils";
 import { Link, useParams } from "react-router-dom";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
+import ActionButton from "../../shared/actionButton/ActionButton";
 import "./SharedWithCard.css";
 
 const SharedWithCard = ({
@@ -21,16 +22,11 @@ const SharedWithCard = ({
       emptyMessage="Non hai ancora condiviso il profilo con altre persone."
       maxItems={10}
       className="shared-with-card"
-        headerActions={
-        <Button
-          variant="success"
-          size="sm"
-          className="button-cards rounded-pill px-3 py-1 d-flex align-items-center gap-2 small fw-medium"
-          onClick={onInviteClick}
-        >
+      headerActions={
+        <ActionButton onClick={onInviteClick}>
           <PersonPlus size={15} />
           <span>Invita</span>
-        </Button>
+        </ActionButton>
       }
       footerContent={
         <div className="text-center card-custom-footer pt-2 border-top">

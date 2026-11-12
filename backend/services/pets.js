@@ -84,6 +84,6 @@ export function toPublicJSON(pet) {
     allergies: hc?.allergies ?? [],
     medicalConditions: hc?.medicalConditions ?? [],
     emergencyNotes: hc?.emergencyNotes ?? "",
-    publicPhone: hc?.publicPhone ?? "",
+    contactPhone: hc?.contactPhone ?? "",
   };
 }

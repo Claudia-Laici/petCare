@@ -1,0 +1,161 @@
+.health-card-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.health-card-container {
+  max-width: 850px;
+  background-color: #fff;
+  border-radius: 20px;
+}
+
+.health-card-header {
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e8e6df;
+}
+
+.health-card-eyebrow {
+  color: #246b5c;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.health-card-title {
+  gap: 18px;
+}
+
+.health-card-title h1 {
+  margin: 0 0 7px;
+  color: #252b29;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+}
+
+.health-card-title p {
+  margin: 0;
+  color: #858b87;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.health-card-main-icon {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: #e3eee9;
+  color: #246b5c;
+  font-size: 27px;
+}
+
+.health-card-intro {
+  overflow: hidden;
+  margin-bottom: 20px;
+  background: #e8efe9;
+  border-radius: 18px;
+}
+
+.health-card-intro-label {
+  color: #568273;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.health-card-intro h2 {
+  margin: 9px 0 6px;
+  color: #29483e;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.health-card-intro p {
+  max-width: 490px;
+  margin: 0;
+  color: #6f8179;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.health-card-intro-icon {
+  flex-shrink: 0;
+  margin-left: 20px;
+  color: #9bb9aa;
+  font-size: 48px;
+  opacity: 0.8;
+}
+
+.health-card-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.health-card-box {
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #eeece7;
+  border-radius: 18px;
+}
+
+.health-card-box-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.health-card-section-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: #e3eee9;
+  color: #246b5c;
+  font-size: 20px;
+}
+
+.health-card-section-icon.allergy-icon {
+  background: #f8eee3;
+  color: #a66b36;
+}
+
+.health-card-box-header h2 {
+  margin: 0 0 5px;
+  color: #292f2c;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.health-card-box-header p {
+  margin: 0;
+  color: #929894;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.health-card-footer {
+  padding-top: 24px;
+  border-top: 1px solid #e8e6df;
+}
+
+.health-card-footer span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #929894;
+  font-size: 12px;
+}
+
+.health-card-footer span svg {
+  flex-shrink: 0;
+  color: #246b5c;
+}

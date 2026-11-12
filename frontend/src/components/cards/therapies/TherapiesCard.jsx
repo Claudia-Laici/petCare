@@ -1,10 +1,11 @@
-import { Button, ListGroup } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { CalendarEvent, Capsule } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { parseDate, formatDate } from "../../../utils/dateUtils";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
 import { useSortedByStatus, startOfToday } from "../../../utils/statusUtils";
 import StatusBadge from "../../statusBadge/StatusBadge";
+import ActionButton from "../../shared/actionButton/ActionButton";
 
 const STATUS = {
   ongoing: { label: "In corso", variant: "success", priority: 0 },
@@ -63,14 +64,7 @@ const TherapiesCard = ({
       className="therapies-card"
       headerActions={
         onAddClick && (
-          <Button
-            variant="success"
-            size="sm"
-            className="button-cards rounded-pill px-3 fw-medium"
-            onClick={onAddClick}
-          >
-            + Aggiungi
-          </Button>
+          <ActionButton onClick={onAddClick}>+ Aggiungi</ActionButton>
         )
       }
       footerContent={

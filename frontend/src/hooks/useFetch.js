@@ -4,8 +4,9 @@ import { apiFetch } from "../utils/apiFetch.js";
 export const useFetch = (path) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [reloadCount, setReloadCount] = useState(0);
+
+  const isLoading = Boolean(path) && data === null && error === null;
 
   useEffect(() => {
     if (!path) return;
@@ -13,7 +14,6 @@ export const useFetch = (path) => {
     const controller = new AbortController();
 
     const load = async () => {
-      setIsLoading(true);
       setError(null);
 
       try {
@@ -22,8 +22,6 @@ export const useFetch = (path) => {
       } catch (e) {
         if (e.name === "AbortError") return;
         setError(e);
-      } finally {
-        if (!controller.signal.aborted) setIsLoading(false);
       }
     };
 

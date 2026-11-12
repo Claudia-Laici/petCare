@@ -26,7 +26,7 @@ const ShareModal = ({ show, onHide, petId, onSaved }) => {
     setError("");
 
     try {
-      await apiFetch(`/pets/${petId}/share`, {
+      await apiFetch(`/pets/${petId}/shares`, {
         method: "POST",
         body: {
           email: form.email.trim().toLowerCase(),

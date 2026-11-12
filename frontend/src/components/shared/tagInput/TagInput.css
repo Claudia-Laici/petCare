@@ -1,0 +1,76 @@
+.tag-input-description {
+  font-size: 13px;
+  color: #858b87;
+  margin-bottom: 14px;
+}
+
+.tag-input-field {
+  border: 1px solid #e5e8e5;
+  border-radius: 10px;
+  padding: 11px 13px;
+  font-size: 14px;
+}
+
+.tag-input-field:focus {
+  border-color: #78a99b;
+  box-shadow: 0 0 0 3px rgba(36, 107, 92, 0.1);
+}
+
+.tag-input-add {
+  width: 44px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 10px;
+  background: #246b5c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.tag-input-add:hover:not(:disabled) {
+  background: #1b5549;
+}
+
+.tag-input-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tag-input-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-input-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px 7px 13px;
+  border-radius: 20px;
+  background: #e7f0ec;
+  color: #246b5c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.tag-input-chip button {
+  border: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  color: #246b5c;
+  cursor: pointer;
+}
+
+.tag-input-chip button:hover {
+  color: #b44747;
+}
+
+.tag-input-empty {
+  font-size: 12px;
+  color: #a0a5a1;
+}

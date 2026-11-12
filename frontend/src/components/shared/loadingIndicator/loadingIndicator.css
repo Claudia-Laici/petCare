@@ -1,71 +1,39 @@
 .loading-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
   background-color: #f5f3ed;
-  color: #263b35;
+  color: #246b5c;
   font-family: "Nunito Sans", sans-serif;
 }
 
-.loading-content {
-  width: min(85%, 320px);
-}
-
-.loading-paw {
-  display: inline-block;
-  font-size: 3.5rem;
-  animation: loading-bounce 1s ease-in-out infinite;
-}
-
 .loading-brand {
-  margin-top: 1rem;
+  margin-bottom: 1rem;
   color: #246b5c;
   font-size: 2rem;
+  font-weight: 700;
   letter-spacing: -1px;
 }
 
+.loading-spinner {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.loading-spinner .spinner-grow {
+  color: #398777;
+}
+
 .loading-message {
+  margin-bottom: 0;
   color: #64766e;
   font-size: 0.95rem;
-}
-
-.loading-track {
-  width: 150px;
-  height: 4px;
-  overflow: hidden;
-  border-radius: 999px;
-  background-color: #dfe8df;
-}
-
-.loading-progress {
-  width: 40%;
-  height: 100%;
-  border-radius: inherit;
-  background-color: #398777;
-  animation: loading-slide 1.2s ease-in-out infinite;
-}
-
-@keyframes loading-bounce {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0);
-  }
-
-  50% {
-    transform: translateY(-8px) rotate(-5deg);
-  }
-}
-
-@keyframes loading-slide {
-  from {
-    transform: translateX(-100%);
-  }
-
-  to {
-    transform: translateX(375%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loading-paw,
-  .loading-progress {
-    animation: none;
-  }
 }

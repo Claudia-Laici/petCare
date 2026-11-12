@@ -5,12 +5,15 @@ import {
   Capsule,
   Folder,
 } from "react-bootstrap-icons";
-import DashboardSections from "../dashboardSection/DashboardSections";
-import MedicalDocumentModal from "../../medicalDocumentModal/MedicalDocumentModal";
-import VaccinationModal from "../../cards/vaccinations/VaccinationModal";
-import ShareModal from "../../cards/sharedWith/ShareModal";
-import TherapyModal from "../../cards/therapies/TherapyModal";
-import { usePetDashboard } from "../../../hooks/usePetDashboard";
+import VaccinationsCard from "../cards/vaccinations/VaccinationsCard";
+import TherapiesCard from "../cards/therapies/TherapiesCard";
+import RecentDocumentsCard from "../cards/recentDocument/RecentDocumentsCard";
+import SharedWithCard from "../cards/sharedWith/SharedWithCard";
+import MedicalDocumentModal from "../medicalDocumentModal/MedicalDocumentModal";
+import VaccinationModal from "../cards/vaccinations/VaccinationModal";
+import ShareModal from "../cards/sharedWith/ShareModal";
+import TherapyModal from "../cards/therapies/TherapyModal";
+import { usePetDashboard } from "../../hooks/usePetDashboard";
 import "./DashboardCards.css";
 
 const DashboardCards = ({ pet }) => {
@@ -69,7 +72,7 @@ const DashboardCards = ({ pet }) => {
       <Row className="g-3">
         {stats.map((stat) => (
           <Col xs={6} xl={3} key={stat.id}>
-            <Card className="border-0 shadow-sm rounded-4 p-3 bg-white">
+            <Card className="border-0 shadow-sm rounded-4 p-3 h-100">
               <Card.Body className="p-1 d-flex flex-column">
                 <div
                   className={`icon-dashboard d-inline-flex align-items-center justify-content-center rounded-3 mb-3 ${stat.iconBg}`}
@@ -81,9 +84,7 @@ const DashboardCards = ({ pet }) => {
                   <h3 className="fw-bold mb-1 text-dark display-6 fs-3">
                     {stat.loading ? "—" : stat.count}
                   </h3>
-                  <p className="text-secondary small fw-medium">
-                    {stat.label}
-                  </p>
+                  <p className="text-secondary small fw-medium">{stat.label}</p>
                 </div>
               </Card.Body>
             </Card>
@@ -91,21 +92,43 @@ const DashboardCards = ({ pet }) => {
         ))}
       </Row>
 
-      <DashboardSections
-        petId={petId}
-        petVaccinations={petVaccinations}
-        vaccinationsLoading={loading.vaccinations}
-        onAddVaccination={() => modals.open("vaccination")}
-        petTherapies={petTherapies}
-        therapiesLoading={loading.therapies}
-        onAddTherapy={() => modals.open("therapy")}
-        petSharedWith={petShares}
-        onInvite={() => modals.open("share")}
-        petDocuments={petDocuments}
-        documentsLoading={loading.documents}
-        onUploadDocument={() => modals.open("document")}
-        isOwner={isOwner}
-      />
+      <Row className="g-4 mt-4">
+        <Col xs={12} lg={6}>
+          <VaccinationsCard
+            vaccinations={petVaccinations}
+            isLoading={loading.vaccinations}
+            petId={petId}
+            onAddClick={() => modals.open("vaccination")}
+          />
+        </Col>
+
+        <Col xs={12} lg={6}>
+          <TherapiesCard
+            therapies={petTherapies}
+            isLoading={loading.therapies}
+            petId={petId}
+            onAddClick={() => modals.open("therapy")}
+          />
+        </Col>
+
+        <Col xs={12} lg={6}>
+          <RecentDocumentsCard
+            documents={petDocuments}
+            isLoading={loading.documents}
+            onUploadClick={() => modals.open("document")}
+          />
+        </Col>
+
+        {isOwner && (
+          <Col xs={12} lg={6}>
+            <SharedWithCard
+              sharedWith={petShares}
+              isLoading={loading.shares}
+              onInviteClick={() => modals.open("share")}
+            />
+          </Col>
+        )}
+      </Row>
 
       <MedicalDocumentModal
         show={modals.activeModal === "document"}

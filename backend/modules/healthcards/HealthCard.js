@@ -21,15 +21,11 @@ const healthCardSchema = new mongoose.Schema(
       trim: true, 
       default: "" 
     },
-    publicPhone: { 
+    contactPhone: { 
       type: String, 
       trim: true, 
       default: "" 
     },
-    publicTherapies: [{
-       type: mongoose.Schema.Types.ObjectId, 
-       ref: "Therapy" 
-      }],
   },
   { timestamps: true },
 );

@@ -1,7 +1,6 @@
 import Therapy from "../modules/therapies/Therapy.js";
 import { getTherapyStatus } from "../utils/therapyStatus.js";
 import { getPetWithAccess, getPetIdsForQuery } from "../utils/petAccess.js";
-import HealthCard from "../modules/healthcards/HealthCard.js";
 
 const withStatus = (therapy) => ({
   ...therapy.toObject(),
@@ -139,11 +138,6 @@ export const deleteTherapy = async (req, res, next) => {
     if (!pet) {
       return res.status(404).json({ message: "Terapia non trovata" });
     }
-
-    await HealthCard.updateOne(
-      { pet: therapy.pet },
-      { $pull: { publicTherapies: therapy._id } },
-    );
 
     await therapy.deleteOne();
 

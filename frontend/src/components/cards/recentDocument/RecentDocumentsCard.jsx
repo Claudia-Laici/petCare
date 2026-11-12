@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { formatDate } from "../../../utils/dateUtils";
 import { apiFetch } from "../../../utils/apiFetch";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
+import ActionButton from "../../shared/actionButton/ActionButton";
 import "./RecentDocumentsCard.css";
 
 const RecentDocumentsCard = ({
@@ -45,15 +46,10 @@ const RecentDocumentsCard = ({
       maxItems={3}
       className="recent-documents-card"
       headerActions={
-        <Button
-          variant="success"
-          size="sm"
-          className="button-cards rounded-pill px-3 py-1 d-flex align-items-center gap-2 small fw-medium"
-          onClick={onUploadClick}
-        >
+        <ActionButton onClick={onUploadClick}>
           <Upload size={15} />
           <span>Carica</span>
-        </Button>
+        </ActionButton>
       }
       footerContent={
         <div className="text-center card-custom-footer pt-2 border-top">

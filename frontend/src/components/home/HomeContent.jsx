@@ -1,17 +1,32 @@
 import { useState } from "react";
-import { Row, Col, Alert, Container } from "react-bootstrap";
+import { Alert, Container } from "react-bootstrap";
+import { useSearchParams } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import Sidebar from "../shared/aside/Sidebar";
 import ProfileCard from "../profileCard/ProfileCard";
 import PetFormModal from "../profileCard/PetFormModal";
 import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
-import DashboardCards from "../dashboard/dashboardCard/DashboardCards";
+import DashboardCards from "../dashboardCard/DashboardCards";
+import QrCard from "../qrCode/qrCard/QrCard";
+import "./HomeContent.css";
 
 const HomeContent = () => {
-  const { data: pets, isLoading, error, refetch } = useFetch("/pets");
-  const { data: currentUser } = useFetch("/auth/me");
+  const {
+    data: pets,
+    isLoading: petsLoading,
+    error,
+    refetch,
+  } = useFetch("/pets");
+  const { data: currentUser, isLoading: userLoading } = useFetch("/auth/me");
 
-  const [selectedPetId, setSelectedPetId] = useState(null);
+  const isLoading = petsLoading || userLoading;
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedPetId = searchParams.get("pet");
+  const setSelectedPetId = (id) => {
+    setSearchParams(id ? { pet: id } : {}, { replace: true });
+  };
+
   const [showPetModal, setShowPetModal] = useState(false);
   const [petToEdit, setPetToEdit] = useState(null);
 
@@ -44,9 +59,11 @@ const HomeContent = () => {
 
   if (error) {
     return (
-      <Alert variant="danger">
-        {error.message || "Impossibile caricare i tuoi animali."}
-      </Alert>
+      <Container className="py-4">
+        <Alert variant="danger">
+          {error.message || "Impossibile caricare i tuoi animali."}
+        </Alert>
+      </Container>
     );
   }
 
@@ -59,49 +76,55 @@ const HomeContent = () => {
   };
 
   return (
-    <>
-      <Container>
-        <Row className="g-4">
-          <Col xs={12} lg={3}>
-            <Sidebar
-              pets={petList}
-              selectedPetId={selectedPet?._id}
-              onSelectPet={setSelectedPetId}
-              onAddPet={openAddPet}
+    <Container>
+      <div className="home-layout mt-3">
+        <div className="home-pets">
+          <Sidebar
+            pets={petList}
+            selectedPetId={selectedPet?._id}
+            onSelectPet={setSelectedPetId}
+            onAddPet={openAddPet}
+          />
+        </div>
+
+        <div className="home-main">
+          {selectedPet ? (
+            <>
+              <ProfileCard
+                pet={selectedPet}
+                currentUserId={currentUser?._id}
+                onEdit={() => openEditPet(selectedPet)}
+                onDeleted={handlePetDeleted}
+              />
+              <div className="mt-4">
+                <DashboardCards pet={selectedPet} />
+              </div>
+            </>
+          ) : (
+            <Alert variant="info">
+              Non hai ancora animali registrati. Aggiungine uno per iniziare!
+            </Alert>
+          )}
+        </div>
+
+        {selectedPet && (
+          <div className="home-qr">
+            <QrCard
+              petId={selectedPet._id}
+              petName={selectedPet.name}
+              role={selectedPet.role}
             />
-          </Col>
+          </div>
+        )}
+      </div>
 
-          <Col xs={12} lg={9}>
-            {selectedPet ? (
-              <>
-                <ProfileCard
-                  pet={selectedPet}
-                  currentUserId={currentUser?._id}
-                  onEdit={() => openEditPet(selectedPet)}
-                  onDeleted={handlePetDeleted}
-                />
-
-                <div className="mt-4">
-                  <DashboardCards pet={selectedPet} />
-                </div>
-
-              </>
-            ) : (
-              <Alert variant="info" className="mt-3">
-                Non hai ancora animali registrati. Aggiungine uno per iniziare!
-              </Alert>
-            )}
-          </Col>
-        </Row>
-
-        <PetFormModal
-          show={showPetModal}
-          onHide={() => setShowPetModal(false)}
-          pet={petToEdit}
-          onSaved={handlePetSaved}
-        />
-      </Container>
-    </>
+      <PetFormModal
+        show={showPetModal}
+        onHide={() => setShowPetModal(false)}
+        pet={petToEdit}
+        onSaved={handlePetSaved}
+      />
+    </Container>
   );
 };
 

@@ -14,6 +14,9 @@ import { auth } from "./middlewares/auth.js";
 import TherapyRouter from "./routes/therapies.js";
 import MedicalDocumentRouter from "./routes/medicalDocuments.js";
 import PublicRouter from "./routes/public.js";
+import PetQrRouter from "./routes/petQr.js";
+import HealthCardRouter from "./routes/healthCards.js";
+import PetSharesRouter from "./routes/petShares.js";
 
 dotenv.config();
 
@@ -75,7 +78,11 @@ server.use("/therapies", TherapyRouter);
 
 server.use("/medical-documents", MedicalDocumentRouter);
 
-server.use("/:petId/shares", PetRouter);
+server.use("/pets", PetQrRouter);
+
+server.use("/pets", HealthCardRouter);
+
+server.use("/pets", PetSharesRouter);
 
 // Rotte non trovate
 server.use((req, res, next) => {

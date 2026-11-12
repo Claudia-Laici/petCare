@@ -1,8 +1,8 @@
+import crypto from "crypto";
 import Vaccination from "../modules/vaccinations/Vaccination.js";
 import Therapy from "../modules/therapies/Therapy.js";
 import MedicalDocument from "../modules/medicalDocuments/MedicalDocument.js";
 import { v2 as cloudinary } from "cloudinary";
-import crypto from "crypto";
 import Pet from "../modules/pets/Pet.js";
 import HealthCard from "../modules/healthcards/HealthCard.js";
 import PetQr from "../modules/petqrs/PetQr.js";
@@ -73,22 +73,35 @@ export async function createPetWithHealthCard(petData, ownerId) {
   return pet.save();
 }
 
-export async function enableQr(pet) {
-  const qr = await PetQr.findOneAndUpdate(
-    { pet: pet._id },
-    { token: crypto.randomBytes(24).toString("hex") },
-    { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
-  );
-  pet.qr = qr._id;
-  await pet.save();
-  return qr;
-}
+const generateToken = () => crypto.randomBytes(24).toString("base64url");
+export const enableQr = async (pet) => {
+  let qr = await PetQr.findOne({ pet: pet._id });
 
-export async function disableQr(pet) {
-  await PetQr.deleteOne({ pet: pet._id });
-  pet.qr = null;
-  await pet.save();
-}
+  if (!qr) {
+    qr = await PetQr.create({ pet: pet._id, token: generateToken() });
+    pet.qr = qr._id;
+    await pet.save();
+  } else if (!qr.enabled) {
+    qr.enabled = true;
+    await qr.save();
+  }
+
+  return qr;
+};
+
+export const regenerateQr = async (pet) => {
+  const qr = await PetQr.findOne({ pet: pet._id });
+  if (!qr) return enableQr(pet);
+
+  qr.token = generateToken();
+  qr.enabled = true;
+  await qr.save();
+  return qr;
+};
+
+export const disableQr = async (pet) => {
+  await PetQr.updateOne({ pet: pet._id }, { enabled: false });
+};
 
 export async function grantAccess(pet, userId, role, expiresAt) {
   return PetShare.findOneAndUpdate(
@@ -145,7 +158,7 @@ export function toPublicJSON(pet) {
     allergies: hc?.allergies ?? [],
     medicalConditions: hc?.medicalConditions ?? [],
     emergencyNotes: hc?.emergencyNotes ?? "",
-    publicPhone: hc?.publicPhone ?? "",
-    therapies: hc?.publicTherapies ?? [],
+    contactPhone: hc?.contactPhone ?? "",
+    therapies: [],
   };
 }

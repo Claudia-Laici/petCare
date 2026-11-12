@@ -5,7 +5,9 @@ import { apiFetch } from "../../../utils/apiFetch.js";
 const emptyForm = {
   name: "",
   dosage: "",
+  dosageUnit: "compressa",
   frequency: "",
+  frequencyUnit: "giorno",
   startDate: "",
   endDate: "",
   veterinarian: "",
@@ -39,7 +41,16 @@ const TherapyModal = ({ show, onHide, petId, onSaved }) => {
         body: {
           ...form,
           pet: petId,
-          dosage: form.dosage || null,
+          dosage: form.dosage ? `${form.dosage} ${form.dosageUnit}` : null,
+          frequency: `${form.frequency} ${
+            Number(form.frequency) === 1 ? "volta" : "volte"
+          } ${
+            form.frequencyUnit === "giorno"
+              ? "al giorno"
+              : form.frequencyUnit === "settimana"
+                ? "alla settimana"
+                : "al mese"
+          }`,
           endDate: form.endDate || null,
         },
       });
@@ -75,23 +86,58 @@ const TherapyModal = ({ show, onHide, petId, onSaved }) => {
 
           <Form.Group className="mb-3">
             <Form.Label>Dosaggio</Form.Label>
-            <Form.Control
-              name="dosage"
-              value={form.dosage}
-              onChange={handleChange}
-              placeholder="Es. 1 compressa"
-            />
+
+            <div className="d-flex gap-2">
+              <Form.Control
+                type="number"
+                name="dosage"
+                value={form.dosage}
+                onChange={handleChange}
+                placeholder="Es. 1"
+                min="0"
+                step="any"
+              />
+
+              <Form.Select
+                name="dosageUnit"
+                value={form.dosageUnit}
+                onChange={handleChange}
+              >
+                <option value="compressa">Compressa</option>
+                <option value="ml">ml</option>
+                <option value="gocce">Gocce</option>
+                <option value="mg">mg</option>
+                <option value="g">g</option>
+                <option value="spruzzo">Spruzzo</option>
+              </Form.Select>
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Frequenza</Form.Label>
-            <Form.Control
-              name="frequency"
-              value={form.frequency}
-              onChange={handleChange}
-              placeholder="Es. 2 volte al giorno"
-              required
-            />
+
+            <div className="d-flex gap-2">
+              <Form.Control
+                type="number"
+                name="frequency"
+                value={form.frequency}
+                onChange={handleChange}
+                placeholder="Es. 1"
+                min="1"
+                step="1"
+                required
+              />
+
+              <Form.Select
+                name="frequencyUnit"
+                value={form.frequencyUnit}
+                onChange={handleChange}
+              >
+                <option value="giorno">Al giorno</option>
+                <option value="settimana">Alla settimana</option>
+                <option value="mese">Al mese</option>
+              </Form.Select>
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3">

@@ -1,32 +1,27 @@
-import Container from "react-bootstrap/Container";
-import "./loadingIndicator.css";
+import Spinner from "react-bootstrap/Spinner";
+import "./LoadingIndicator.css";
 
-const LoadingIndicator = ({ message = "Stiamo preparando PetCare..." }) => {
+const LoadingIndicator = () => {
   return (
-    <Container
-      fluid
-      className="loading-page min-vh-100 d-flex flex-column align-items-center justify-content-center"
-      role="status"
-      aria-live="polite"
-    >
-      <div className="loading-content text-center">
-        <div className="loading-paw" aria-hidden="true">
-          🐾
-        </div>
+    <div className="loading-page" role="status" aria-live="polite">
+      <h1 className="loading-brand">PetCare</h1>
 
-        <h1 className="loading-brand fw-bold mt-3 mb-2">
-          PetCare
-        </h1>
-
-        <p className="loading-message mb-4">
-          {message}
-        </p>
-
-        <div className="loading-track mx-auto" aria-hidden="true">
-          <div className="loading-progress" />
-        </div>
+      <div className="loading-spinner">
+        {[0, 1, 2].map((i) => (
+          <Spinner
+            key={i}
+            animation="grow"
+            size="sm"
+            aria-hidden="true"
+            style={{ animationDelay: `${i * 0.15}s` }}
+          />
+        ))}
       </div>
-    </Container>
+
+      <p className="loading-message">
+        Stiamo preparando tutto per te
+      </p>
+    </div>
   );
 };
 

@@ -1,12 +1,19 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import Button from "react-bootstrap/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../assets/logo/Logo.webp";
+import ActionButton from "../../shared/actionButton/ActionButton";
 import "./Navbar.css";
 
-const PetCareNavbar = ({ onLogout, onAddPet }) => {
+const PetCareNavbar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login", { replace: true });
+  };
+
   return (
     <Navbar expand="lg" className="home-header border-bottom">
       <Container fluid className="px-4">
@@ -41,22 +48,9 @@ const PetCareNavbar = ({ onLogout, onAddPet }) => {
             </Nav>
 
             <div className="d-flex justify-content-lg-end mt-3 mt-lg-0 gap-2">
-              <Button
-                variant="success"
-                className="rounded-pill px-4"
-                size="sm"
-                onClick={onAddPet}
-              >
-                + Aggiungi Pet
-              </Button>
-              <Button
-                variant="outline-success"
-                className="rounded-pill px-4"
-                size="sm"
-                onClick={onLogout}
-              >
+              <ActionButton onClick={handleLogout} className="px-4">
                 Esci
-              </Button>
+              </ActionButton>
             </div>
           </div>
         </Navbar.Collapse>

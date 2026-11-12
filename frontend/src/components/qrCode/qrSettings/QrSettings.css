@@ -1,0 +1,19 @@
+.btn-back-dashboard:hover {
+  background-color: #2e7b6b;
+  border-color: #2e7b6b;
+  color: #fff;
+}
+
+.qr-settings-container{
+   min-height: 100vh;
+}
+
+.qr-settings-container .form-check-input:checked {
+  background-color: #2e7b6b;
+  border-color: #2e7b6b;
+}
+
+.qr-settings-container .form-check-input:focus {
+  border-color: #2e7b6b;
+  box-shadow: 0 0 0 0.25rem rgba(46, 123, 107, 0.25);
+}
