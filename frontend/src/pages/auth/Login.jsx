@@ -1,17 +1,33 @@
 import { Button } from "react-bootstrap";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { apiFetch } from "../../utils/apiFetch";
 import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
 import AuthLayout from "./AuthLayout";
+import GoogleButton from "./GoogleButton";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const googleError = new URLSearchParams(location.search).has("error")
+    ? "Accesso con Google non riuscito. Riprova."
+    : "";
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate(from, { replace: true });
+    }
+  }, [location.search, navigate, from]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -25,7 +41,7 @@ const Login = () => {
       });
 
       localStorage.setItem("token", data.token);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (e) {
       setError(e.message || "Errore durante il login");
     } finally {
@@ -82,9 +98,9 @@ const Login = () => {
           />
         </div>
 
-        {error && (
+        {(error || googleError) && (
           <div className="alert alert-danger" role="alert">
-            {error}
+            {error || googleError}
           </div>
         )}
 
@@ -92,6 +108,10 @@ const Login = () => {
           Accedi
         </Button>
       </form>
+      <div className="d-flex justify-content-center gap-3 my-3">
+        <span className="text-muted small">oppure</span>
+      </div>
+      <GoogleButton label="Accedi con Google" />
     </AuthLayout>
   );
 };

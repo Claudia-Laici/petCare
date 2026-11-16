@@ -3,10 +3,20 @@ import Pet from "../modules/pets/Pet.js";
 import User from "../modules/users/User.js";
 import PetShare from "../modules/petshares/PetShare.js";
 import * as petService from "../services/petService.js";
+import { sendShareInviteEmail } from "../services/emailService.js";
 
 export const sharePet = async (req, res, next) => {
   try {
     const { email, role = "viewer", expiresAt = null } = req.body;
+    const normalizedEmail = String(email || "").toLowerCase().trim();
+
+    if (!normalizedEmail) {
+      return res.status(400).json({ message: "Email mancante" });
+    }
+
+    if (!["viewer", "editor"].includes(role)) {
+      return res.status(400).json({ message: "Ruolo non valido" });
+    }
 
     const pet = await Pet.findOne({
       _id: req.params.petId,
@@ -14,12 +24,7 @@ export const sharePet = async (req, res, next) => {
     });
     if (!pet) return res.status(404).json({ message: "Animale non trovato" });
 
-    const target = await User.findOne({
-      email: String(email).toLowerCase().trim(),
-    });
-    if (!target) return res.status(404).json({ message: "Utente non trovato" });
-
-    if (target._id.equals(req.user._id)) {
+    if (normalizedEmail === req.user.email) {
       return res.status(400).json({ message: "L'animale è già tuo" });
     }
 
@@ -33,9 +38,35 @@ export const sharePet = async (req, res, next) => {
       }
     }
 
-    await petService.grantAccess(pet, target._id, role, expiresAt);
+    const target = await User.findOne({ email: normalizedEmail });
 
-    res.status(200).json(await petService.petView(pet, req.user._id));
+    if (target) {
+      await petService.grantAccess(pet, target._id, role, expiresAt);
+    }
+
+    let emailSent = true;
+    try {
+      await sendShareInviteEmail({
+        to: normalizedEmail,
+        ownerName: req.user.nome,
+        petName: pet.name,
+        role,
+        isRegistered: Boolean(target),
+      });
+    } catch (emailError) {
+      emailSent = false;
+      console.error("Email di invito non inviata:", emailError.message);
+    }
+
+    if (!target) {
+      return res.status(202).json({ shared: false, emailSent });
+    }
+
+    res.status(200).json({
+      shared: true,
+      emailSent,
+      pet: await petService.petView(pet, req.user._id),
+    });
   } catch (e) {
     next(e);
   }

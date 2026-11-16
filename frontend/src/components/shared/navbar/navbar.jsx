@@ -1,13 +1,19 @@
+
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import Dropdown from "react-bootstrap/Dropdown";
 import { Link, useNavigate } from "react-router-dom";
+import { PersonCircle } from "react-bootstrap-icons";
 import Logo from "../../../assets/logo/Logo.webp";
-import ActionButton from "../../shared/actionButton/ActionButton";
+import { useFetch } from "../../../hooks/useFetch";
 import "./Navbar.css";
 
 const PetCareNavbar = () => {
   const navigate = useNavigate();
+
+  const { data: currentUser } = useFetch("/auth/me");
+  const avatar = currentUser?.avatar;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -47,10 +53,45 @@ const PetCareNavbar = () => {
               </Nav.Link>
             </Nav>
 
-            <div className="d-flex justify-content-lg-end mt-3 mt-lg-0 gap-2">
-              <ActionButton onClick={handleLogout} className="px-4">
-                Esci
-              </ActionButton>
+            <div className="d-flex align-items-center justify-content-lg-end mt-3 mt-lg-0">
+              <Dropdown align="end">
+                <Dropdown.Toggle
+                  variant="link"
+                  className="navbar-avatar-toggle p-0 border-0"
+                  aria-label="Menu profilo"
+                >
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="Avatar profilo"
+                      className="navbar-avatar"
+                    />
+                  ) : (
+                    <PersonCircle
+                      size={38}
+                      className="text-secondary"
+                    />
+                  )}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="shadow-sm border-0 rounded-3 mt-2">
+                  <Dropdown.Header>
+                    {currentUser
+                      ? `${currentUser.nome || ""} ${currentUser.cognome || ""}`.trim()
+                      : "Il mio account"}
+                  </Dropdown.Header>
+
+                  <Dropdown.Divider />
+
+                  <Dropdown.Item as={Link} to="/profile">
+                    Il mio profilo
+                  </Dropdown.Item>
+
+                  <Dropdown.Item onClick={handleLogout}>
+                    Esci
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </Navbar.Collapse>

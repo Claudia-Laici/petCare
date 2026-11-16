@@ -1,0 +1,39 @@
+:root {
+  /* Brand */
+  --color-primary: #2e7b6b;
+  --color-primary-dark: #245e52;
+  --color-primary-light: #e3eee9;
+  --color-brand: #246b5c;
+
+  /* Background */
+  --color-page-bg: #f6f3ee;
+  --color-white: #ffffff;
+  --color-card-bg: #ffffff;
+
+  /* Public page */
+  --color-public-hero: #e9eee9;
+  --color-public-chip-bg: #f1f5f1;
+  --color-public-chip-text: #52635a;
+  --color-public-icon-bg: #e8f1eb;
+
+  /* Text */
+  --color-text: #333333;
+  --color-text-dark: #252b29;
+  --color-text-muted: #929894;
+
+  /* Bordi */
+  --color-border: #eeece7;
+
+  /* Accent */
+  --color-accent: #faedcd;
+  --color-warning-bg: #fffaf0;
+  --color-warning-text: #66552e;
+
+  /* Border radius */
+  --radius-card: 18px;
+  --radius-container: 20px;
+  --radius-pill: 20px;
+
+  /* Shadows */
+  --shadow-avatar: 0 4px 12px rgb(0 0 0 / 12%);
+}

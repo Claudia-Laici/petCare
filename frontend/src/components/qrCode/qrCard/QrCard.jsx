@@ -4,6 +4,7 @@ import { Card, Button } from "react-bootstrap";
 import { Download, Gear, ArrowRepeat } from "react-bootstrap-icons";
 import { QRCodeCanvas } from "qrcode.react";
 import { usePetQr } from "../../../hooks/usePetQr";
+import "./QrCard.css";
 
 const APP_URL = import.meta.env.VITE_APP_URL;
 
@@ -65,10 +66,9 @@ const QrCard = ({ petId, petName, role }) => {
             <QRCodeCanvas
               ref={canvasRef}
               value={url}
-              size={1024}
+              size={150}
               level="M"
               marginSize={4}
-              style={{ width: 150, height: 150 }}
               role="img"
               aria-label="QR code della scheda rapida"
             />

@@ -73,7 +73,7 @@ const RecentDocumentsCard = ({
           <div className="recent-document-info flex-grow-1">
             <div className="fw-semibold text-dark small">{doc.title}</div>
 
-            <div className="recent-document-date text-secondary">
+            <div className="text-date text-secondary">
               {formatDate(doc.documentDate || doc.createdAt)}
             </div>
           </div>

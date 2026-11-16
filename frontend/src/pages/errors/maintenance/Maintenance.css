@@ -1,0 +1,30 @@
+.maintenance-page {
+  background-color: var(--color-page-bg);
+}
+
+.maintenance-container {
+  max-width: 550px;
+}
+
+.maintenance-card {
+  background-color: var(--color-card-bg);
+}
+
+.maintenance-icon {
+  width: 75px;
+  height: 75px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 32px;
+}
+
+.maintenance-brand {
+  color: var(--color-primary);
+}
+
+.maintenance-message {
+  background-color: var(--color-public-hero);
+  color: var(--color-brand);
+  font-size: 0.95rem;
+  font-weight: 500;
+}

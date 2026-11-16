@@ -1,33 +1,20 @@
 import { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Plus, X } from "react-bootstrap-icons";
 import "./TagInput.css";
 
-const TagInput = ({
-  label,
-  description,
-  placeholder,
-  items = [],
-  onChange,
-  id,
-}) => {
+const TagInput = ({ label, description, placeholder, items = [], onChange, id }) => {
   const [value, setValue] = useState("");
 
   const handleAdd = () => {
     const newValue = value.trim();
-
     if (!newValue) return;
 
     const alreadyExists = items.some(
       (item) => item.toLowerCase() === newValue.toLowerCase(),
     );
 
-    if (alreadyExists) {
-      setValue("");
-      return;
-    }
-
-    onChange([...items, newValue]);
+    if (!alreadyExists) onChange([...items, newValue]);
     setValue("");
   };
 
@@ -47,7 +34,7 @@ const TagInput = ({
       <Form.Label className="fw-semibold">{label}</Form.Label>
 
       {description && (
-        <p className="tag-input-description">{description}</p>
+        <p className="small text-body-secondary mb-3">{description}</p>
       )}
 
       <div className="d-flex gap-2">
@@ -57,28 +44,31 @@ const TagInput = ({
           placeholder={placeholder}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="tag-input-field"
+          className="rounded-3 py-2 px-3"
         />
 
-        <button
+        <Button
           type="button"
-          className="tag-input-add"
+          className="tag-input-add d-flex align-items-center justify-content-center flex-shrink-0 rounded-3"
           onClick={handleAdd}
           disabled={!value.trim()}
           aria-label="Aggiungi"
         >
           <Plus />
-        </button>
+        </Button>
       </div>
 
       {items.length > 0 ? (
-        <div className="tag-input-list mt-3">
+        <div className="d-flex flex-wrap gap-2 mt-3">
           {items.map((item, index) => (
-            <span key={`${item}-${index}`} className="tag-input-chip">
+            <span
+              key={`${item}-${index}`}
+              className="tag-input-chip d-inline-flex align-items-center gap-2 rounded-pill py-2 ps-3 pe-2 small fw-medium"
+            >
               {item}
-
               <button
                 type="button"
+                className="border-0 bg-transparent p-0 d-flex"
                 onClick={() => handleRemove(index)}
                 aria-label={`Rimuovi ${item}`}
               >
@@ -88,7 +78,7 @@ const TagInput = ({
           ))}
         </div>
       ) : (
-        <p className="tag-input-empty mt-3 mb-0">
+        <p className="small text-body-secondary mt-3 mb-0">
           Nessuna informazione aggiunta.
         </p>
       )}

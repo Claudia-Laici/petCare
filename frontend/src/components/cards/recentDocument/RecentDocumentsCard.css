@@ -1,3 +1,4 @@
+
 .recent-document-icon {
   width: 40px;
   height: 40px;
@@ -14,9 +15,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5rem;
+  border-radius: var(--radius-pill);
   background-color: #e8f2ef;
-  color: #2e7b6b;
+  color: var(--color-primary);
   border: none;
   transition:
     background-color 0.2s ease,
@@ -25,8 +26,8 @@
 }
 
 .recent-document-options:hover {
-  background-color: #2e7b6b;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   transform: translateY(-2px);
 }
 
@@ -35,6 +36,6 @@
 }
 
 .recent-document-options:focus-visible {
-  outline: 2px solid #2e7b6b;
+  outline: 2px solid var(--color-primary);
   outline-offset: 3px;
 }

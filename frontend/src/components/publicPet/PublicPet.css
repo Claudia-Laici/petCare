@@ -1,15 +1,16 @@
+
 .public-page-main {
   min-height: 100vh;
-  color: #333;
-  background: #f6f3ee;
+  color: var(--color-text);
+  background: var(--color-page-bg);
 }
 
 .text-brand {
-  color: #246b5c;
+  color: var(--color-brand);
 }
 
 .public-page-header {
-  color: #246b5c;
+  color: var(--color-brand);
 }
 
 .public-page-container {
@@ -23,8 +24,8 @@
   justify-content: center;
   overflow: hidden;
   font-size: 65px;
-  color: #246b5c;
-  background: #e9eee9;
+  color: var(--color-brand);
+  background: var(--color-public-hero);
 }
 
 .img-cover {
@@ -41,13 +42,13 @@
 
 .public-page-chip {
   font-size: 13px;
-  background: #f1f5f1;
-  color: #52635a;
+  background: var(--color-public-chip-bg);
+  color: var(--color-public-chip-text);
 }
 
 .public-page-message {
-  color: #66552e;
-  background: #fffaf0;
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg);
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -57,5 +58,5 @@
 .public-page-icon {
   width: 32px;
   height: 32px;
-  background: #e8f1eb;
+  background: var(--color-public-icon-bg);
 }

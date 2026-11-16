@@ -4,6 +4,8 @@ import { formatDate } from "../../../utils/dateUtils";
 import { Link, useParams } from "react-router-dom";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
 import ActionButton from "../../shared/actionButton/ActionButton";
+import "../../../styles/variables.css"
+import "../../../styles/components.css"
 import "./SharedWithCard.css";
 
 const SharedWithCard = ({

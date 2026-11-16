@@ -17,6 +17,8 @@ import PublicRouter from "./routes/public.js";
 import PetQrRouter from "./routes/petQr.js";
 import HealthCardRouter from "./routes/healthCards.js";
 import PetSharesRouter from "./routes/petShares.js";
+import passport from "passport";
+import googleStrategy from "./strategies/google.js";
 
 dotenv.config();
 
@@ -40,6 +42,7 @@ server.use(
 );
 
 server.use(express.json());
+passport.use(googleStrategy)
 server.use((req, res, next) => {
   req.body ??= {};
   next();

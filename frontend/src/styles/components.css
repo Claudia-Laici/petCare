@@ -1,0 +1,34 @@
+/* Card */
+.card-base {
+  background-color: var(--color-card-bg);
+}
+
+/* Icone */
+.icon-dashboard {
+  width: 45px;
+  height: 45px;
+}
+
+/* Avatar */
+.avatar-base {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Testi secondari */
+.text-muted-small {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+/* Bottoni brand */
+.btn-brand {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-brand:hover {
+  background-color: var(--color-primary-dark);
+}

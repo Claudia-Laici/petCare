@@ -4,6 +4,8 @@ import { PencilFill, Trash3 } from "react-bootstrap-icons";
 import { apiFetch } from "../../utils/apiFetch";
 import { SPECIES } from "../../constants/pets";
 import petPlaceholder from "../../assets/petPlaceholder/petPlaceholder.webp";
+import "../../styles/variables.css";
+import "../../styles/components.css";
 import "./ProfileCard.css";
 
 const getAge = (birthDate) => {

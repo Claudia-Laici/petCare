@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../modules/users/User.js";
 import Pet from "../modules/pets/Pet.js";
+import { cloudinary } from "../middlewares/cloudinary.js";
+import sendGrid from "@sendgrid/mail";
 
 export const createUser = async (req, res, next) => {
   try {
@@ -13,10 +15,16 @@ export const createUser = async (req, res, next) => {
       email,
       password,
       dataDiNascita,
-      avatar,
     });
 
     const savedUser = await user.save();
+
+    try {
+      await sendWelcomeEmail(savedUser.email);
+    } catch (emailError) {
+      console.error("Email di benvenuto non inviata:", emailError.message);
+    }
+
     const userResponse = savedUser.toObject();
     delete userResponse.password;
 
@@ -32,9 +40,9 @@ export const loginUser = async (req, res, next) => {
 
     const user = await User.findOne({ email }).select("+password");
 
-    if (!user) {
+    if (!user.password) {
       return res.status(401).json({
-        message: "Email o password non validi",
+        message: "Questo account utilizza Google. Accedi con Google.",
       });
     }
 
@@ -73,15 +81,8 @@ export const getCurrentUser = (req, res) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    const {
-      nome,
-      cognome,
-      email,
-      dataDiNascita,
-      avatar,
-      currentPassword,
-      password,
-    } = req.body;
+    const { nome, cognome, email, dataDiNascita, currentPassword, password } =
+      req.body;
 
     const user = req.user;
 
@@ -125,7 +126,6 @@ export const updateUser = async (req, res, next) => {
     if (cognome !== undefined) user.cognome = cognome;
     if (email !== undefined) user.email = email;
     if (dataDiNascita !== undefined) user.dataDiNascita = dataDiNascita;
-    if (avatar !== undefined) user.avatar = avatar;
 
     const updatedUser = await user.save();
 
@@ -137,7 +137,6 @@ export const updateUser = async (req, res, next) => {
     next(e);
   }
 };
-
 
 export const deleteUser = async (req, res, next) => {
   try {
@@ -169,3 +168,42 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
+export const updateUserAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Seleziona un'immagine da caricare",
+      });
+    }
+
+    const user = req.user;
+    const oldAvatarPublicId = user.avatarPublicId;
+
+    user.avatar = req.file.path;
+    user.avatarPublicId = req.file.filename;
+
+    const updatedUser = await user.save();
+
+    if (
+      oldAvatarPublicId &&
+      oldAvatarPublicId !== updatedUser.avatarPublicId
+    ) {
+      try {
+        await cloudinary.uploader.destroy(oldAvatarPublicId);
+      } catch (cloudinaryError) {
+        console.error(
+          "Errore durante l'eliminazione del vecchio avatar:",
+          cloudinaryError,
+        );
+      }
+    }
+
+    res.status(200).json({
+      message: "Avatar aggiornato con successo",
+      avatar: updatedUser.avatar,
+      avatarPublicId: updatedUser.avatarPublicId,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

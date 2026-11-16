@@ -10,7 +10,7 @@ import {
 import { useFetch } from "../../hooks/useFetch";
 import { apiFetch } from "../../utils/apiFetch";
 import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
-import CardActionButton from "../shared/actionButton/ActionButton";
+import ActionButtontton from "../shared/actionButton/ActionButton";
 import TagInput from "../shared/tagInput/TagInput";
 import "./UpdateHealthCard.css";
 
@@ -75,10 +75,10 @@ const HealthCardForm = ({ petId, card }) => {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <span className="health-card-eyebrow">PETCARE / SALUTE</span>
 
-            <CardActionButton onClick={() => navigate(-1)} className="py-2">
+            <ActionButtontton onClick={() => navigate(-1)} className="py-2">
               <ArrowLeft size={16} />
               Indietro
-            </CardActionButton>
+            </ActionButtontton>
           </div>
 
           <div className="health-card-title d-flex align-items-start align-items-md-center gap-3">
@@ -168,14 +168,14 @@ const HealthCardForm = ({ petId, card }) => {
           </span>
 
           <div className="align-self-end">
-            <CardActionButton
+            <ActionButtontton
               onClick={handleSave}
               disabled={saving}
               className="px-4 py-2"
             >
               <Save />
               {saving ? "Salvataggio..." : "Salva modifiche"}
-            </CardActionButton>
+            </ActionButtontton>
           </div>
         </footer>
       </Container>

@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../modules/users/User.js";
 
-export const login = async (req, res, next) => {
+export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
 
@@ -34,7 +34,7 @@ export const login = async (req, res, next) => {
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" },
+      { expiresIn: process.env.JWT_EXPIRES_IN },
     );
 
     res.status(200).json({
@@ -46,7 +46,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const me = (req, res) => {
+export async function me(req, res) {
   const userResponse = req.user.toObject();
 
   delete userResponse.password;

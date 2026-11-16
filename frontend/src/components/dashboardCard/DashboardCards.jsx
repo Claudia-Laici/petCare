@@ -30,37 +30,35 @@ const DashboardCards = ({ pet }) => {
     refetches,
   } = usePetDashboard(pet);
 
-  if (!pet) return null;
-
   const stats = [
     {
       id: 1,
-      count: counts.vaccinations,
-      loading: loading.vaccinations,
+      count: pet ? counts.vaccinations : 0,
+      loading: pet && loading.vaccinations,
       label: "Vaccinazioni registrate",
       icon: <ShieldCheck size={20} className="text-success" />,
       iconBg: "bg-success bg-opacity-10",
     },
     {
       id: 2,
-      count: counts.upcomingDeadlines,
-      loading: loading.vaccinations || loading.therapies,
+      count: pet ? counts.upcomingDeadlines : 0,
+      loading: pet && (loading.vaccinations || loading.therapies),
       label: "Prossime scadenze",
       icon: <CalendarEvent size={20} className="text-warning" />,
       iconBg: "bg-warning bg-opacity-10",
     },
     {
       id: 3,
-      count: counts.activeTherapies,
-      loading: loading.therapies,
+      count: pet ? counts.activeTherapies : 0,
+      loading: pet && loading.therapies,
       label: "Terapie in corso",
       icon: <Capsule size={20} className="text-danger" />,
       iconBg: "bg-danger bg-opacity-10",
     },
     {
       id: 4,
-      count: counts.documents,
-      loading: loading.documents,
+      count: pet ? counts.documents : 0,
+      loading: pet && loading.documents,
       label: "Documenti",
       icon: <Folder size={20} className="text-primary" />,
       iconBg: "bg-primary bg-opacity-10",

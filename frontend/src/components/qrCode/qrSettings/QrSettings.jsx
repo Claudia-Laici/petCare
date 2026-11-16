@@ -5,7 +5,7 @@ import { ArrowLeft, Save } from "react-bootstrap-icons";
 import { useFetch } from "../../../hooks/useFetch";
 import { usePetQr } from "../../../hooks/usePetQr";
 import LoadingIndicator from "../../shared/loadingIndicator/LoadingIndicator";
-import CardActionButton from "../../shared/actionButton/ActionButton";
+import ActionButtontton from "../../shared/actionButton/ActionButton";
 import "./QrSettings.css";
 
 const SHARE_GROUPS = [
@@ -135,10 +135,10 @@ const QrSettingsForm = ({ pet, qr, onSave }) => {
         </div>
 
         <div className="order-1 order-sm-2">
-          <CardActionButton onClick={() => navigate(backPath)} className="py-2">
+          <ActionButtontton onClick={() => navigate(backPath)} className="py-2">
             <ArrowLeft size={16} />
             Torna alla dashboard
-          </CardActionButton>
+          </ActionButtontton>
         </div>
       </div>
 
@@ -193,12 +193,12 @@ const QrSettingsForm = ({ pet, qr, onSave }) => {
                         </div>
                       </div>
 
-                      <CardActionButton
+                      <ActionButtontton
                         href={group.fillPath(pet._id)}
                         className="py-2"
                       >
                         Apri scheda sanitaria
-                      </CardActionButton>
+                      </ActionButtontton>
                     </div>
                   </div>
                 )}
@@ -258,14 +258,14 @@ const QrSettingsForm = ({ pet, qr, onSave }) => {
             </Form.Group>
 
             <div className="d-flex justify-content-end mt-4">
-              <CardActionButton
+              <ActionButtontton
                 onClick={handleSave}
                 disabled={saving || missingPhone}
                 className="py-2"
               >
                 <Save size={16} />
                 {saving ? "Salvataggio..." : "Salva modifiche"}
-              </CardActionButton>
+              </ActionButtontton>
             </div>
           </Card>
         </Col>

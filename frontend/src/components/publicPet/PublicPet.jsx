@@ -12,7 +12,8 @@ import {
 } from "react-bootstrap-icons";
 import { apiFetch } from "../../utils/apiFetch";
 import { SPECIES, SEX } from "../../constants/pets";
-import CardActionButton from "../shared/actionButton/ActionButton";
+import ActionButtontton from "../shared/actionButton/ActionButton";
+import "../../styles/variables.css"
 import "./PublicPet.css";
 
 const SECTIONS = [
@@ -212,13 +213,13 @@ const PublicPet = () => {
 
                 {pet.contactPhone && (
                   <div className="public-page-cta-wrap mt-3">
-                    <CardActionButton
+                    <ActionButtontton
                       href={`tel:${pet.contactPhone.replace(/\s/g, "")}`}
                       className="w-100 justify-content-center py-3 border-0"
                     >
                       <TelephoneFill />
                       Chiama il proprietario
-                    </CardActionButton>
+                    </ActionButtontton>
                   </div>
                 )}
               </div>

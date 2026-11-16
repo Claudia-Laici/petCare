@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { OAuth2Client } from "google-auth-library";
 import User from "../modules/users/User.js";
 
 export async function auth(req, res, next) {
@@ -49,5 +50,53 @@ export async function auth(req, res, next) {
     }
 
     next(error);
+  }
+}
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export async function googleLogin(req, res, next) {
+  const { credential } = req.body;
+  if (!credential) {
+    return res.status(400).json({ message: "Credenziale Google mancante" });
+  }
+
+  let googleUser;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    googleUser = ticket.getPayload();
+  } catch {
+    return res.status(401).json({ message: "Token Google non valido" });
+  }
+
+  try {
+    const { sub, email, email_verified, given_name, family_name, picture } = googleUser;
+
+    if (!email_verified) {
+      return res.status(401).json({ message: "Email Google non verificata" });
+    }
+
+    let user = await User.findOne({ googleId: sub });
+
+    if (!user) {
+      user = await User.findOne({ email: email.toLowerCase() });
+      if (user) {
+        user.googleId = sub; 
+        await user.save();
+      } else {
+        user = await User.create({
+          googleId: sub,
+          email: email.toLowerCase(),
+        });
+      }
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    res.json({ token, user });
+  } catch (e) {
+    next(e);
   }
 }

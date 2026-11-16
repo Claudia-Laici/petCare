@@ -3,14 +3,16 @@ import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   nome: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 50,
+  type: String,
+  required: function () {
+    return !this.googleId;
   },
+  minlength: 2,
+  maxlength: 50,
+},
   cognome: {
     type: String,
-    required: true,
+     required: function () { return !this.googleId; },
     minlength: 2,
     maxlength: 50,
   },
@@ -23,6 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    required: function () { return !this.googleId; },
     select: false,
   },
   googleId: {
@@ -36,6 +39,9 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
   },
+  avatarPublicId: {
+  type: String,
+},
 });
 
 userSchema.pre("save", async function () {

@@ -98,7 +98,7 @@ const TherapiesCard = ({
                   </span>
                 </div>
 
-                <div className="therapy-date d-flex align-items-center text-secondary gap-1 small">
+                <div className="text-date d-flex align-items-center text-secondary gap-1 small">
                   <CalendarEvent size={12} />
                   <span>
                     {formatDate(item.startDate)}

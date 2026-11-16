@@ -1,11 +1,11 @@
 .shared-with-card {
-  background-color: #fff;
+  background-color: var(--color-white);
 }
 
 .shared-with-avatar {
   width: 40px;
   height: 40px;
-  background-color: #faedcd;
+  background-color: var(--color-accent);
 }
 
 .shared-with-info {
@@ -27,8 +27,8 @@
 }
 
 .shared-with-invite {
-  background-color: #2e7b6b;
-  color: #ffffff;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .shared-with-invite:hover {

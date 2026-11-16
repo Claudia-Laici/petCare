@@ -91,12 +91,12 @@ const VaccinationsCard = ({
               <div>
                 <h6 className="fw-semibold mb-1">{item.name}</h6>
 
-                <div className="vaccination-date d-flex align-items-center text-secondary gap-1">
+                <div className="text-date d-flex align-items-center text-secondary gap-1">
                   <CalendarEvent size={12} />
                   <span>{formatDate(displayDate)}</span>
                 </div>
 
-                <span className="vaccination-date d-flex align-items-center text-secondary gap-1 small mb-1">
+                <span className="text-date d-flex align-items-center text-secondary gap-1 small mb-1">
                   {item.nextDueDate
                     ? `Richiamo: ${formatDate(item.nextDueDate)}`
                     : `Somministrazione: ${formatDate(item.dateAdministered)}`}

@@ -1,0 +1,29 @@
+.not-found-page {
+  background-color: var(--color-page-bg);
+}
+
+.not-found-card {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-container);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 4%);
+}
+
+.not-found-icon {
+  width: 65px;
+  height: 65px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.not-found-code {
+  color: var(--color-primary);
+}
+
+.not-found-card h1 {
+  color: var(--color-text-dark);
+}
+
+.not-found-card p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}

@@ -8,6 +8,7 @@ import PetFormModal from "../profileCard/PetFormModal";
 import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
 import DashboardCards from "../dashboardCard/DashboardCards";
 import QrCard from "../qrCode/qrCard/QrCard";
+import ActionButtontton from "../shared/actionButton/ActionButton";
 import "./HomeContent.css";
 
 const HomeContent = () => {
@@ -89,22 +90,30 @@ const HomeContent = () => {
 
         <div className="home-main">
           {selectedPet ? (
-            <>
-              <ProfileCard
-                pet={selectedPet}
-                currentUserId={currentUser?._id}
-                onEdit={() => openEditPet(selectedPet)}
-                onDeleted={handlePetDeleted}
-              />
-              <div className="mt-4">
-                <DashboardCards pet={selectedPet} />
-              </div>
-            </>
+            <ProfileCard
+              pet={selectedPet}
+              currentUserId={currentUser?._id}
+              onEdit={() => openEditPet(selectedPet)}
+              onDeleted={handlePetDeleted}
+            />
           ) : (
-            <Alert variant="info">
-              Non hai ancora animali registrati. Aggiungine uno per iniziare!
+            <Alert variant="info" className="rounded-4 border-0 shadow-sm p-4">
+              <h5 className="fw-semibold">Benvenuto su PetCare!</h5>
+
+              <p className="mb-3">
+                Non hai ancora animali registrati. Aggiungine uno per iniziare a
+                organizzare la salute dei tuoi amici a quattro zampe.
+              </p>
+
+              <ActionButtontton onClick={openAddPet}>
+                Aggiungi un animale
+              </ActionButtontton>
             </Alert>
           )}
+
+          <div className="mt-4">
+            <DashboardCards pet={selectedPet} />
+          </div>
         </div>
 
         {selectedPet && (
