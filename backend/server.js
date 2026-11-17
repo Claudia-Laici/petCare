@@ -1,6 +1,6 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 
 //import
@@ -19,10 +19,22 @@ import HealthCardRouter from "./routes/healthCards.js";
 import PetSharesRouter from "./routes/petShares.js";
 import passport from "passport";
 import googleStrategy from "./strategies/google.js";
+import GoogleCalendarRouter from "./routes/googleCalendar.js";
+import AppointmentRouter from "./routes/appointment.js";
+import { startAppointmentSyncJob } from "./services/appointmentSyncJob.js";
 
-dotenv.config();
-
-const requiredEnv = ["MONGO_URL", "PORT", "JWT_SECRET",  "ALLOWED_ORIGINS",];
+const requiredEnv = [
+  "MONGO_URL",
+  "PORT",
+  "JWT_SECRET",
+  "JWT_EXPIRES_IN",
+  "ALLOWED_ORIGINS",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "GOOGLE_CALLBACK_URL",
+  "GOOGLE_CALENDAR_CALLBACK_URL",
+  "GOOGLE_TOKEN_ENCRYPTION_KEY",
+];
 
 for (const variable of requiredEnv) {
   if (!process.env[variable]) {
@@ -42,7 +54,8 @@ server.use(
 );
 
 server.use(express.json());
-passport.use(googleStrategy)
+server.use(passport.initialize());
+passport.use(googleStrategy);
 server.use((req, res, next) => {
   req.body ??= {};
   next();
@@ -56,6 +69,8 @@ try {
   process.exit(1);
 }
 
+startAppointmentSyncJob();
+
 server.get("/", (req, res) => {
   res.status(200).json({
     message: "Benvenuto nel server di PetCare!",
@@ -63,7 +78,8 @@ server.get("/", (req, res) => {
 });
 
 // Rotte pubbliche
-server.use("/auth", AuthRouter)
+server.use("/auth", AuthRouter);
+server.use("/auth/google/calendar", GoogleCalendarRouter);
 server.post("/users", createUser);
 server.use("/public", PublicRouter);
 
@@ -86,6 +102,9 @@ server.use("/pets", PetQrRouter);
 server.use("/pets", HealthCardRouter);
 
 server.use("/pets", PetSharesRouter);
+
+server.use("/appointments", AppointmentRouter);
+
 
 // Rotte non trovate
 server.use((req, res, next) => {

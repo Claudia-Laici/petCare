@@ -73,7 +73,8 @@ export async function googleLogin(req, res, next) {
   }
 
   try {
-    const { sub, email, email_verified, given_name, family_name, picture } = googleUser;
+    const { sub, email, email_verified, given_name, family_name, picture } =
+      googleUser;
 
     if (!email_verified) {
       return res.status(401).json({ message: "Email Google non verificata" });
@@ -84,7 +85,7 @@ export async function googleLogin(req, res, next) {
     if (!user) {
       user = await User.findOne({ email: email.toLowerCase() });
       if (user) {
-        user.googleId = sub; 
+        user.googleId = sub;
         await user.save();
       } else {
         user = await User.create({
@@ -94,7 +95,9 @@ export async function googleLogin(req, res, next) {
       }
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
     res.json({ token, user });
   } catch (e) {
     next(e);
