@@ -10,12 +10,13 @@ import UpdateHealthCardPage from "./pages/updateHealthCardPage/UpdateHealthCardP
 import MainLayout from "./components/shared/layout/MainLayout";
 import NotFound from "./pages/errors/notFound/NotFound";
 import Maintenance from "./pages/errors/maintenance/Maintenance";
+import AppointmentsPage from "./pages/appointments/AppointmentsPage";
+import PublicAppointmentPage from "./pages/publicAppointmentPage/PublicAppointmentPage";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-     
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -24,6 +25,7 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/appointments" element={<AppointmentsPage />} />
             <Route path="/pets/:petId/qr-settings" element={<QrPage />} />
             <Route
               path="/pets/:petId/health"
@@ -33,6 +35,8 @@ const App = () => {
         </Route>
 
         <Route path="/p/:qrToken" element={<PublicPetPage />} />
+
+        <Route path="/a/:token" element={<PublicAppointmentPage />} />
 
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="*" element={<NotFound />} />

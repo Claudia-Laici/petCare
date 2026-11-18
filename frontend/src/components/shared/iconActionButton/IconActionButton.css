@@ -1,0 +1,42 @@
+.icon-action-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background-color: #ffffff;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.icon-action-button:hover {
+  transform: translateY(-2px);
+}
+
+.icon-action-button:active {
+  transform: scale(0.95);
+}
+
+.icon-action-button-edit {
+  color: #286e60;
+}
+
+.icon-action-button-edit:hover {
+  background-color: #e5f2ed;
+  color: #205c4e;
+}
+
+.icon-action-button-delete {
+  color: #c03939;
+}
+
+.icon-action-button-delete:hover {
+  background-color: #fbeaea;
+  color: #a52828;
+}

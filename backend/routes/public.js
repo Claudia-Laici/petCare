@@ -1,6 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import { getPublicPet } from "../controllers/petQr.js";
+import { getPublicAppointment } from "../controllers/appointmentShare.js";
 
 const PublicRouter = express.Router();
 
@@ -16,5 +17,11 @@ const publicLimiter = rateLimit({
 });
 
 PublicRouter.get("/pets/:qrToken", publicLimiter, getPublicPet);
+
+PublicRouter.get(
+  "/appointments/:token",
+  publicLimiter,
+  getPublicAppointment,
+);
 
 export default PublicRouter;

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Alert, Button, Card, Image, Modal, Spinner } from "react-bootstrap";
-import { PencilFill, Trash3 } from "react-bootstrap-icons";
 import { apiFetch } from "../../utils/apiFetch";
 import { SPECIES } from "../../constants/pets";
 import petPlaceholder from "../../assets/petPlaceholder/petPlaceholder.webp";
+import IconActionButton from "../shared/iconActionButton/IconActionButton";
 import "../../styles/variables.css";
 import "../../styles/components.css";
 import "./ProfileCard.css";
@@ -49,8 +49,7 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
   if (!pet) return null;
 
   const ownerId = pet.owner?._id ?? pet.owner;
-  const isOwner =
-    !!currentUserId && String(ownerId) === String(currentUserId);
+  const isOwner = !!currentUserId && String(ownerId) === String(currentUserId);
 
   const age = getAge(pet.birthDate);
 
@@ -84,7 +83,6 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
         <div className="profile-card-decoration" aria-hidden="true" />
 
         <div className="profile-card-content d-flex flex-column flex-sm-row align-items-center gap-3 gap-md-4">
-
           <Image
             src={pet.cover || petPlaceholder}
             roundedCircle
@@ -93,26 +91,18 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
           />
 
           <div className="profile-card-info flex-grow-1 text-center text-sm-start">
-            <span className="profile-card-label">
-              PROFILO SANITARIO
-            </span>
+            <span className="profile-card-label">PROFILO SANITARIO</span>
 
-            <h2 className="profile-card-name">
-              {pet.name}
-            </h2>
+            <h2 className="profile-card-name">{pet.name}</h2>
 
             <div className="profile-card-badges d-flex flex-wrap justify-content-center justify-content-sm-start gap-2">
-              <InfoBadge>
-                {SPECIES[pet.species] ?? "Non specificata"}
-              </InfoBadge>
+              <InfoBadge>{SPECIES[pet.species] ?? "Non specificata"}</InfoBadge>
 
               {pet.breed && <InfoBadge>{pet.breed}</InfoBadge>}
 
               {age && <InfoBadge>{age}</InfoBadge>}
 
-              {pet.weight > 0 && (
-                <InfoBadge>{pet.weight} kg</InfoBadge>
-              )}
+              {pet.weight > 0 && <InfoBadge>{pet.weight} kg</InfoBadge>}
 
               {pet.microchipNumber && (
                 <InfoBadge title={pet.microchipNumber}>
@@ -123,26 +113,18 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
           </div>
 
           <div className="profile-card-actions d-flex align-items-center gap-2">
-            <Button
-              variant="light"
-              className="profile-card-action"
+            <IconActionButton
+              action="edit"
+              label="Modifica profilo"
               onClick={onEdit}
-              aria-label="Modifica profilo"
-              title="Modifica profilo"
-            >
-              <PencilFill size={15} />
-            </Button>
+            />
 
             {isOwner && (
-              <Button
-                variant="light"
-                className="profile-card-action profile-card-action-delete"
+              <IconActionButton
+                action="delete"
+                label="Elimina animale"
                 onClick={openDeleteModal}
-                aria-label="Elimina animale"
-                title="Elimina animale"
-              >
-                <Trash3 size={15} />
-              </Button>
+              />
             )}
           </div>
         </div>
@@ -169,13 +151,12 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
           )}
 
           <p>
-            Vuoi davvero eliminare il profilo di{" "}
-            <strong>{pet.name}</strong>?
+            Vuoi davvero eliminare il profilo di <strong>{pet.name}</strong>?
           </p>
 
           <p className="text-danger small mb-0">
-            L'operazione eliminerà anche i dati sanitari e i documenti
-            associati al profilo. Non può essere annullata.
+            L'operazione eliminerà anche i dati sanitari e i documenti associati
+            al profilo. Non può essere annullata.
           </p>
         </Modal.Body>
 

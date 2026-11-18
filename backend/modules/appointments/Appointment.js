@@ -86,12 +86,23 @@ const appointmentSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    vetQuestions: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: 1000,
+    },
+    attendeeInstructions: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: 1000,
+    },
     status: {
       type: String,
       enum: appointmentStatusEnum,
       default: "scheduled",
     },
-
     participants: {
       type: [participantSchema],
       default: [],
@@ -100,12 +111,10 @@ const appointmentSchema = new mongoose.Schema(
       type: [checklistItemSchema],
       default: [],
     },
-
     deletedAt: {
       type: Date,
       default: null,
     },
-
     googleEventId: {
       type: String,
       default: null,
@@ -160,7 +169,7 @@ appointmentSchema.pre("validate", function () {
 appointmentSchema.index({ pet: 1, startAt: 1 });
 appointmentSchema.index({ createdBy: 1, startAt: 1 });
 appointmentSchema.index({ "participants.user": 1, startAt: 1 });
-appointmentSchema.index({ googleSyncStatus: 1, updatedAt: 1 }); 
+appointmentSchema.index({ googleSyncStatus: 1, updatedAt: 1 });
 appointmentSchema.index(
   { createdBy: 1, idempotencyKey: 1 },
   {

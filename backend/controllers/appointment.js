@@ -12,9 +12,7 @@ const NOT_FOUND = { message: "Appuntamento non trovato" };
 const PARTICIPANT_FIELDS = "nome cognome email";
 
 const createAppointmentHash = (data) =>
-  createHash("sha256")
-    .update(JSON.stringify(data))
-    .digest("hex");
+  createHash("sha256").update(JSON.stringify(data)).digest("hex");
 
 const findAppointment = async (appointmentId, userId, role) => {
   const appointment = await Appointment.findOne({
@@ -45,6 +43,8 @@ export const createAppointment = async (req, res, next) => {
       location,
       veterinarian,
       notes,
+      vetQuestions,
+      attendeeInstructions,
       checklist,
     } = req.body;
 
@@ -56,11 +56,7 @@ export const createAppointment = async (req, res, next) => {
       });
     }
 
-    const existingPet = await getPetWithAccess(
-      pet,
-      req.user._id,
-      "editor",
-    );
+    const existingPet = await getPetWithAccess(pet, req.user._id, "editor");
 
     if (!existingPet) {
       return res.status(404).json({
@@ -77,6 +73,8 @@ export const createAppointment = async (req, res, next) => {
       location: location ?? "",
       veterinarian: veterinarian ?? "",
       notes: notes ?? "",
+      vetQuestions: vetQuestions ?? "",
+      attendeeInstructions: attendeeInstructions ?? "",
       checklist: checklist ?? [],
     };
 
@@ -90,8 +88,7 @@ export const createAppointment = async (req, res, next) => {
     if (existingAppointment) {
       if (existingAppointment.idempotencyHash !== idempotencyHash) {
         return res.status(409).json({
-          message:
-            "Questa chiave è già stata utilizzata con dati differenti",
+          message: "Questa chiave è già stata utilizzata con dati differenti",
         });
       }
 
@@ -118,8 +115,7 @@ export const createAppointment = async (req, res, next) => {
 
       if (duplicate.idempotencyHash !== idempotencyHash) {
         return res.status(409).json({
-          message:
-            "Questa chiave è già stata utilizzata con dati differenti",
+          message: "Questa chiave è già stata utilizzata con dati differenti",
         });
       }
 
@@ -196,6 +192,8 @@ export const updateAppointment = async (req, res, next) => {
       "location",
       "veterinarian",
       "notes",
+      "vetQuestions",
+      "attendeeInstructions",
       "status",
       "checklist",
     ];

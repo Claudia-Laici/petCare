@@ -1,0 +1,10 @@
+.appointment-share-section {
+  margin-bottom: 1.5rem;
+}
+
+.appointment-share-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: var(--color-primary);
+}

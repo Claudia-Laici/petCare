@@ -87,10 +87,3 @@
   object-fit: contain;
   flex-shrink: 0;
 }
-
-.auth-logo {
-  display: block;
-  width: 90%;
-  height: auto;
-  margin: 0 auto;
-}

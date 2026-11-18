@@ -1,43 +1,89 @@
-
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import Dropdown from "react-bootstrap/Dropdown";
 import { Link, useNavigate } from "react-router-dom";
 import { PersonCircle } from "react-bootstrap-icons";
-import Logo from "../../../assets/logo/Logo.webp";
+import Logo from "../../../assets/logo/LogoPetCare.png";
 import { useFetch } from "../../../hooks/useFetch";
+import { useRef, useState } from "react";
+import { updateUserAvatar } from "../../../services/users/userService";
+import MobileBottomNav from "./MobileBottomNav";
 import "./Navbar.css";
 
 const PetCareNavbar = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
 
   const { data: currentUser } = useFetch("/auth/me");
-  const avatar = currentUser?.avatar;
+  const [updatedAvatar, setUpdatedAvatar] = useState(null);
+
+  const avatar = updatedAvatar ?? currentUser?.avatar;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login", { replace: true });
   };
 
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setAvatarError("");
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      setAvatarError("Formato non supportato. Usa JPG, PNG o WebP.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError("L'immagine non può superare i 5 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    try {
+      setUploadingAvatar(true);
+
+      const result = await updateUserAvatar(formData);
+
+      setUpdatedAvatar(result.avatar);
+    } catch (error) {
+      setAvatarError(error.message || "Errore durante il caricamento.");
+    } finally {
+      setUploadingAvatar(false);
+      event.target.value = "";
+    }
+  };
+
   return (
-    <Navbar expand="lg" className="home-header border-bottom">
-      <Container fluid className="px-4">
-        <Navbar.Brand as={Link} to="/" className="mb-0">
-          <img src={Logo} alt="PetCare" className="logo-img" />
-        </Navbar.Brand>
+    <>
+      <Navbar expand="lg" className="home-header border-bottom">
+        <Container fluid className="px-4 d-flex align-items-center">
+          <Navbar.Brand as={Link} to="/" className="mb-0">
+            <img src={Logo} alt="PetCare" className="logo-img" />
+          </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="petcare-navbar-nav" />
-
-        <Navbar.Collapse id="petcare-navbar-nav">
-          <div className="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1">
-            <Nav className="mx-lg-auto align-items-lg-center">
+          <Navbar.Collapse className="d-none d-lg-flex flex-grow-1">
+            <Nav className="mx-auto align-items-center">
               <Nav.Link as={Link} to="/" className="nav-text">
                 Home
               </Nav.Link>
 
               <Nav.Link as={Link} to="/" className="nav-text">
                 I miei animali
+              </Nav.Link>
+
+              <Nav.Link as={Link} to="/appointments" className="nav-text">
+                Appuntamenti
               </Nav.Link>
 
               <Nav.Link as={Link} to="/" className="nav-text">
@@ -52,51 +98,53 @@ const PetCareNavbar = () => {
                 Condivisione
               </Nav.Link>
             </Nav>
+          </Navbar.Collapse>
 
-            <div className="d-flex align-items-center justify-content-lg-end mt-3 mt-lg-0">
-              <Dropdown align="end">
-                <Dropdown.Toggle
-                  variant="link"
-                  className="navbar-avatar-toggle p-0 border-0"
-                  aria-label="Menu profilo"
-                >
-                  {avatar ? (
-                    <img
-                      src={avatar}
-                      alt="Avatar profilo"
-                      className="navbar-avatar"
-                    />
-                  ) : (
-                    <PersonCircle
-                      size={38}
-                      className="text-secondary"
-                    />
-                  )}
-                </Dropdown.Toggle>
+          <div className="d-flex align-items-center gap-3 ms-auto">
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/jpeg,image/png,image/webp"
+              className="d-none"
+              onChange={handleAvatarChange}
+            />
 
-                <Dropdown.Menu className="shadow-sm border-0 rounded-3 mt-2">
-                  <Dropdown.Header>
-                    {currentUser
-                      ? `${currentUser.nome || ""} ${currentUser.cognome || ""}`.trim()
-                      : "Il mio account"}
-                  </Dropdown.Header>
+            <button
+              type="button"
+              className="navbar-avatar-toggle p-0 border-0 bg-transparent"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              aria-label="Cambia immagine profilo"
+              title="Cambia immagine profilo"
+            >
+              {uploadingAvatar ? (
+                <span className="spinner-border spinner-border-sm text-success" />
+              ) : avatar ? (
+                <img
+                  src={avatar}
+                  alt="Avatar profilo"
+                  className="navbar-avatar"
+                />
+              ) : (
+                <PersonCircle size={38} className="text-secondary" />
+              )}
+            </button>
 
-                  <Dropdown.Divider />
-
-                  <Dropdown.Item as={Link} to="/profile">
-                    Il mio profilo
-                  </Dropdown.Item>
-
-                  <Dropdown.Item onClick={handleLogout}>
-                    Esci
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
+            <button
+              type="button"
+              className="nav-text border-0 bg-transparent p-0"
+              onClick={handleLogout}
+            >
+              Esci
+            </button>
           </div>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        </Container>
+
+        {avatarError && <small className="text-danger">{avatarError}</small>}
+      </Navbar>
+
+      <MobileBottomNav />
+    </>
   );
 };
 

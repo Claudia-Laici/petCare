@@ -1,6 +1,6 @@
 import { Container, Col, Row } from "react-bootstrap";
 import pawDivider from "../../assets/decoration/pawDivider.png";
-import Logo from "../../assets/logo/Logo.webp";
+import Logo from "../../assets/logo/LogoPetCare.png";
 import "./Auth.css";
 
 const AuthLayout = ({ title, description, footer, children }) => {
@@ -14,7 +14,7 @@ const AuthLayout = ({ title, description, footer, children }) => {
           <div className="card auth-card shadow-sm border p-0">
             <div className="card-body p-4 p-md-5">
               <div className="text-center mb-4">
-                <img src={Logo} alt="PetCare" className="auth-logo" />
+                <img src={Logo} alt="PetCare"/>
                 <p className="text-secondary auth-subtitle">
                   La salute dei tuoi animali, sempre con te.
                 </p>

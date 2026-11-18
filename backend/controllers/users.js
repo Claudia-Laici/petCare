@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../modules/users/User.js";
 import Pet from "../modules/pets/Pet.js";
 import { cloudinary } from "../middlewares/cloudinary.js";
-import sendGrid from "@sendgrid/mail";
+import { sendWelcomeEmail } from "../services/emailService.js";
 
 export const createUser = async (req, res, next) => {
   try {

@@ -2,15 +2,22 @@ import sendGrid from "@sendgrid/mail";
 
 const frontendUrl = () => process.env.FRONTEND_URL;
 export async function sendEmail({ to, subject, text, html }) {
+  console.log("sendEmail chiamata per:", to);
   sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
 
-  await sendGrid.send({
-    to,
-    from: process.env.SENDGRID_FROM_EMAIL,
-    subject,
-    text,
-    html,
-  });
+  try {
+    const [response] = await sendGrid.send({
+      to,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      subject,
+      text,
+      html,
+    });
+    console.log("SendGrid status:", response.statusCode); // 202 = accettata
+  } catch (error) {
+    console.error("SendGrid error:", error.response?.body || error);
+    throw error;
+  }
 }
 
 export function sendWelcomeEmail(to) {

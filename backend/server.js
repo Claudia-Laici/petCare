@@ -22,6 +22,7 @@ import googleStrategy from "./strategies/google.js";
 import GoogleCalendarRouter from "./routes/googleCalendar.js";
 import AppointmentRouter from "./routes/appointment.js";
 import { startAppointmentSyncJob } from "./services/appointmentSyncJob.js";
+import AppointmentSharesRouter from "./routes/appointmentShares.js";
 
 const requiredEnv = [
   "MONGO_URL",
@@ -104,6 +105,8 @@ server.use("/pets", HealthCardRouter);
 server.use("/pets", PetSharesRouter);
 
 server.use("/appointments", AppointmentRouter);
+
+server.use("/appointments", AppointmentSharesRouter);
 
 
 // Rotte non trovate
