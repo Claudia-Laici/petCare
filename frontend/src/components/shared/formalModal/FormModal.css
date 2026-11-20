@@ -2,7 +2,7 @@
   overflow: hidden;
   border: 1px solid var(--color-glass-border);
   border-radius: var(--radius-container);
-  background: rgb(255 255 255 / 65%);
+  background: #b7baba;
   box-shadow: 0 20px 60px rgb(36 59 49 / 18%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
