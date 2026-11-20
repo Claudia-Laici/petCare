@@ -117,6 +117,7 @@ const DashboardCards = ({ pet }) => {
             <SharedWithCard
               sharedWith={petShares}
               isLoading={loading.shares}
+              petId={petId}
               onInviteClick={() => modals.open("share")}
             />
           </Col>

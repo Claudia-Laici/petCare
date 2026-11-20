@@ -1,7 +1,7 @@
 import { ListGroup } from "react-bootstrap";
 import { PersonPlus, Person } from "react-bootstrap-icons";
 import { formatDate } from "../../../utils/dateUtils";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
 import ActionButton from "../../shared/actionButton/ActionButton";
 import "../../../styles/variables.css";
@@ -11,9 +11,9 @@ import "./SharedWithCard.css";
 const SharedWithCard = ({
   sharedWith = [],
   isLoading = false,
+  petId,
   onInviteClick,
 }) => {
-  const { petId } = useParams();
 
   return (
     <HealthRecordsCard
