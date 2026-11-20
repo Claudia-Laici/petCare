@@ -11,7 +11,7 @@ import {
 import { groupByLabel } from "../../utils/appointmentDates";
 import { useVaccinations } from "../../hooks/useVaccinations";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
-import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
 import ConfirmDeleteModal from "../../components/shared/confirmDeleteModal/ConfirmDeleteModal";
 import VaccinationRow from "../../components/cards/vaccinations/VaccinationRow";

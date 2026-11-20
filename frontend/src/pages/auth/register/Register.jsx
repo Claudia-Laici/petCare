@@ -2,7 +2,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { apiFetch } from "../../../utils/apiFetch";
-import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../../../components/shared/loadingIndicator/LoadingIndicator";
 import AuthLayout from "../AuthLayout";
 
 const Register = () => {
