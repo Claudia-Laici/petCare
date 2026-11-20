@@ -1,5 +1,6 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
+import { claimInvitations } from "../services/petService.js";
 import User from "../modules/users/schema.js";
 
 const googleStrategy = new GoogleStrategy(
@@ -36,18 +37,18 @@ const googleStrategy = new GoogleStrategy(
         }
       }
 
-      const token = jwt.sign(
-        { id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-      );
+      await claimInvitations(user);
+
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      });
 
       done(null, { token });
     } catch (error) {
       console.error("Errore nella strategia Google:", error);
       done(error);
     }
-  }
+  },
 );
 
 export default googleStrategy;

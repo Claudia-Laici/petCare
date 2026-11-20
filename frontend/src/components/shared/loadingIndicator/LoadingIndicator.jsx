@@ -1,10 +1,11 @@
 import Spinner from "react-bootstrap/Spinner";
+import Logo from "../../../assets/logo/LogoPetCare.png";
 import "./LoadingIndicator.css";
 
 const LoadingIndicator = () => {
   return (
     <div className="loading-page" role="status" aria-live="polite">
-      <h1 className="loading-brand">PetCare</h1>
+      <img src={Logo} alt="PetCare" className="logo-img" />
 
       <div className="loading-spinner">
         {[0, 1, 2].map((i) => (

@@ -5,6 +5,7 @@ import PetShare from "../petshares/schema.js";
 import { cloudinary } from "../../middlewares/globals/cloudinary.js";
 import { sendWelcomeEmail } from "../../services/emailService.js";
 import { deletePetCascade } from "../../services/petService.js";
+import { claimInvitations } from "../../services/petService.js";
 
 const removePassword = (user) => {
   const userResponse = user.toObject();
@@ -24,6 +25,12 @@ export const createUser = async (data) => {
   });
 
   const savedUser = await user.save();
+
+  try {
+    await claimInvitations(savedUser);
+  } catch (claimError) {
+    console.error("Collegamento inviti non riuscito:", claimError.message);
+  }
 
   try {
     await sendWelcomeEmail(savedUser.email);

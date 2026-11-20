@@ -40,7 +40,8 @@ const SharedWithCard = ({
           </Link>
         </div>
       }
-      renderItem={(share) => {
+            renderItem={(share) => {
+        const isPending = share.status === "pending";
         const user = share.user;
 
         return (
@@ -54,12 +55,18 @@ const SharedWithCard = ({
 
             <div className="flex-grow-1 shared-with-info">
               <div className="fw-semibold text-dark small">
-                {user?.nome} {user?.cognome}
+                {isPending ? share.email : `${user?.nome} ${user?.cognome}`}
               </div>
 
-              <div className="shared-with-email text-muted-small">
-                {user?.email}
-              </div>
+              {isPending ? (
+                <div className="text-muted-small">
+                  In attesa di registrazione
+                </div>
+              ) : (
+                <div className="shared-with-email text-muted-small">
+                  {user?.email}
+                </div>
+              )}
 
               {share.expiresAt && (
                 <div className="text-muted-small">

@@ -42,3 +42,17 @@ export const getPetShares = async (req, res, next) => {
     next(error);
   }
 };
+
+export const revokeInvitation = async (req, res, next) => {
+  try {
+    const result = await petShareService.revokeInvitation(
+      req.params.petId,
+      req.user._id,
+      req.params.invitationId,
+    );
+
+    return res.status(result.statusCode).json(result.data);
+  } catch (error) {
+    next(error);
+  }
+};

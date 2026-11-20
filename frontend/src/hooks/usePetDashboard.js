@@ -79,7 +79,7 @@ export const usePetDashboard = (pet) => {
       upcomingDeadlines: upcomingVaccinations.length + upcomingTherapies.length,
       activeTherapies: activeTherapies.length,
       documents: petDocuments.length,
-      shares: petShares.length,
+      shares: petShares.filter((share) => share.status !== "pending").length,
     },
     modals: {
       activeModal,

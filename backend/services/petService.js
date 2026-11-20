@@ -7,6 +7,7 @@ import Pet from "../modules/pets/schema.js";
 import HealthCard from "../modules/healthcards/schema.js";
 import PetQr from "../modules/petqrs/schema.js";
 import PetShare from "../modules/petshares/schema.js";
+import PetInvitation from "../modules/petinvitations/schema.js";
 import { getPetRole } from "../utils/petAccess.js";
 
 export const deletePetCascade = async (pet) => {
@@ -39,10 +40,7 @@ export const deletePetCascade = async (pet) => {
   );
 
   if (failures.length > 0) {
-    console.error(
-      "Errore eliminazione file Cloudinary:",
-      failures,
-    );
+    console.error("Errore eliminazione file Cloudinary:", failures);
 
     throw new Error(
       "Impossibile eliminare tutti i file dell'animale da Cloudinary.",
@@ -56,15 +54,13 @@ export const deletePetCascade = async (pet) => {
     HealthCard.deleteOne({ pet: pet._id }),
     PetQr.deleteOne({ pet: pet._id }),
     PetShare.deleteMany({ pet: pet._id }),
+    PetInvitation.deleteMany({ pet: pet._id }),
   ]);
 
   await pet.deleteOne();
 };
 
-export const petPopulate = [
-  { path: "healthCard" },
-  { path: "qr" },
-];
+export const petPopulate = [{ path: "healthCard" }, { path: "qr" }];
 
 export async function createPetWithHealthCard(petData, ownerId) {
   const pet = await Pet.create({ ...petData, owner: ownerId });
@@ -162,3 +158,42 @@ export function toPublicJSON(pet) {
     therapies: [],
   };
 }
+
+export const createInvitation = ({
+  pet,
+  invitedBy,
+  email,
+  role,
+  shareExpiresAt,
+}) =>
+  PetInvitation.findOneAndUpdate(
+    { pet, email: email.toLowerCase() },
+    { $set: { invitedBy, role, shareExpiresAt: shareExpiresAt ?? null } },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
+  );
+
+export const claimInvitations = async (user) => {
+  const invitations = await PetInvitation.find({
+    email: user.email.toLowerCase(),
+  });
+
+  for (const invitation of invitations) {
+    const stillValid =
+      !invitation.shareExpiresAt || invitation.shareExpiresAt > new Date();
+
+    if (stillValid) {
+      await PetShare.updateOne(
+        { pet: invitation.pet, user: user._id },
+        {
+          $setOnInsert: {
+            role: invitation.role,
+            expiresAt: invitation.shareExpiresAt,
+          },
+        },
+        { upsert: true },
+      );
+    }
+
+    await PetInvitation.deleteOne({ _id: invitation._id });
+  }
+};

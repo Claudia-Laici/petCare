@@ -20,10 +20,7 @@ const ShareModal = ({
 }) => {
   const [form, setForm] = useState({
     ...emptyForm,
-    petId:
-      petId ||
-      initialPet?._id ||
-      (pets.length === 1 ? pets[0]._id : ""),
+    petId: petId || initialPet?._id || (pets.length === 1 ? pets[0]._id : ""),
   });
 
   const [error, setError] = useState("");
@@ -39,10 +36,7 @@ const ShareModal = ({
   const resetAndClose = () => {
     setForm({
       ...emptyForm,
-      petId:
-        petId ||
-        initialPet?._id ||
-        (pets.length === 1 ? pets[0]._id : ""),
+      petId: petId || initialPet?._id || (pets.length === 1 ? pets[0]._id : ""),
     });
     setError("");
     setMessage("");
@@ -79,12 +73,20 @@ const ShareModal = ({
       });
 
       if (result?.shared) {
-        onSaved?.(result);
+        onSaved?.({
+          type: "success",
+          message: "Accesso concesso correttamente.",
+        });
+
         resetAndClose();
       } else if (result?.emailSent) {
-        setMessage(
-          "Invito inviato. La persona dovrà registrarsi per accedere al profilo.",
-        );
+        onSaved?.({
+          type: "success",
+          message:
+            "Invito inviato. La persona dovrà registrarsi per accedere al profilo.",
+        });
+
+        resetAndClose();
       } else {
         setMessage(
           "La richiesta è stata ricevuta, ma non è stato possibile inviare l'email.",
@@ -161,11 +163,7 @@ const ShareModal = ({
 
       <Form.Group className="mb-3">
         <Form.Label>Permessi</Form.Label>
-        <Form.Select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-        >
+        <Form.Select name="role" value={form.role} onChange={handleChange}>
           <option value="viewer">Lettura</option>
           <option value="editor">Modifica</option>
         </Form.Select>

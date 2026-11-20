@@ -22,7 +22,6 @@ AuthRouter.get(
     session: false,
   }),
   (req, res) => {
-    console.log("FRONTEND_URL utilizzato:", process.env.FRONTEND_URL);
     res.redirect(
       `${process.env.FRONTEND_URL}/login?token=${req.user.token}`
     );

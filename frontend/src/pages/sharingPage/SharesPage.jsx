@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
-import { People, Person, PersonPlus, Trash3,
-} from "react-bootstrap-icons";
+import { People, Person, PersonPlus, Trash3 } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import { apiFetch } from "../../utils/apiFetch";
@@ -15,7 +14,6 @@ import SearchInput from "../../components/shared/pageComponents/searchInput/Sear
 import EmptyState from "../../components/shared/pageComponents/emptyState/EmptyState";
 import ConfirmDeleteModal from "../../components/shared/confirmDeleteModal/ConfirmDeleteModal";
 import ShareModal from "../../components/cards/sharedWith/ShareModal";
-
 import "./SharesPage.css";
 
 const EMPTY_TEXTS = {
@@ -29,6 +27,11 @@ const EMPTY_TEXTS = {
       "Invita una persona per permetterle di accedere al profilo di uno dei tuoi animali.",
   },
 };
+
+const getPersonName = (share) =>
+  share.status === "pending"
+    ? share.email
+    : `${share.user?.nome || ""} ${share.user?.cognome || ""}`.trim();
 
 const SharesPage = () => {
   const { petId } = useParams();
@@ -45,6 +48,7 @@ const SharesPage = () => {
   const [sharesStatus, setSharesStatus] = useState("loading");
   const [sharesError, setSharesError] = useState("");
   const [reloadCount, setReloadCount] = useState(0);
+  const [notification, setNotification] = useState(null);
 
   const [selectedPet, setSelectedPet] = useState(petId || "all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -118,6 +122,7 @@ const SharesPage = () => {
         share.user?.nome,
         share.user?.cognome,
         share.user?.email,
+        share.email,
         share.pet?.name,
       ].some((value) => value?.toLowerCase().includes(term));
 
@@ -125,16 +130,23 @@ const SharesPage = () => {
     });
   }, [shares, selectedPet, searchTerm]);
 
-  const stats = useMemo(
-    () => ({
-      total: shares.length,
-      editors: shares.filter((share) => share.role === "editor").length,
-      viewers: shares.filter((share) => share.role === "viewer").length,
-    }),
-    [shares],
-  );
+  const stats = useMemo(() => {
+    const active = shares.filter((share) => share.status !== "pending");
+
+    return {
+      total: active.length,
+      editors: active.filter((share) => share.role === "editor").length,
+      viewers: active.filter((share) => share.role === "viewer").length,
+    };
+  }, [shares]);
+
+  const handleShareSaved = (result) => {
+    setNotification(result);
+    setReloadCount((count) => count + 1);
+  };
 
   const openInviteModal = (pet = null) => {
+    setNotification(null);
     setInvitePet(pet);
     setShowInviteModal(true);
   };
@@ -145,10 +157,13 @@ const SharesPage = () => {
   };
 
   const deleteShare = async () => {
-    await apiFetch(
-      `/pets/${shareToDelete.pet._id}/shares/${shareToDelete.user._id}`,
-      { method: "DELETE" },
-    );
+    const isPending = shareToDelete.status === "pending";
+
+    const path = isPending
+      ? `/pets/${shareToDelete.pet._id}/invitations/${shareToDelete._id}`
+      : `/pets/${shareToDelete.pet._id}/shares/${shareToDelete.user._id}`;
+
+    await apiFetch(path, { method: "DELETE" });
 
     setReloadCount((count) => count + 1);
   };
@@ -223,6 +238,15 @@ const SharesPage = () => {
           </div>
         }
       >
+        {notification && (
+          <Alert
+            variant="success"
+            dismissible
+            onClose={() => setNotification(null)}
+          >
+            {notification.message}
+          </Alert>
+        )}
         {sharesStatus === "loading" ? (
           <LoadingIndicator />
         ) : sharesStatus === "error" ? (
@@ -259,10 +283,12 @@ const SharesPage = () => {
                     </div>
 
                     <div className="share-person">
-                      <h3>
-                        {share.user?.nome} {share.user?.cognome}
-                      </h3>
-                      <p>{share.user?.email}</p>
+                      <h3>{getPersonName(share)}</h3>
+                      <p>
+                        {share.status === "pending"
+                          ? "In attesa di registrazione"
+                          : share.user?.email}
+                      </p>
                     </div>
 
                     <span
@@ -312,7 +338,7 @@ const SharesPage = () => {
           onHide={closeInviteModal}
           pets={ownedPets}
           initialPet={invitePet}
-          onSaved={() => setReloadCount((count) => count + 1)}
+          onSaved={handleShareSaved}
         />
       )}
 
@@ -322,7 +348,7 @@ const SharesPage = () => {
         title="Revoca accesso"
         itemName={
           shareToDelete
-            ? `${shareToDelete.user?.nome} ${shareToDelete.user?.cognome} al profilo di ${shareToDelete.pet?.name}`
+            ? `${getPersonName(shareToDelete)} al profilo di ${shareToDelete.pet?.name}`
             : ""
         }
         onConfirm={deleteShare}
