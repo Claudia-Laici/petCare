@@ -1,6 +1,6 @@
 import { ListGroup, Button } from "react-bootstrap";
 import { FileEarmarkText, Upload, Download } from "react-bootstrap-icons";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/dateUtils";
 import { apiFetch } from "../../../utils/apiFetch";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
@@ -12,7 +12,6 @@ const RecentDocumentsCard = ({
   isLoading = false,
   onUploadClick,
 }) => {
-  const { petId } = useParams();
 
   const handleDownload = async (documentId) => {
     try {
@@ -54,7 +53,7 @@ const RecentDocumentsCard = ({
       footerContent={
         <div className="text-center card-custom-footer pt-2 border-top">
           <Link
-            to={`/pets/${petId}/documents`}
+            to="/documents"
             className="d-block py-2 text-decoration-none small fw-medium"
           >
             Vedi tutti i documenti →

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Pet from "../modules/pets/Pet.js";
-import PetShare from "../modules/petshares/PetShare.js";
+import Pet from "../modules/pets/schema.js";
+import PetShare from "../modules/petshares/schema.js";
 
 const ROLE_LEVEL = { viewer: 1, editor: 2, owner: 3 };
 

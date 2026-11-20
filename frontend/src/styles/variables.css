@@ -9,6 +9,12 @@
   --color-page-bg: #f6f3ee;
   --color-white: #ffffff;
   --color-card-bg: #ffffff;
+  --color-modal-bg: #fbfaf7;
+  --color-disabled-bg: #f0f2ee;
+  --color-glass-surface: rgb(255 255 255 / 85%);
+
+  /* Primary */
+  --color-primary-darker: #194a40;
 
   /* Public page */
   --color-public-hero: #e9eee9;
@@ -21,8 +27,34 @@
   --color-text-dark: #252b29;
   --color-text-muted: #929894;
 
-  /* Bordi */
+  /* Glass */
+  --color-glass: #d1d1d176;
+  --color-glass-border: rgb(255 255 255 / 85%);
+  --color-glass-input: rgb(255 255 255 / 38%);
+  --color-glass-input-focus: rgb(255 255 255 / 60%);
+  --color-card-glass: rgb(255 255 255 / 82%);
+
+  /* Green text */
+  --color-text-green: #1f4338;
+  --color-text-green-dark: #244b40;
+  --color-text-green-muted: #4a6057;
+
+  /* Borders */
   --color-border: #eeece7;
+  --color-border-green: rgb(36 75 64 / 24%);
+  --color-border-soft: color-mix(
+    in srgb,
+    var(--color-primary-dark) 10%,
+    transparent
+  );
+  --color-border-input: #e3e8e1;
+  --color-border-focus: #78a18f;
+
+  /* Feedback */
+  --color-danger-bg: #fcf0ee;
+  --color-danger-border: #f0d6d3;
+  --color-danger-text: #a44f48;
+  --color-warning-border: #eee1bd;
 
   /* Accent */
   --color-accent: #faedcd;
@@ -33,7 +65,22 @@
   --radius-card: 18px;
   --radius-container: 20px;
   --radius-pill: 20px;
+  --radius-input: 12px;
+  --radius-box: 16px;
+  --radius-modal: 24px;
+  --radius-full: 100%;
 
   /* Shadows */
   --shadow-avatar: 0 4px 12px rgb(0 0 0 / 12%);
+  --shadow-card: 0 5px 18px rgb(45 74 62 / 4%), 0 1px 4px rgb(45 74 62 / 3%);
+  --shadow-card-hover:
+    0 12px 28px rgb(45 74 62 / 9%), 0 3px 8px rgb(45 74 62 / 4%);
+  --shadow-modal:
+    0 20px 60px rgb(36 59 49 / 14%), 0 4px 14px rgb(36 59 49 / 5%);
+  --shadow-focus: 0 0 0 3px
+    color-mix(in srgb, var(--color-primary) 10%, transparent);
+  --shadow-button: 0 3px 9px
+    color-mix(in srgb, var(--color-primary-dark) 15%, transparent);
+  --shadow-button-hover: 0 5px 13px
+    color-mix(in srgb, var(--color-primary-dark) 20%, transparent);
 }

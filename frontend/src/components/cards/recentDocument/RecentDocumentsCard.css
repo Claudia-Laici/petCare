@@ -1,12 +1,8 @@
-
 .recent-document-icon {
   width: 40px;
   height: 40px;
-  background-color: #e8f0fe;
-}
-
-.recent-document-date {
-  font-size: 0.75rem;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .recent-document-options {
@@ -35,7 +31,4 @@
   transform: scale(0.96);
 }
 
-.recent-document-options:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
+

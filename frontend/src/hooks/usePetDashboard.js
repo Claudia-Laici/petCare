@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFetch } from "./useFetch";
-import { isTherapyOngoing } from "../utils/therapyUtils";
+import { isTherapyOngoing } from "../utils/therapyStatus";
 import { parseDate } from "../utils/dateUtils";
 
 const isWithinNext30Days = (dateValue) => {
@@ -54,7 +54,7 @@ export const usePetDashboard = (pet) => {
 
   const upcomingTherapies = petTherapies.filter(
     (therapy) =>
-      isTherapyOngoing(therapy) && isWithinNext30Days(therapy.endDate),
+      isTherapyOngoing(therapy) && isWithinNext30Days(therapy.nextReminderDate),
   );
 
   const upcomingVaccinations = petVaccinations.filter((vaccination) =>
@@ -79,6 +79,7 @@ export const usePetDashboard = (pet) => {
       upcomingDeadlines: upcomingVaccinations.length + upcomingTherapies.length,
       activeTherapies: activeTherapies.length,
       documents: petDocuments.length,
+      shares: petShares.length,
     },
     modals: {
       activeModal,

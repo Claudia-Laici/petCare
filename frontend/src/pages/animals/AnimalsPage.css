@@ -1,0 +1,11 @@
+.animals-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.animals-search-input {
+  width: min(100%, 270px);
+}

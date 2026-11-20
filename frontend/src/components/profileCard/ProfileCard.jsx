@@ -80,52 +80,56 @@ const ProfileCard = ({ pet, currentUserId, onEdit, onDeleted }) => {
   return (
     <>
       <Card className="profile-card border-0 shadow-sm rounded-4 mt-3">
-        <div className="profile-card-decoration" aria-hidden="true" />
+        <div className="profile-card-inner">
+          <div className="profile-card-decoration" aria-hidden="true" />
 
-        <div className="profile-card-content d-flex flex-column flex-sm-row align-items-center gap-3 gap-md-4">
-          <Image
-            src={pet.cover || petPlaceholder}
-            roundedCircle
-            className="profile-card-avatar"
-            alt={`Foto di ${pet.name}`}
-          />
-
-          <div className="profile-card-info flex-grow-1 text-center text-sm-start">
-            <span className="profile-card-label">PROFILO SANITARIO</span>
-
-            <h2 className="profile-card-name">{pet.name}</h2>
-
-            <div className="profile-card-badges d-flex flex-wrap justify-content-center justify-content-sm-start gap-2">
-              <InfoBadge>{SPECIES[pet.species] ?? "Non specificata"}</InfoBadge>
-
-              {pet.breed && <InfoBadge>{pet.breed}</InfoBadge>}
-
-              {age && <InfoBadge>{age}</InfoBadge>}
-
-              {pet.weight > 0 && <InfoBadge>{pet.weight} kg</InfoBadge>}
-
-              {pet.microchipNumber && (
-                <InfoBadge title={pet.microchipNumber}>
-                  Microchip {pet.microchipNumber}
-                </InfoBadge>
-              )}
-            </div>
-          </div>
-
-          <div className="profile-card-actions d-flex align-items-center gap-2">
-            <IconActionButton
-              action="edit"
-              label="Modifica profilo"
-              onClick={onEdit}
+          <div className="profile-card-content d-flex flex-column flex-sm-row align-items-center gap-3 gap-md-4">
+            <Image
+              src={pet.cover || petPlaceholder}
+              roundedCircle
+              className="profile-card-avatar"
+              alt={`Foto di ${pet.name}`}
             />
 
-            {isOwner && (
+            <div className="profile-card-info flex-grow-1 text-center text-sm-start">
+              <span className="profile-card-label">PROFILO SANITARIO</span>
+
+              <h2 className="profile-card-name">{pet.name}</h2>
+
+              <div className="profile-card-badges d-flex flex-wrap justify-content-center justify-content-sm-start gap-2">
+                <InfoBadge>
+                  {SPECIES[pet.species] ?? "Non specificata"}
+                </InfoBadge>
+
+                {pet.breed && <InfoBadge>{pet.breed}</InfoBadge>}
+
+                {age && <InfoBadge>{age}</InfoBadge>}
+
+                {pet.weight > 0 && <InfoBadge>{pet.weight} kg</InfoBadge>}
+
+                {pet.microchipNumber && (
+                  <InfoBadge title={pet.microchipNumber}>
+                    Microchip {pet.microchipNumber}
+                  </InfoBadge>
+                )}
+              </div>
+            </div>
+
+            <div className="profile-card-actions d-flex align-items-center gap-2">
               <IconActionButton
-                action="delete"
-                label="Elimina animale"
-                onClick={openDeleteModal}
+                action="edit"
+                label="Modifica profilo"
+                onClick={onEdit}
               />
-            )}
+
+              {isOwner && (
+                <IconActionButton
+                  action="delete"
+                  label="Elimina animale"
+                  onClick={openDeleteModal}
+                />
+              )}
+            </div>
           </div>
         </div>
       </Card>

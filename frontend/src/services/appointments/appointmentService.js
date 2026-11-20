@@ -20,7 +20,7 @@ export const createAppointment = (data, idempotencyKey) => {
 
 export const updateAppointment = (appointmentId, data) => {
   return apiFetch(`/appointments/${appointmentId}`, {
-    method: "PUT",
+    method: "PATCH",
     body: data,
   });
 };

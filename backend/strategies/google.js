@@ -1,6 +1,6 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
-import User from "../modules/users/User.js";
+import User from "../modules/users/schema.js";
 
 const googleStrategy = new GoogleStrategy(
   {

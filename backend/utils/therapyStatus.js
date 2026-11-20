@@ -1,20 +1,23 @@
-const toUtcDay = (value) => {
+const toLocalDay = (value) => {
   const date = new Date(value);
-  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ).getTime();
 };
 
 export const getTherapyStatus = (therapy) => {
-  const now = new Date();
-  const today = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const start = toUtcDay(therapy.startDate);
-  const end = therapy.endDate ? toUtcDay(therapy.endDate) : null;
+  const todayTime = today.getTime();
+  const start = toLocalDay(therapy.startDate);
+  const end = therapy.endDate ? toLocalDay(therapy.endDate) : null;
 
-  if (start > today) return "scheduled";
-  if (end !== null && end < today) return "ended";
+  if (start > todayTime) return "scheduled";
+  if (end !== null && end < todayTime) return "ended";
+
   return "ongoing";
 };

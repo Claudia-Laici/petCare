@@ -2,7 +2,7 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { PersonCircle } from "react-bootstrap-icons";
+import { PersonCircle, PencilFill } from "react-bootstrap-icons";
 import Logo from "../../../assets/logo/LogoPetCare.png";
 import { useFetch } from "../../../hooks/useFetch";
 import { useRef, useState } from "react";
@@ -78,7 +78,7 @@ const PetCareNavbar = () => {
                 Home
               </Nav.Link>
 
-              <Nav.Link as={Link} to="/" className="nav-text">
+              <Nav.Link as={Link} to="/animals" className="nav-text">
                 I miei animali
               </Nav.Link>
 
@@ -86,16 +86,20 @@ const PetCareNavbar = () => {
                 Appuntamenti
               </Nav.Link>
 
-              <Nav.Link as={Link} to="/" className="nav-text">
-                Scadenze
+              <Nav.Link as={Link} to="/therapies" className="nav-text">
+                Terapie
               </Nav.Link>
 
-              <Nav.Link as={Link} to="/" className="nav-text">
+              <Nav.Link as={Link} to="/vaccinations" className="nav-text">
+                Vaccinazioni
+              </Nav.Link>
+
+              <Nav.Link as={Link} to="/documents" className="nav-text">
                 Documenti
               </Nav.Link>
 
-              <Nav.Link as={Link} to="/" className="nav-text">
-                Condivisione
+              <Nav.Link as={Link} to="/shares" className="nav-text">
+                Condivisioni
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -111,7 +115,7 @@ const PetCareNavbar = () => {
 
             <button
               type="button"
-              className="navbar-avatar-toggle p-0 border-0 bg-transparent"
+              className="navbar-avatar-toggle p-0 border-0 bg-transparent position-relative"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadingAvatar}
               aria-label="Cambia immagine profilo"
@@ -127,6 +131,12 @@ const PetCareNavbar = () => {
                 />
               ) : (
                 <PersonCircle size={38} className="text-secondary" />
+              )}
+
+              {!uploadingAvatar && (
+                <span className="avatar-edit-icon">
+                  <PencilFill />
+                </span>
               )}
             </button>
 

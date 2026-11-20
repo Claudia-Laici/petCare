@@ -1,34 +1,62 @@
-.text-date {
+.health-records-card {
+  --card-padding: 1.5rem;
+  overflow: hidden;
+  padding: var(--card-padding);
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 20px;
+  background-color: rgb(255 255 255 / 65%);
+  box-shadow: 0 8px 24px rgb(36 59 49 / 6%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.health-records-card h5 {
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.health-records-card .list-group-item {
+  background-color: transparent;
+  border-color: rgb(36 75 64 / 9%);
+}
+
+.health-records-card .text-date {
   font-size: 0.75rem;
 }
 
-.therapy-dosage {
+.health-records-card .therapy-dosage {
   font-size: 0.8rem;
 }
 
-.card-custom-footer {
-  background-color: var(--color-white);
-  color: var(--color-primary);
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  margin: -1.5rem;
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  transition: background-color 0.35s ease-out, color 0.35s ease-out;
+.health-records-message {
+  color: var(--color-text-muted);
+  line-height: 1.6;
 }
 
-.card-custom-footer:hover {
-  background-color: #f2f2f2;
+.health-records-footer {
+  margin-top: var(--card-padding);
+}
+
+.health-records-card .card-custom-footer {
+  margin: var(--card-padding) calc(var(--card-padding) * -1) calc(var(--card-padding) * -1);
+  padding: 0.9rem var(--card-padding);
+  background-color: rgb(255 255 255 / 55%);
+  color: var(--color-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.health-records-card .card-custom-footer:hover {
+  background-color: rgb(242 242 242 / 80%);
   color: var(--color-primary-dark);
 }
 
-.card-custom-footer a {
-  color: var(--color-primary);
-  opacity: 0.9;
-  transition: opacity 0.2s ease;
+.health-records-card .card-custom-footer a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.card-custom-footer a:hover {
-  opacity: 1;
+.health-records-card .card-custom-footer a:hover {
   text-decoration: underline;
 }

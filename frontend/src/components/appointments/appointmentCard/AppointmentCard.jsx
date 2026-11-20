@@ -1,5 +1,5 @@
-import { Card } from "react-bootstrap";
-import { CalendarEvent, Clock } from "react-bootstrap-icons";
+
+import { CalendarEvent, Clock, GeoAlt, Person } from "react-bootstrap-icons";
 import StatusBadge from "../../statusBadge/StatusBadge";
 import IconActionButton from "../../shared/iconActionButton/IconActionButton";
 import {
@@ -7,66 +7,87 @@ import {
   APPOINTMENT_TYPES,
 } from "../../../constants/appointments";
 import { formatDate, formatTime } from "../../../utils/formatDate";
+import "./AppointmentCard.css";
 
-const AppointmentCard = ({ appointment, canEdit, onEdit, onShare }) => {
+const AppointmentCard = ({
+  appointment,
+  canEdit,
+  onEdit,
+  onShare,
+  onDelete,
+}) => {
   const status =
     APPOINTMENT_STATUSES[appointment.status] ?? APPOINTMENT_STATUSES.scheduled;
 
   return (
-    <Card className="border-0 shadow-sm rounded-4 card-base">
-      <Card.Body className="p-4">
-        <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
-          <h5 className="fw-bold mb-0">{appointment.title}</h5>
+    <article className="appointment-item">
+      <div className="d-flex flex-wrap align-items-start gap-3">
+        <div className="flex-grow-1 min-w-0">
+          <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <h5 className="appointment-item-title mb-0">
+              {appointment.title}
+            </h5>
 
-          <StatusBadge status={status} />
+            <StatusBadge status={status} />
+          </div>
 
-          {canEdit && (
-            <div className="ms-auto d-flex align-items-center gap-2 flex-shrink-0">
-              <IconActionButton
-                action="share"
-                label="Condividi appuntamento"
-                onClick={() => onShare(appointment)}
-              />
+          <p className="appointment-item-subtitle mb-3">
+            {APPOINTMENT_TYPES[appointment.type] ?? "Altro"}
+            <span className="mx-2">·</span>
+            {appointment.petName}
+          </p>
 
-              <IconActionButton
-                action="edit"
-                label="Modifica appuntamento"
-                onClick={() => onEdit(appointment)}
-              />
-            </div>
-          )}
-        </div>
+          <div className="d-flex flex-wrap gap-3 appointment-item-details">
+            <span>
+              <CalendarEvent />
+              {formatDate(appointment.startAt)}
+            </span>
 
-        <p className="text-muted mb-3">
-          {APPOINTMENT_TYPES[appointment.type] ?? "Altro"}
-          {" · "}
-          {appointment.petName}
-        </p>
+            <span>
+              <Clock />
+              {formatTime(appointment.startAt)}
+              {appointment.endAt && ` - ${formatTime(appointment.endAt)}`}
+            </span>
 
-        <div className="d-flex flex-wrap gap-3 text-muted small">
-          <span>
-            <CalendarEvent className="me-2" />
-            {formatDate(appointment.startAt)}
-          </span>
-
-          <span>
-            <Clock className="me-2" />
-            {formatTime(appointment.startAt)}
-            {appointment.endAt && ` - ${formatTime(appointment.endAt)}`}
-          </span>
-        </div>
-
-        {(appointment.location || appointment.veterinarian) && (
-          <div className="mt-3 d-flex flex-column gap-2 text-muted small">
-            {appointment.location && <span>{appointment.location}</span>}
+            {appointment.location && (
+              <span>
+                <GeoAlt />
+                {appointment.location}
+              </span>
+            )}
 
             {appointment.veterinarian && (
-              <span>Veterinario: {appointment.veterinarian}</span>
+              <span>
+                <Person />
+                Veterinario: {appointment.veterinarian}
+              </span>
             )}
           </div>
+        </div>
+
+        {canEdit && (
+          <div className="d-flex align-items-center gap-2 flex-shrink-0 ms-auto">
+            <IconActionButton
+              action="share"
+              label="Condividi appuntamento"
+              onClick={() => onShare(appointment)}
+            />
+
+            <IconActionButton
+              action="edit"
+              label="Modifica appuntamento"
+              onClick={() => onEdit(appointment)}
+            />
+
+            <IconActionButton
+              action="delete"
+              label="Elimina appuntamento"
+              onClick={() => onDelete(appointment)}
+            />
+          </div>
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </article>
   );
 };
 

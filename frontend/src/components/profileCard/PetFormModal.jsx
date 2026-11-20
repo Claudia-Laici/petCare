@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Form, Image, Modal, Spinner } from "react-bootstrap";
+import { Alert, Button, Form, Image, Spinner } from "react-bootstrap";
 import { SPECIES, SEX } from "../../constants/pets";
 import petPlaceholder from "../../assets/petPlaceholder/petPlaceholder.webp";
 import { apiFetch } from "../../utils/apiFetch";
+import FormModal from "../shared/formalModal/FormModal";
 
 const AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
@@ -63,6 +64,11 @@ const PetFormModalContent = ({ show, onHide, onSaved, pet = null }) => {
     onChange: handleChange,
   });
 
+  const handleClose = () => {
+    if (isSubmitting) return;
+    onHide();
+  };
+
   const handleAvatarSelection = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -74,10 +80,12 @@ const PetFormModalContent = ({ show, onHide, onSaved, pet = null }) => {
         : "";
 
     setError(problem);
+
     if (problem) {
       event.target.value = "";
       return;
     }
+
     setAvatar({ file, preview: URL.createObjectURL(file) });
   };
 
@@ -97,11 +105,13 @@ const PetFormModalContent = ({ show, onHide, onSaved, pet = null }) => {
           microchipNumber: formData.microchipNumber.trim(),
         },
       });
+
       setPetId(saved._id);
 
       if (avatar) {
         const body = new FormData();
         body.append("avatar", avatar.file);
+
         try {
           await apiFetch(`/pets/${saved._id}/avatar`, {
             method: "PATCH",
@@ -128,128 +138,27 @@ const PetFormModalContent = ({ show, onHide, onSaved, pet = null }) => {
   const submitLabel = pet ? "Salva modifiche" : "Aggiungi animale";
 
   return (
-    <Modal
+    <FormModal
       show={show}
-      onHide={onHide}
-      centered
+      onHide={handleClose}
+      onSubmit={handleSubmit}
+      title={pet ? "Modifica profilo" : "Aggiungi un animale"}
+      size="lg"
+      closeButton={!isSubmitting}
       backdrop={isSubmitting ? "static" : true}
       keyboard={!isSubmitting}
-    >
-      <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton={!isSubmitting}>
-          <Modal.Title className="fs-5 fw-semibold">
-            {pet ? "Modifica profilo" : "Aggiungi un animale"}
-          </Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          {error && (
-            <Alert variant="danger" className="small">
-              {error}
-            </Alert>
-          )}
-
-          <div className="text-center mb-4">
-            <Image
-              src={avatar?.preview || pet?.cover || petPlaceholder}
-              roundedCircle
-              width={100}
-              height={100}
-              className="object-fit-cover border shadow-sm mb-2"
-              alt={
-                pet?.name
-                  ? `Foto di ${pet.name}`
-                  : "Anteprima della foto dell'animale"
-              }
-            />
-            <div>
-              <Form.Control
-                ref={avatarInputRef}
-                type="file"
-                accept={AVATAR_TYPES.join(",")}
-                onChange={handleAvatarSelection}
-                className="d-none"
-                disabled={isSubmitting}
-              />
-              <Button
-                type="button"
-                variant="outline-secondary"
-                size="sm"
-                className="rounded-pill"
-                onClick={() => avatarInputRef.current?.click()}
-                disabled={isSubmitting}
-              >
-                Cambia foto
-              </Button>
-            </div>
-            <Form.Text className="d-block">
-              JPG, PNG o WebP · massimo 5 MB
-            </Form.Text>
-          </div>
-
-          <Field
-            label="Nome *"
-            id="petName"
-            {...bind("name")}
-            placeholder="Es. Achille"
-            maxLength={80}
-            required
-            autoFocus
-          />
-          <Field
-            label="Specie *"
-            id="petSpecies"
-            as={Form.Select}
-            {...bind("species")}
-            required
-          >
-            {options(SPECIES)}
-          </Field>
-          <Field
-            label="Razza"
-            id="petBreed"
-            {...bind("breed")}
-            placeholder="Es. Labrador"
-            maxLength={100}
-          />
-          <Field
-            label="Data di nascita"
-            id="petBirthDate"
-            type="date"
-            {...bind("birthDate")}
-            max={new Date().toISOString().slice(0, 10)}
-          />
-          <Field label="Sesso" id="petSex" as={Form.Select} {...bind("sex")}>
-            {options(SEX)}
-          </Field>
-          <Field
-            label="Numero microchip"
-            id="petMicrochip"
-            {...bind("microchipNumber")}
-            placeholder="Facoltativo"
-            maxLength={100}
-          />
-
-          <Form.Check
-            type="checkbox"
-            name="sterilized"
-            id="petSterilized"
-            label="Animale sterilizzato"
-            checked={formData.sterilized}
-            onChange={handleChange}
-          />
-        </Modal.Body>
-
-        <Modal.Footer>
+      footer={
+        <>
           <Button
             type="button"
             variant="outline-secondary"
             className="rounded-pill"
-            onClick={onHide}
+            onClick={handleClose}
             disabled={isSubmitting}
           >
             Annulla
           </Button>
+
           <Button
             type="submit"
             variant="success"
@@ -265,9 +174,113 @@ const PetFormModalContent = ({ show, onHide, onSaved, pet = null }) => {
               submitLabel
             )}
           </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+        </>
+      }
+    >
+      {error && (
+        <Alert variant="danger" className="small">
+          {error}
+        </Alert>
+      )}
+
+      <div className="text-center mb-4">
+        <Image
+          src={avatar?.preview || pet?.cover || petPlaceholder}
+          roundedCircle
+          width={100}
+          height={100}
+          className="object-fit-cover border shadow-sm mb-2"
+          alt={
+            pet?.name
+              ? `Foto di ${pet.name}`
+              : "Anteprima della foto dell'animale"
+          }
+        />
+
+        <div>
+          <Form.Control
+            ref={avatarInputRef}
+            type="file"
+            accept={AVATAR_TYPES.join(",")}
+            onChange={handleAvatarSelection}
+            className="d-none"
+            disabled={isSubmitting}
+          />
+
+          <Button
+            type="button"
+            variant="outline-secondary"
+            size="sm"
+            className="rounded-pill"
+            onClick={() => avatarInputRef.current?.click()}
+            disabled={isSubmitting}
+          >
+            Cambia foto
+          </Button>
+        </div>
+
+        <Form.Text className="d-block">
+          JPG, PNG o WebP · massimo 5 MB
+        </Form.Text>
+      </div>
+
+      <Field
+        label="Nome *"
+        id="petName"
+        {...bind("name")}
+        placeholder="Es. Achille"
+        maxLength={80}
+        required
+        autoFocus
+      />
+
+      <Field
+        label="Specie *"
+        id="petSpecies"
+        as={Form.Select}
+        {...bind("species")}
+        required
+      >
+        {options(SPECIES)}
+      </Field>
+
+      <Field
+        label="Razza"
+        id="petBreed"
+        {...bind("breed")}
+        placeholder="Es. Labrador"
+        maxLength={100}
+      />
+
+      <Field
+        label="Data di nascita"
+        id="petBirthDate"
+        type="date"
+        {...bind("birthDate")}
+        max={new Date().toISOString().slice(0, 10)}
+      />
+
+      <Field label="Sesso" id="petSex" as={Form.Select} {...bind("sex")}>
+        {options(SEX)}
+      </Field>
+
+      <Field
+        label="Numero microchip"
+        id="petMicrochip"
+        {...bind("microchipNumber")}
+        placeholder="Facoltativo"
+        maxLength={100}
+      />
+
+      <Form.Check
+        type="checkbox"
+        name="sterilized"
+        id="petSterilized"
+        label="Animale sterilizzato"
+        checked={formData.sterilized}
+        onChange={handleChange}
+      />
+    </FormModal>
   );
 };
 

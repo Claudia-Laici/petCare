@@ -172,7 +172,7 @@ const QrSettingsForm = ({ pet, qr, onSave }) => {
                       {empty && group.key === "pet" && (
                         <Link
                           to={group.fillPath(pet._id)}
-                          className="small text-decoration-none"
+                          className="small text-decoration-none info-link"
                         >
                           Completa questa informazione
                         </Link>

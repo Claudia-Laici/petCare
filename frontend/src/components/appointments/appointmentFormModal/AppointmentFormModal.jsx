@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Alert, Button, Form, Modal, Row, Col, Spinner } from "react-bootstrap";
+import { Alert, Button, Form, Row, Col, Spinner } from "react-bootstrap";
 import {
   createAppointment,
   updateAppointment,
@@ -9,6 +9,7 @@ import {
   FIELD_LABELS,
 } from "../../../constants/appointments";
 import { toDateTimeLocal } from "../../../utils/formatDate";
+import FormModal from "../../shared/formalModal/FormModal";
 
 const initialFormData = {
   pet: "",
@@ -38,6 +39,7 @@ const getInitialFormData = (appointment) =>
         attendeeInstructions: appointment.attendeeInstructions ?? "",
       }
     : initialFormData;
+
 const AppointmentFormModal = (props) => (
   <AppointmentFormModalContent
     key={props.show ? "open" : "closed"}
@@ -106,7 +108,10 @@ const AppointmentFormModalContent = ({
         const signature = JSON.stringify(data);
 
         if (idempotencyRef.current?.signature !== signature) {
-          idempotencyRef.current = { signature, key: crypto.randomUUID() };
+          idempotencyRef.current = {
+            signature,
+            key: crypto.randomUUID(),
+          };
         }
 
         saved = await createAppointment(data, idempotencyRef.current.key);
@@ -127,170 +132,18 @@ const AppointmentFormModalContent = ({
   };
 
   return (
-    <Modal
+    <FormModal
       show={show}
       onHide={onHide}
-      centered
-      size="lg"
+      onSubmit={handleSubmit}
+      title={appointment ? "Modifica appuntamento" : "Nuovo appuntamento"}
+      subtitle="Inserisci i dettagli della visita."
+      className="appointment-form-modal"
       backdrop={isSubmitting ? "static" : true}
       keyboard={!isSubmitting}
-    >
-      <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton={!isSubmitting}>
-          <Modal.Title className="fs-5 fw-semibold">
-            {appointment ? "Modifica appuntamento" : "Nuovo appuntamento"}
-          </Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          {error && (
-            <Alert variant="danger" className="small">
-              {error}
-            </Alert>
-          )}
-
-          {pets.length === 0 && (
-            <Alert variant="warning">
-              Devi prima aggiungere un animale per creare un appuntamento.
-            </Alert>
-          )}
-
-          <Form.Group className="mb-3" controlId="appointmentPet">
-            <Form.Label>Animale *</Form.Label>
-            <Form.Select
-              {...bind("pet")}
-              required
-              disabled={isSubmitting || pets.length === 0}
-            >
-              <option value="">Seleziona un animale</option>
-              {pets.map((pet) => (
-                <option key={pet._id} value={pet._id}>
-                  {pet.name}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="appointmentTitle">
-            <Form.Label>Titolo *</Form.Label>
-            <Form.Control
-              {...bind("title")}
-              placeholder="Es. Controllo veterinario"
-              maxLength={150}
-              required
-              disabled={isSubmitting}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="appointmentType">
-            <Form.Label>Tipologia</Form.Label>
-            <Form.Select {...bind("type")} disabled={isSubmitting}>
-              {Object.entries(APPOINTMENT_TYPES).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="appointmentStart">
-                <Form.Label>Data e ora di inizio *</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  {...bind("startAt")}
-                  required
-                  disabled={isSubmitting}
-                />
-              </Form.Group>
-            </Col>
-
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="appointmentEnd">
-                <Form.Label>Data e ora di fine</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  {...bind("endAt")}
-                  min={formData.startAt || undefined}
-                  disabled={isSubmitting}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Form.Group className="mb-3" controlId="appointmentLocation">
-            <Form.Label>Luogo</Form.Label>
-            <Form.Control
-              {...bind("location")}
-              placeholder="Es. Clinica veterinaria"
-              disabled={isSubmitting}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="appointmentVeterinarian">
-            <Form.Label>Veterinario</Form.Label>
-            <Form.Control
-              {...bind("veterinarian")}
-              placeholder="Nome del veterinario"
-              disabled={isSubmitting}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="appointmentNotes">
-            <Form.Label>{FIELD_LABELS.notes}</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              {...bind("notes")}
-              placeholder="Aggiungi eventuali informazioni..."
-              disabled={isSubmitting}
-            />
-          </Form.Group>
-
-          <hr className="my-4" />
-
-          <div className="mb-3">
-            <h6 className="fw-semibold mb-1">Informazioni aggiuntive</h6>
-            <p className="text-muted small mb-0">
-              Aggiungi dettagli utili per preparare la visita o per chi
-              accompagnerà l'animale.
-            </p>
-          </div>
-
-          <Form.Group className="mb-3" controlId="appointmentVetQuestions">
-            <Form.Label>{FIELD_LABELS.vetQuestions}</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              maxLength={1000}
-              {...bind("vetQuestions")}
-              placeholder="Es. Chiedere informazioni sulla terapia e sui prossimi controlli..."
-              disabled={isSubmitting}
-            />
-            <Form.Text className="text-muted">
-              Annotati gli argomenti da affrontare durante la visita.
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group controlId="appointmentAttendeeInstructions">
-            <Form.Label>{FIELD_LABELS.attendeeInstructions}</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              maxLength={1000}
-              {...bind("attendeeInstructions")}
-              placeholder="Es. Portare il libretto sanitario, arrivare 10 minuti prima..."
-              disabled={isSubmitting}
-            />
-            <Form.Text className="text-muted">
-              Informazioni pratiche per chi si occuperà di accompagnare
-              l'animale.
-            </Form.Text>
-          </Form.Group>
-        </Modal.Body>
-
-        <Modal.Footer>
+      closeButton={!isSubmitting}
+      footer={
+        <>
           <Button
             type="button"
             variant="outline-secondary"
@@ -318,9 +171,156 @@ const AppointmentFormModalContent = ({
               "Crea appuntamento"
             )}
           </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+        </>
+      }
+    >
+      {error && (
+        <Alert variant="danger" className="small">
+          {error}
+        </Alert>
+      )}
+
+      {pets.length === 0 && (
+        <Alert variant="warning">
+          Devi prima aggiungere un animale per creare un appuntamento.
+        </Alert>
+      )}
+
+      <Form.Group className="mb-3" controlId="appointmentPet">
+        <Form.Label>Animale *</Form.Label>
+        <Form.Select
+          {...bind("pet")}
+          required
+          disabled={isSubmitting || pets.length === 0}
+        >
+          <option value="">Seleziona un animale</option>
+          {pets.map((pet) => (
+            <option key={pet._id} value={pet._id}>
+              {pet.name}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="appointmentTitle">
+        <Form.Label>Titolo *</Form.Label>
+        <Form.Control
+          {...bind("title")}
+          placeholder="Es. Controllo veterinario"
+          maxLength={150}
+          required
+          disabled={isSubmitting}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="appointmentType">
+        <Form.Label>Tipologia</Form.Label>
+        <Form.Select {...bind("type")} disabled={isSubmitting}>
+          {Object.entries(APPOINTMENT_TYPES).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
+      <Row>
+        <Col md={6}>
+          <Form.Group className="mb-3" controlId="appointmentStart">
+            <Form.Label>Data e ora di inizio *</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              step={900}
+              {...bind("startAt")}
+              required
+              disabled={isSubmitting}
+            />
+          </Form.Group>
+        </Col>
+
+        <Col md={6}>
+          <Form.Group className="mb-3" controlId="appointmentEnd">
+            <Form.Label>Data e ora di fine</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              step={900}
+              {...bind("endAt")}
+              min={formData.startAt || undefined}
+              disabled={isSubmitting}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+
+      <Form.Group className="mb-3" controlId="appointmentLocation">
+        <Form.Label>Luogo</Form.Label>
+        <Form.Control
+          {...bind("location")}
+          placeholder="Es. Clinica veterinaria"
+          disabled={isSubmitting}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="appointmentVeterinarian">
+        <Form.Label>Veterinario</Form.Label>
+        <Form.Control
+          {...bind("veterinarian")}
+          placeholder="Nome del veterinario"
+          disabled={isSubmitting}
+        />
+      </Form.Group>
+
+      <Form.Group controlId="appointmentNotes">
+        <Form.Label>{FIELD_LABELS.notes}</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          {...bind("notes")}
+          placeholder="Aggiungi eventuali informazioni..."
+          disabled={isSubmitting}
+        />
+      </Form.Group>
+
+      <hr className="my-4" />
+
+      <div className="mb-3">
+        <h6 className="fw-semibold mb-1">Informazioni aggiuntive</h6>
+        <p className="text-muted small mb-0">
+          Aggiungi dettagli utili per preparare la visita o per chi accompagnerà
+          l'animale.
+        </p>
+      </div>
+
+      <Form.Group className="mb-3" controlId="appointmentVetQuestions">
+        <Form.Label>{FIELD_LABELS.vetQuestions}</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          maxLength={1000}
+          {...bind("vetQuestions")}
+          placeholder="Es. Chiedere informazioni sulla terapia e sui prossimi controlli..."
+          disabled={isSubmitting}
+        />
+        <Form.Text className="text-muted">
+          Annotati gli argomenti da affrontare durante la visita.
+        </Form.Text>
+      </Form.Group>
+
+      <Form.Group controlId="appointmentAttendeeInstructions">
+        <Form.Label>{FIELD_LABELS.attendeeInstructions}</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          maxLength={1000}
+          {...bind("attendeeInstructions")}
+          placeholder="Es. Portare il libretto sanitario, arrivare 10 minuti prima..."
+          disabled={isSubmitting}
+        />
+        <Form.Text className="text-muted">
+          Informazioni pratiche per chi si occuperà di accompagnare l'animale.
+        </Form.Text>
+      </Form.Group>
+    </FormModal>
   );
 };
 

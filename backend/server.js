@@ -4,25 +4,25 @@ import cors from "cors";
 import mongoose from "mongoose";
 
 //import
-import UserRouter from "./routes/users.js";
-import errorHandler from "./middlewares/errorHandler.js";
-import PetRouter from "./routes/pets.js";
-import VaccinationRouter from "./routes/vaccinations.js";
-import { createUser } from "./controllers/users.js";
+import UserRouter from "./modules/users/routes.js";
+import errorHandler from "./middlewares/error/errorHandler.js";
+import PetRouter from "./modules/pets/routes.js";
+import VaccinationRouter from "./modules/vaccinations/routes.js";
+import { createUser } from "./modules/users/controller.js";
 import AuthRouter from "./routes/auth.js";
-import { auth } from "./middlewares/auth.js";
-import TherapyRouter from "./routes/therapies.js";
-import MedicalDocumentRouter from "./routes/medicalDocuments.js";
+import { auth } from "./middlewares/globals/auth.js";
+import TherapyRouter from "./modules/therapies/routes.js";
+import MedicalDocumentRouter from "./modules/medicalDocuments/routes.js";
 import PublicRouter from "./routes/public.js";
-import PetQrRouter from "./routes/petQr.js";
-import HealthCardRouter from "./routes/healthCards.js";
-import PetSharesRouter from "./routes/petShares.js";
+import PetQrRouter from "./modules/petqrs/routes.js";
+import HealthCardRouter from "./modules/healthcards/routes.js";
+import PetSharesRouter from "./modules/petshares/routes.js";
 import passport from "passport";
 import googleStrategy from "./strategies/google.js";
 import GoogleCalendarRouter from "./routes/googleCalendar.js";
-import AppointmentRouter from "./routes/appointment.js";
+import AppointmentRouter from "./modules/appointments/routes.js";
 import { startAppointmentSyncJob } from "./services/appointmentSyncJob.js";
-import AppointmentSharesRouter from "./routes/appointmentShares.js";
+import AppointmentSharesRouter from "./modules/appointmentShare/routes.js";
 
 const requiredEnv = [
   "MONGO_URL",

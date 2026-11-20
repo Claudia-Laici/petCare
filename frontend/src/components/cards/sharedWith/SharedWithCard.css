@@ -1,11 +1,8 @@
-.shared-with-card {
-  background-color: var(--color-white);
-}
-
 .shared-with-avatar {
   width: 40px;
   height: 40px;
   background-color: var(--color-accent);
+  border: 1px solid rgb(255 255 255 / 70%);
 }
 
 .shared-with-info {
@@ -13,24 +10,10 @@
 }
 
 .shared-with-email {
-  font-size: 0.75rem;
   overflow-wrap: anywhere;
-}
-
-.shared-with-expiration {
-  font-size: 0.7rem;
 }
 
 .shared-with-role {
   font-size: 0.8rem;
   white-space: nowrap;
-}
-
-.shared-with-invite {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-}
-
-.shared-with-invite:hover {
-  border-color: #d1dbd4;
 }

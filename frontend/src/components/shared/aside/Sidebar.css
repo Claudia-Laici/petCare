@@ -1,45 +1,62 @@
 .sidebar-container {
   max-width: 100%;
+  padding: 0.5rem;
+  border: 1px solid rgb(255 255 255 / 75%);
+  border-radius: 18px;
+  background-color: rgb(255 255 255 / 55%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgb(36 59 49 / 5%);
 }
 
 .pet-item {
   background-color: transparent;
-  transition: background-color 0.2s ease-in-out;
+  border-radius: 12px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .pet-item:hover {
-  background-color: #f4f6f4;
+  background-color: rgb(244 246 244 / 75%);
+  transform: translateX(2px);
 }
 
 .pet-item.active-pet,
 .pet-item.active {
-  background-color: #e2f0e8;
+  background-color: rgb(226 240 232 / 85%);
+  box-shadow: inset 3px 0 0 #6f9d83;
 }
 
 .pet-item.active:hover {
-  background-color: #d7e9df;
+  background-color: rgb(215 233 223 / 90%);
 }
 
 .btn-add {
-  border-color: #d1d5db;
+  border: 1px solid rgb(209 213 219 / 75%);
+  border-radius: 12px;
+  background-color: rgb(255 255 255 / 35%);
   color: #4b5563;
   font-size: 0.875rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-add:hover {
-  background-color: #f3f4f6;
+  background-color: rgb(243 244 246 / 85%);
   border-color: #d1d5db;
   color: #374151;
 }
 
 .btn-download {
-  background-color: #fff;
-  border: 0;
+  background-color: rgb(255 255 255 / 55%);
+  border-radius: 10px;
   color: #212529;
   font-size: 0.85rem;
+  transition: background-color 0.2s ease;
 }
 
 .btn-download:hover {
-  background-color: #e5e7eb;
+  background-color: rgb(229 231 235 / 85%);
   color: #212529;
 }

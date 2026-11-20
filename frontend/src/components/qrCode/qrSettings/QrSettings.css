@@ -17,3 +17,13 @@
   border-color: #2e7b6b;
   box-shadow: 0 0 0 0.25rem rgba(46, 123, 107, 0.25);
 }
+
+.info-link {
+  color: var(--color-primary);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.info-link:hover {
+  color: var(--color-primary-dark);
+}

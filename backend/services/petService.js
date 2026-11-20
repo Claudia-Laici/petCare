@@ -1,12 +1,12 @@
 import crypto from "crypto";
-import Vaccination from "../modules/vaccinations/Vaccination.js";
-import Therapy from "../modules/therapies/Therapy.js";
-import MedicalDocument from "../modules/medicalDocuments/MedicalDocument.js";
+import Vaccination from "../modules/vaccinations/schema.js";
+import Therapy from "../modules/therapies/schema.js";
+import MedicalDocument from "../modules/medicalDocuments/schema.js";
 import { v2 as cloudinary } from "cloudinary";
-import Pet from "../modules/pets/Pet.js";
-import HealthCard from "../modules/healthcards/HealthCard.js";
-import PetQr from "../modules/petqrs/PetQr.js";
-import PetShare from "../modules/petshares/PetShare.js";
+import Pet from "../modules/pets/schema.js";
+import HealthCard from "../modules/healthcards/schema.js";
+import PetQr from "../modules/petqrs/schema.js";
+import PetShare from "../modules/petshares/schema.js";
 import { getPetRole } from "../utils/petAccess.js";
 
 export const deletePetCascade = async (pet) => {

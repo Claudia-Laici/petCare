@@ -1,3 +1,90 @@
+.page-layout {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 100vh;
+  margin: auto;
+}
+
+.page-layout-header {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-wrap: wrap; 
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-bottom: 2rem;
+  padding: 1.8rem 2rem;
+  border: 1px solid rgb(255 255 255 / 85%);
+  border-radius: 20px;
+  background: linear-gradient(
+    120deg,
+    rgb(227 238 233 / 85%),
+    rgb(255 255 255 / 72%)
+  );
+  box-shadow: 0 8px 28px rgb(36 59 49 / 6%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.page-layout-heading {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.page-layout-breadcrumb {
+  margin-bottom: 0.65rem;
+  color: var(--color-text-muted, #829087);
+  font-size: 0.82rem;
+  font-weight: 550;
+}
+
 .page-layout-title {
-  color: var(--color-text-dark);
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding-bottom: 0.65rem;
+  color: var(--color-text-dark, #293b34);
+  font-size: clamp(1.75rem, 2.6vw, 2.2rem);
+  font-weight: 750;
+  letter-spacing: -0.05em;
+  line-height: 1.2;
+}
+
+.page-layout-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 38px;
+  height: 3px;
+  background: #6f9d83;
+  border-radius: 10px;
+}
+
+.page-layout-description {
+  max-width: 620px;
+  margin: 0.65rem 0 0;
+  color: var(--color-text-green-muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.page-layout-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.page-layout-stats {
+  margin-bottom: 1.75rem;
+}
+
+.page-layout-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.page-layout-filters {
+  margin-bottom: 1.5rem;
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import Appointment from "../modules/appointments/Appointment.js";
-import User from "../modules/users/User.js";
+import Appointment from "../modules/appointments/schema.js";
+import User from "../modules/users/schema.js";
 import {
   upsertGoogleCalendarEvent,
   deleteGoogleCalendarEvent,

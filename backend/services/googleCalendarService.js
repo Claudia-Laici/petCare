@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import User from "../modules/users/User.js";
+import User from "../modules/users/schema.js";
 import { decryptToken } from "./tokenEncryption.js";
 
 const DEFAULT_DURATION_MS = 30 * 60 * 1000;

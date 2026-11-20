@@ -1,0 +1,14 @@
+.google-button {
+  min-height: 48px;
+  border-color: #246b5c;
+  border-radius: 10px;
+  background-color: #246b5c;
+  color: #fff;
+  font-weight: 700;
+  gap: 2px;
+}
+
+.google-button:hover:not(:disabled) {
+  border-color: #1c574b;
+  background-color: #1c574b;
+}

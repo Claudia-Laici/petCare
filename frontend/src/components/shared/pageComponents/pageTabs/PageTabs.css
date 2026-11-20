@@ -1,0 +1,94 @@
+.page-tabs {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.2rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem;
+  border: 1px solid rgb(255 255 255 / 85%);
+  border-radius: 30px;
+  background: linear-gradient(
+    120deg,
+    rgb(227 238 233 / 85%),
+    rgb(255 255 255 / 72%)
+  );
+  box-shadow: 0 8px 28px rgb(36 59 49 / 6%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.page-tabs button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.15rem;
+  border: 0;
+  border-radius: 30px;
+  background: transparent;
+  color: #858d87;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.page-tabs button:hover {
+  background: rgb(46 123 107 / 5%);
+  color: var(--color-primary-dark);
+}
+
+.page-tabs button.is-active {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 3px 9px rgb(46 123 107 / 20%);
+}
+
+.page-tabs button span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 23px;
+  height: 23px;
+  padding: 0 6px;
+  border-radius: 50px;
+  background: rgb(0 0 0 / 5%);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.page-tabs button.is-active span {
+  background: rgb(255 255 255 / 20%);
+  color: white;
+}
+
+.page-tabs button:focus-visible {
+  outline: 3px solid rgb(46 123 107 / 30%);
+  outline-offset: 3px;
+}
+
+
+@media (max-width: 575.98px) {
+  .page-tabs {
+    padding: 0.35rem;
+    border: 1px solid rgb(255 255 255 / 85%);
+    border-radius: 30px;
+    background: linear-gradient(
+      120deg,
+      rgb(227 238 233 / 85%),
+      rgb(255 255 255 / 72%)
+    );
+    box-shadow: 0 8px 28px rgb(36 59 49 / 6%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}

@@ -4,8 +4,8 @@ import { formatDate } from "../../../utils/dateUtils";
 import { Link, useParams } from "react-router-dom";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
 import ActionButton from "../../shared/actionButton/ActionButton";
-import "../../../styles/variables.css"
-import "../../../styles/components.css"
+import "../../../styles/variables.css";
+import "../../../styles/components.css";
 import "./SharedWithCard.css";
 
 const SharedWithCard = ({
@@ -48,7 +48,7 @@ const SharedWithCard = ({
             key={share._id}
             className="shared-with-item px-0 py-2 d-flex align-items-center gap-3"
           >
-            <div className="shared-with-avatar d-flex align-items-center justify-content-center rounded-3 flex-shrink-0 text-dark">
+            <div className="shared-with-avatar d-flex align-items-center justify-content-center flex-shrink-0 text-dark">
               <Person size={20} />
             </div>
 
@@ -57,12 +57,12 @@ const SharedWithCard = ({
                 {user?.nome} {user?.cognome}
               </div>
 
-              <div className="shared-with-email text-secondary">
+              <div className="shared-with-email text-muted-small">
                 {user?.email}
               </div>
 
               {share.expiresAt && (
-                <div className="shared-with-expiration text-secondary">
+                <div className="text-muted-small">
                   Accesso fino al {formatDate(share.expiresAt)}
                 </div>
               )}

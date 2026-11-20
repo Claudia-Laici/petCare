@@ -1,7 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
-import { getPublicPet } from "../controllers/petQr.js";
-import { getPublicAppointment } from "../controllers/appointmentShare.js";
+import { getPublicPet } from "../modules/petqrs/controller.js";
+import { getPublicAppointment } from "../modules/appointmentShare/controller.js";
 
 const PublicRouter = express.Router();
 

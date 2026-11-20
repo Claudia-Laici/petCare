@@ -1,4 +1,30 @@
+.dashboard-stats-card {
+  overflow: hidden;
+  padding: 1.5rem;
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 20px;
+  background-color: rgb(255 255 255 / 65%);
+  box-shadow: 0 8px 24px rgb(36 59 49 / 6%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 .icon-dashboard {
-    width: 45px;
-    height: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+}
+
+.dashboard-stats-card h3 {
+  color: var(--color-text-dark);
+}
+
+.dashboard-stats-card p {
+  margin-bottom: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
 }

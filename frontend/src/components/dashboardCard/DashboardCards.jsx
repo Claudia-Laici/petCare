@@ -1,11 +1,6 @@
 import { Container, Row, Col, Card } from "react-bootstrap";
-import {
-  ShieldCheck,
-  CalendarEvent,
-  Capsule,
-  Folder,
-} from "react-bootstrap-icons";
-import VaccinationsCard from "../cards/vaccinations/VaccinationsCard";
+import { ShieldCheck, People, Capsule, Folder } from "react-bootstrap-icons";
+import VaccinationCard from "../cards/vaccinations/VaccinationCard";
 import TherapiesCard from "../cards/therapies/TherapiesCard";
 import RecentDocumentsCard from "../cards/recentDocument/RecentDocumentsCard";
 import SharedWithCard from "../cards/sharedWith/SharedWithCard";
@@ -41,11 +36,11 @@ const DashboardCards = ({ pet }) => {
     },
     {
       id: 2,
-      count: pet ? counts.upcomingDeadlines : 0,
-      loading: pet && (loading.vaccinations || loading.therapies),
-      label: "Prossime scadenze",
-      icon: <CalendarEvent size={20} className="text-warning" />,
-      iconBg: "bg-warning bg-opacity-10",
+      count: pet ? counts.shares : 0,
+      loading: pet && loading.shares,
+      label: "Condivisioni attive",
+      icon: <People size={20} className="text-info" />,
+      iconBg: "bg-info bg-opacity-10",
     },
     {
       id: 3,
@@ -70,7 +65,7 @@ const DashboardCards = ({ pet }) => {
       <Row className="g-3">
         {stats.map((stat) => (
           <Col xs={6} xl={3} key={stat.id}>
-            <Card className="border-0 shadow-sm rounded-4 p-3 h-100">
+            <Card className="dashboard-stats-card h-100">
               <Card.Body className="p-1 d-flex flex-column">
                 <div
                   className={`icon-dashboard d-inline-flex align-items-center justify-content-center rounded-3 mb-3 ${stat.iconBg}`}
@@ -92,7 +87,7 @@ const DashboardCards = ({ pet }) => {
 
       <Row className="g-4 mt-4">
         <Col xs={12} lg={6}>
-          <VaccinationsCard
+          <VaccinationCard
             vaccinations={petVaccinations}
             isLoading={loading.vaccinations}
             petId={petId}

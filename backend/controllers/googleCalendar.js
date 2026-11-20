@@ -1,5 +1,5 @@
-import User from "../modules/users/User.js";
-import Appointment from "../modules/appointments/Appointment.js";
+import User from "../modules/users/schema.js";
+import Appointment from "../modules/appointments/schema.js";
 import {
   createCalendarAuthorizationUrl,
   consumeCalendarState,

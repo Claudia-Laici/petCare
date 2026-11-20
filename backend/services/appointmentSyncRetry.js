@@ -1,4 +1,4 @@
-import Appointment from "../modules/appointments/Appointment.js";
+import Appointment from "../modules/appointments/schema.js";
 import {
   syncAppointmentWithGoogle,
   deleteAppointmentEverywhere,

@@ -1,7 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import { randomBytes, createHash } from "node:crypto";
 import jwt from "jsonwebtoken";
-import User from "../modules/users/User.js";
+import User from "../modules/users/schema.js";
 
 const createOAuthClient = () => {
   return new OAuth2Client(

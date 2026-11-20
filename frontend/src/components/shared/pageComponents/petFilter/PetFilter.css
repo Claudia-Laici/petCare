@@ -1,0 +1,20 @@
+.pet-filter {
+  width: auto;
+  padding: 0.65rem 2.5rem 0.65rem 1rem;
+  border: 1px solid rgb(238 236 231 / 90%);
+  border-radius: 20px;
+  background-color: rgb(255 255 255 / 85%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23245e52' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 5.646a.5.5 0 0 1 .708 0L8 11.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 14px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  appearance: none;
+  cursor: pointer;
+}
+
+.pet-filter:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(46 123 107 / 12%);
+}

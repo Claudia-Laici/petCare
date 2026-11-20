@@ -8,16 +8,25 @@ const ActionButton = ({
   children,
   className = "",
   disabled = false,
+  type = "button",
 }) => {
-  const classes = `btn btn-success btn-sm button-cards rounded-pill px-3 py-1 d-flex align-items-center gap-2 small fw-medium ${className}`;
+  const classes = `
+    btn btn-sm button-cards rounded-pill
+    px-3 py-1 d-flex align-items-center gap-2
+    small fw-medium
+    ${className}
+  `
+    .trim()
+    .replace(/\s+/g, " ");
 
   if (to) {
     return (
       <Link
-        to={to}
+        to={disabled ? "#" : to}
         className={classes}
         aria-disabled={disabled}
-        onClick={disabled ? (e) => e.preventDefault() : onClick}
+        tabIndex={disabled ? -1 : undefined}
+        onClick={disabled ? (event) => event.preventDefault() : onClick}
       >
         {children}
       </Link>
@@ -27,10 +36,11 @@ const ActionButton = ({
   if (href) {
     return (
       <a
-        href={href}
+        href={disabled ? undefined : href}
         className={classes}
         aria-disabled={disabled}
-        onClick={disabled ? (e) => e.preventDefault() : onClick}
+        tabIndex={disabled ? -1 : undefined}
+        onClick={disabled ? (event) => event.preventDefault() : onClick}
       >
         {children}
       </a>
@@ -39,7 +49,7 @@ const ActionButton = ({
 
   return (
     <button
-      type="button"
+      type={type}
       disabled={disabled}
       className={classes}
       onClick={onClick}

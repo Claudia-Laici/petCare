@@ -1,12 +1,7 @@
 import { useState } from "react";
-import {
-  Modal,
-  Form,
-  Button,
-  Alert,
-  Spinner,
-} from "react-bootstrap";
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { apiFetch } from "../../utils/apiFetch";
+import FormModal from "../shared/formalModal/FormModal";
 
 const DOCUMENT_TYPES = [
   { value: "referto", label: "Referto" },
@@ -17,7 +12,7 @@ const DOCUMENT_TYPES = [
 ];
 
 const MedicalDocumentModal = (props) => {
-  const { show, onHide, petId, onUploaded } = props;
+  const { show, onHide, petId, pets = [], onUploaded } = props;
 
   const [title, setTitle] = useState("");
   const [documentType, setDocumentType] = useState("altro");
@@ -27,6 +22,11 @@ const MedicalDocumentModal = (props) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const getInitialPetId = () =>
+    petId || (pets.length === 1 ? pets[0]._id : "");
+
+  const [selectedPetId, setSelectedPetId] = useState(getInitialPetId);
+
   const resetForm = () => {
     setTitle("");
     setDocumentType("altro");
@@ -34,6 +34,7 @@ const MedicalDocumentModal = (props) => {
     setDescription("");
     setFile(null);
     setError("");
+    setSelectedPetId(getInitialPetId());
   };
 
   const handleClose = () => {
@@ -46,7 +47,7 @@ const MedicalDocumentModal = (props) => {
     e.preventDefault();
     setError("");
 
-    if (!petId) {
+    if (!selectedPetId) {
       setError("Seleziona un animale prima di caricare un documento.");
       return;
     }
@@ -59,7 +60,7 @@ const MedicalDocumentModal = (props) => {
     const formData = new FormData();
 
     formData.append("document", file);
-    formData.append("pet", petId);
+    formData.append("pet", selectedPetId);
     formData.append("title", title.trim());
     formData.append("documentType", documentType);
 
@@ -90,84 +91,19 @@ const MedicalDocumentModal = (props) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton={!isLoading}>
-        <Modal.Title className="fw-bold">
-          Carica documento veterinario
-        </Modal.Title>
-      </Modal.Header>
-
-      <Form onSubmit={handleSubmit}>
-        <Modal.Body>
-          {error && (
-            <Alert variant="danger" className="small">
-              {error}
-            </Alert>
-          )}
-
-          <Form.Group className="mb-3">
-            <Form.Label>Titolo *</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Es. Referto visita veterinaria"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              maxLength={100}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Tipologia</Form.Label>
-            <Form.Select
-              value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
-            >
-              {DOCUMENT_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Data del documento</Form.Label>
-            <Form.Control
-              type="date"
-              value={documentDate}
-              onChange={(e) => setDocumentDate(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Descrizione</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Aggiungi eventuali annotazioni..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              maxLength={500}
-            />
-          </Form.Group>
-
-          <Form.Group>
-            <Form.Label>File *</Form.Label>
-            <Form.Control
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,.webp"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              required
-            />
-            <Form.Text className="text-muted">
-              Formati supportati: PDF, JPG, PNG e WEBP. Dimensione massima: 10 MB.
-            </Form.Text>
-          </Form.Group>
-        </Modal.Body>
-
-        <Modal.Footer>
+    <FormModal
+      show={show}
+      onHide={handleClose}
+      title="Carica documento veterinario"
+      className="medical-document-modal"
+      closeButton={!isLoading}
+      backdrop={isLoading ? "static" : true}
+      keyboard={!isLoading}
+      onSubmit={handleSubmit}
+      footer={
+        <>
           <Button
+            type="button"
             variant="outline-secondary"
             onClick={handleClose}
             disabled={isLoading}
@@ -175,11 +111,7 @@ const MedicalDocumentModal = (props) => {
             Annulla
           </Button>
 
-          <Button
-            type="submit"
-            variant="success"
-            disabled={isLoading}
-          >
+          <Button type="submit" variant="success" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Spinner size="sm" animation="border" className="me-2" />
@@ -189,9 +121,94 @@ const MedicalDocumentModal = (props) => {
               "Carica documento"
             )}
           </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+        </>
+      }
+    >
+      {error && (
+        <Alert variant="danger" className="small">
+          {error}
+        </Alert>
+      )}
+
+      {!petId && (
+        <Form.Group className="mb-3">
+          <Form.Label>Animale *</Form.Label>
+          <Form.Select
+            value={selectedPetId}
+            onChange={(e) => setSelectedPetId(e.target.value)}
+            required
+          >
+            <option value="">Seleziona un animale</option>
+
+            {pets.map((pet) => (
+              <option key={pet._id} value={pet._id}>
+                {pet.name}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+      )}
+
+      <Form.Group className="mb-3">
+        <Form.Label>Titolo *</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Es. Referto visita veterinaria"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          maxLength={100}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Tipologia</Form.Label>
+        <Form.Select
+          value={documentType}
+          onChange={(e) => setDocumentType(e.target.value)}
+        >
+          {DOCUMENT_TYPES.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Data del documento</Form.Label>
+        <Form.Control
+          type="date"
+          value={documentDate}
+          onChange={(e) => setDocumentDate(e.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Descrizione</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          placeholder="Aggiungi eventuali annotazioni..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={500}
+        />
+      </Form.Group>
+
+      <Form.Group>
+        <Form.Label>File *</Form.Label>
+        <Form.Control
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          required
+        />
+        <Form.Text className="text-muted">
+          Formati supportati: PDF, JPG, PNG e WEBP. Dimensione massima: 10 MB.
+        </Form.Text>
+      </Form.Group>
+    </FormModal>
   );
 };
 

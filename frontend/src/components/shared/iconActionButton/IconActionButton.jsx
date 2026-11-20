@@ -21,6 +21,7 @@ const IconActionButton = ({
 
   return (
     <Button
+      type="button"
       variant="light"
       className={`icon-action-button icon-action-button-${action} ${className}`}
       onClick={onClick}
@@ -28,7 +29,7 @@ const IconActionButton = ({
       title={label}
       disabled={disabled}
     >
-      <Icon size={15} />
+      <Icon size={15} aria-hidden="true" />
     </Button>
   );
 };

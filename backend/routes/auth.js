@@ -1,8 +1,7 @@
 import express from "express";
 import { login, me } from "../controllers/auth.js";
-import {auth} from "../middlewares/auth.js"
+import {auth} from "../middlewares/globals/auth.js"
 import passport from "passport";
-import googleStrategy from "../strategies/google.js"
 
 const AuthRouter = express.Router();
 
