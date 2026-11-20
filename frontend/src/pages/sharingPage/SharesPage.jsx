@@ -8,7 +8,7 @@ import { apiFetch } from "../../utils/apiFetch";
 import { formatDate } from "../../utils/dateUtils";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
-import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
 import PageStats from "../../components/shared/pageStats/PageStats";
 import PetFilter from "../../components/shared/pageComponents/petFilter/PetFilter";
 import SearchInput from "../../components/shared/pageComponents/searchInput/SearchInput";

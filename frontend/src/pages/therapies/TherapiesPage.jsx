@@ -8,7 +8,7 @@ import { getTherapyStatus, getTherapyStatusKey, getTherapySortTime, } from "../.
 import { sortByStatus } from "../../utils/statusUtils";
 import { deleteTherapy } from "../../services/therapies/therapyService";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
-import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
 import ConfirmDeleteModal from "../../components/shared/confirmDeleteModal/ConfirmDeleteModal";
 import TherapyModal from "../../components/cards/therapies/TherapyModal";

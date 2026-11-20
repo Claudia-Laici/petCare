@@ -6,7 +6,7 @@ import { DOCUMENT_TYPES } from "../../utils/documentTypes";
 import { isImageDocument, isPdfDocument } from "../../utils/documentFormats";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
-import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
 import MedicalDocumentModal from "../../components/medicalDocumentModal/MedicalDocumentModal";
 import DocumentCard from "../../components/documents/documentCard/DocumentCard";
 import PageStats from "../../components/shared/pageStats/PageStats";
