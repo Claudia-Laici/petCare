@@ -15,11 +15,11 @@ const userSchema = new mongoose.Schema({
     required: function () {
       return !this.googleId;
     },
-    minlength: [2, "Il cognome deve contenere almeno 2 caratteri."],
     maxlength: 50,
+    trim: true,
     validate: {
       validator: function (value) {
-        if (this.googleId && (!value || !value.trim())) {
+        if (this.googleId && !value?.trim()) {
           return true;
         }
 
