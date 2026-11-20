@@ -12,7 +12,7 @@ import NotFound from "./pages/errors/notFound/NotFound";
 import Maintenance from "./pages/errors/maintenance/Maintenance";
 import AppointmentsPage from "./pages/appointments/AppointmentsPage";
 import PublicAppointmentPage from "./pages/publicAppointmentPage/PublicAppointmentPage";
-import AnimalsPage from "./pages/animals/animalsPage";
+import AnimalsPage from "./pages/animals/AnimalsPage";
 import DocumentsPage from "./pages/documents/DocumentsPage";
 import SharesPage from "./pages/sharingPage/SharesPage";
 import TherapiesPage from "./pages/therapies/TherapiesPage";
