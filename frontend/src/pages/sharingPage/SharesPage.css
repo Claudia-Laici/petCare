@@ -6,6 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -147,4 +148,10 @@
   border-color: #e7c9c3;
   background: #fbf1ef;
   color: #a34d40;
+}
+
+@media (max-width: 767.98px) {
+  .shares-toolbar > :first-child {
+    flex-basis: 100%;
+  }
 }

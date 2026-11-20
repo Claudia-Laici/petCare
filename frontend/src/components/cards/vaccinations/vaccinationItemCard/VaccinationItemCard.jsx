@@ -7,21 +7,19 @@ import "./VaccinationItemCard.css";
 const VaccinationItemCard = ({
   vaccination,
   canEdit,
+  canDelete,
   onEdit,
   onDelete,
 }) => {
   const status =
-    VACCINATION_STATUS[vaccination.state] ??
-    VACCINATION_STATUS.single;
+    VACCINATION_STATUS[vaccination.state] ?? VACCINATION_STATUS.single;
 
   return (
     <article className="vaccination-item">
       <div className="d-flex flex-wrap align-items-start gap-3">
         <div className="flex-grow-1 min-w-0">
           <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
-            <h5 className="vaccination-item-title mb-0">
-              {vaccination.name}
-            </h5>
+            <h5 className="vaccination-item-title mb-0">{vaccination.name}</h5>
 
             <StatusBadge status={status} />
           </div>
@@ -36,26 +34,28 @@ const VaccinationItemCard = ({
             </span>
 
             {vaccination.nextDueDate && (
-              <span>
-                Richiamo: {formatDate(vaccination.nextDueDate)}
-              </span>
+              <span>Richiamo: {formatDate(vaccination.nextDueDate)}</span>
             )}
           </div>
         </div>
 
-        {canEdit && (
+        {(canEdit || canDelete) && (
           <div className="d-flex align-items-center gap-2 flex-shrink-0 ms-auto">
-            <IconActionButton
-              action="edit"
-              label="Modifica vaccinazione"
-              onClick={() => onEdit(vaccination)}
-            />
+            {canEdit && (
+              <IconActionButton
+                action="edit"
+                label="Modifica vaccinazione"
+                onClick={() => onEdit(vaccination)}
+              />
+            )}
 
-            <IconActionButton
-              action="delete"
-              label="Elimina vaccinazione"
-              onClick={() => onDelete(vaccination)}
-            />
+            {canDelete && (
+              <IconActionButton
+                action="delete"
+                label="Elimina vaccinazione"
+                onClick={() => onDelete(vaccination)}
+              />
+            )}
           </div>
         )}
       </div>

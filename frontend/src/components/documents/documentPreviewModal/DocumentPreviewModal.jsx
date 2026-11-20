@@ -1,6 +1,7 @@
 import { Button } from "react-bootstrap";
 import { FilePdf } from "react-bootstrap-icons";
 import FormModal from "../../shared/formalModal/FormModal";
+import DocumentViewer from "../../medicalDocuments/documentViewer/DocumentViewer";
 
 const DocumentPreviewModal = ({ show, onHide, document, url }) => {
   if (!document) return null;
@@ -16,29 +17,14 @@ const DocumentPreviewModal = ({ show, onHide, document, url }) => {
       className="document-preview-modal"
       bodyClassName="document-preview-body"
       footer={
-        url && (
-          <>
-            <Button
-              type="button"
-              variant="outline-secondary"
-              className="rounded-pill"
-              onClick={onHide}
-            >
-              Chiudi
-            </Button>
-
-            <Button
-              as="a"
-              href={url}
-              target="_blank"
-              rel="noreferrer"
-              variant="success"
-              className="rounded-pill"
-            >
-              Apri in una nuova scheda
-            </Button>
-          </>
-        )
+        <Button
+          type="button"
+          variant="outline-secondary"
+          className="rounded-pill"
+          onClick={onHide}
+        >
+          Chiudi
+        </Button>
       }
     >
       {!url ? (
@@ -47,11 +33,7 @@ const DocumentPreviewModal = ({ show, onHide, document, url }) => {
           <p>Anteprima non disponibile.</p>
         </div>
       ) : isPdf ? (
-        <iframe
-          src={url}
-          title={document.title}
-          className="document-preview-pdf"
-        />
+        <DocumentViewer file={url} />
       ) : (
         <img
           src={url}

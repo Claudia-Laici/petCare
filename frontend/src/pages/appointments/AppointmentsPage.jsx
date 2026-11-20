@@ -2,14 +2,7 @@ import { useState } from "react";
 import { Alert } from "react-bootstrap";
 import { CalendarEvent, Plus } from "react-bootstrap-icons";
 import { apiFetch } from "../../utils/apiFetch";
-import {
-  getAppointmentDate,
-  groupByLabel,
-  hasValidDate,
-  pastLabel,
-  startOfDay,
-  upcomingLabel,
-} from "../../utils/appointmentDates";
+import { getAppointmentDate, groupByLabel, hasValidDate, pastLabel,startOfDay, upcomingLabel,} from "../../utils/appointmentDates";
 import { useFetch } from "../../hooks/useFetch";
 import { useAppointments } from "../../hooks/useAppointments";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";

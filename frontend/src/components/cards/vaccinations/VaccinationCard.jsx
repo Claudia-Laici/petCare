@@ -3,7 +3,10 @@ import { CalendarEvent } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/dateUtils";
 import { useSortedByStatus } from "../../../utils/statusUtils";
-import { getVaccinationStatus, getVaccinationSortTime, } from "../../../utils/vaccinationUtils";
+import {
+  getVaccinationStatus,
+  getVaccinationSortTime,
+} from "../../../utils/vaccinationUtils";
 import HealthRecordsCard from "../../healthRecordsCard/HealthRecordsCard";
 import StatusBadge from "../../statusBadge/StatusBadge";
 import ActionButton from "../../shared/actionButton/ActionButton";
@@ -13,6 +16,7 @@ const VaccinationCard = ({
   isLoading = false,
   onAddClick,
   petId,
+  canEdit = false,
 }) => {
   const items = useSortedByStatus(
     vaccinations,
@@ -29,7 +33,10 @@ const VaccinationCard = ({
       emptyMessage="Non sono ancora presenti vaccinazioni per questo animale."
       className="vaccinations-card"
       headerActions={
-        <ActionButton onClick={onAddClick}>+ Aggiungi</ActionButton>
+        canEdit &&
+        onAddClick && (
+          <ActionButton onClick={onAddClick}>+ Aggiungi</ActionButton>
+        )
       }
       footerContent={
         petId && (

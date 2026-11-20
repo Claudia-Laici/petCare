@@ -38,17 +38,26 @@
 
 .auth-button {
   min-height: 48px;
-  border-color: #246b5c;
-  border-radius: 10px;
-  background-color: #246b5c;
+  border: 1px solid #246b5c;
+  background: #246b5c;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 3px 10px rgb(36 107 92 / 12%);
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .auth-button:hover:not(:disabled) {
-  border-color: #1c574b;
-  background-color: #1c574b;
+  background: #1e5c50;
+  border-color: #1e5c50;
+  color: #fff;
+  transform: translateY(-1px);
 }
+
+.auth-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 
 .auth-footer {
   font-size: 0.85rem;

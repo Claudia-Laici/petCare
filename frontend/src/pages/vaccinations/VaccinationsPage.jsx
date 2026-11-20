@@ -19,6 +19,7 @@ import VaccinationModal from "../../components/cards/vaccinations/VaccinationMod
 import PageTabs from "../../components/shared/pageComponents/pageTabs/PageTabs";
 import PetFilter from "../../components/shared/pageComponents/petFilter/PetFilter";
 import EmptyState from "../../components/shared/pageComponents/emptyState/EmptyState";
+import { canEditPet, canDeletePet } from "../../utils/petPermissions";
 import "./VaccinationsPage.css";
 
 const PAGE_SIZE = 8;
@@ -123,12 +124,15 @@ const VaccinationsPage = () => {
     String(vaccination.pet?._id ?? vaccination.pet ?? "");
 
   const canEdit = (vaccination) =>
-    ["owner", "editor"].includes(petsById[getPetId(vaccination)]?.role);
+    canEditPet(petsById[getPetId(vaccination)]?.role);
+
+  const canDelete = (vaccination) =>
+    canDeletePet(petsById[getPetId(vaccination)]?.role);
 
   const canCreate =
     selectedPet === "all"
-      ? petList.some((pet) => ["owner", "editor"].includes(pet.role))
-      : ["owner", "editor"].includes(petsById[String(selectedPet)]?.role);
+      ? petList.some((pet) => canEditPet(pet.role))
+      : canEditPet(petsById[String(selectedPet)]?.role);
 
   const sortVaccinations = (a, b) => {
     const priorityA = VACCINATION_STATUS[a.state]?.priority ?? 99;
@@ -252,6 +256,7 @@ const VaccinationsPage = () => {
                   vaccination={vaccination}
                   isHistory={!isActiveTab}
                   canEdit={canEdit(vaccination)}
+                  canDelete={canDelete(vaccination)}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                 />

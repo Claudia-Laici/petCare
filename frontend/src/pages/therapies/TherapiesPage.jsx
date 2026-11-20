@@ -1,10 +1,13 @@
-
 import { useState } from "react";
 import { Alert } from "react-bootstrap";
 import { Capsule, Plus } from "react-bootstrap-icons";
 import { useFetch } from "../../hooks/useFetch";
 import { useTherapies } from "../../hooks/useTherapies";
-import { getTherapyStatus, getTherapyStatusKey, getTherapySortTime, } from "../../utils/therapyStatus";
+import {
+  getTherapyStatus,
+  getTherapyStatusKey,
+  getTherapySortTime,
+} from "../../utils/therapyStatus";
 import { sortByStatus } from "../../utils/statusUtils";
 import { deleteTherapy } from "../../services/therapies/therapyService";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
@@ -16,6 +19,7 @@ import TherapyRow from "../../components/cards/therapies/TherapyRow";
 import PageTabs from "../../components/shared/pageComponents/pageTabs/PageTabs";
 import PetFilter from "../../components/shared/pageComponents/petFilter/PetFilter";
 import EmptyState from "../../components/shared/pageComponents/emptyState/EmptyState";
+import { canEditPet, canDeletePet } from "../../utils/petPermissions";
 import "./TherapiesPage.css";
 
 const PAGE_SIZE = 8;
@@ -54,10 +58,12 @@ const TherapiesPage = () => {
     error: petsError,
   } = useFetch("/pets");
 
-  const openModal = (setShow) => (therapy = null) => {
-    setSelectedTherapy(therapy);
-    setShow(true);
-  };
+  const openModal =
+    (setShow) =>
+    (therapy = null) => {
+      setSelectedTherapy(therapy);
+      setShow(true);
+    };
 
   const handleCreate = openModal(setShowTherapyModal);
   const handleEdit = openModal(setShowTherapyModal);
@@ -93,12 +99,19 @@ const TherapiesPage = () => {
   const petList = Array.isArray(pets) ? pets : [];
   const therapyList = Array.isArray(therapies) ? therapies : [];
 
-  const petsById = Object.fromEntries(
-    petList.map((pet) => [pet._id, pet]),
-  );
+  const petsById = Object.fromEntries(petList.map((pet) => [pet._id, pet]));
 
-  const canEdit = (therapy) =>
-    ["owner", "editor"].includes(petsById[therapy.pet]?.role);
+  const getTherapyPetRole = (therapy) =>
+    petsById[String(therapy.pet?._id ?? therapy.pet)]?.role;
+
+  const canEdit = (therapy) => canEditPet(getTherapyPetRole(therapy));
+
+  const canDelete = (therapy) => canDeletePet(getTherapyPetRole(therapy));
+
+  const canCreate =
+    selectedPet === "all"
+      ? petList.some((pet) => canEditPet(pet.role))
+      : canEditPet(petsById[String(selectedPet)]?.role);
 
   const counts = therapyList.reduce((acc, therapy) => {
     const key = getTherapyStatusKey(therapy);
@@ -111,10 +124,7 @@ const TherapiesPage = () => {
     getTherapyStatus,
     getTherapySortTime,
     "desc",
-  ).filter(
-    (therapy) =>
-      tab === "all" || getTherapyStatusKey(therapy) === tab,
-  );
+  ).filter((therapy) => tab === "all" || getTherapyStatusKey(therapy) === tab);
 
   const visibleTherapies = filteredTherapies.slice(0, visibleCount);
   const remaining = filteredTherapies.length - visibleTherapies.length;
@@ -128,10 +138,12 @@ const TherapiesPage = () => {
       className="therapies-page"
       contentClassName="therapies-content"
       action={
-        <ActionButton onClick={() => handleCreate()}>
-          <Plus size={16} />
-          Nuova terapia
-        </ActionButton>
+        canCreate && (
+          <ActionButton onClick={() => handleCreate()}>
+            <Plus size={16} />
+            Nuova terapia
+          </ActionButton>
+        )
       }
       toolbar={
         <div className="therapies-toolbar">
@@ -158,7 +170,8 @@ const TherapiesPage = () => {
           icon={<Capsule size={28} />}
           message={EMPTY_TEXTS[isEmpty ? "empty" : "filtered"]}
           action={
-            isEmpty && (
+            isEmpty &&
+            canCreate && (
               <ActionButton onClick={() => handleCreate()}>
                 <Plus size={16} />
                 Aggiungi una terapia
@@ -173,9 +186,11 @@ const TherapiesPage = () => {
               key={therapy._id}
               therapy={therapy}
               petName={
-                petsById[therapy.pet]?.name || "Animale non disponibile"
+                petsById[String(therapy.pet?._id ?? therapy.pet)]?.name ||
+                "Animale non disponibile"
               }
               canEdit={canEdit(therapy)}
+              canDelete={canDelete(therapy)}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
@@ -185,9 +200,7 @@ const TherapiesPage = () => {
             <button
               type="button"
               className="therapies-more"
-              onClick={() =>
-                setVisibleCount((count) => count + PAGE_SIZE)
-              }
+              onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
             >
               Mostra altre {Math.min(remaining, PAGE_SIZE)}
             </button>
@@ -202,8 +215,7 @@ const TherapiesPage = () => {
           pets={petList}
           therapy={selectedTherapy}
           petId={
-            selectedTherapy?.pet ||
-            (selectedPet !== "all" ? selectedPet : "")
+            selectedTherapy?.pet || (selectedPet !== "all" ? selectedPet : "")
           }
           onSaved={refetch}
         />

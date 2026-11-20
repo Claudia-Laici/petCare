@@ -8,7 +8,7 @@ const GoogleButton = ({ label = "Continua con Google" }) => {
 
   return (
     <Button
-       className="w-100 d-flex align-items-center justify-content-center gap-2 py-2 google-button"
+       className="w-100 d-flex align-items-center justify-content-center gap-2 mt-3 py-2 google-button rounded-pill"
       onClick={handleClick}
     >
       <img

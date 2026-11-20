@@ -1,8 +1,5 @@
 import Vaccination from "./schema.js";
-import {
-  getPetWithAccess,
-  getPetIdsForQuery,
-} from "../../utils/petAccess.js";
+import { getPetWithAccess, getPetIdsForQuery } from "../../utils/petAccess.js";
 
 export const createVaccination = async (data, userId) => {
   const {
@@ -72,11 +69,7 @@ export const getVaccinationById = async (vaccinationId, userId) => {
   return vaccination;
 };
 
-export const updateVaccination = async (
-  vaccinationId,
-  userId,
-  data,
-) => {
+export const updateVaccination = async (vaccinationId, userId, data) => {
   const vaccination = await Vaccination.findById(vaccinationId);
 
   if (!vaccination) return null;
@@ -116,7 +109,7 @@ export const deleteVaccination = async (vaccinationId, userId) => {
 
   if (!vaccination) return false;
 
-  const pet = await getPetWithAccess(vaccination.pet, userId, "editor");
+  const pet = await getPetWithAccess(vaccination.pet, userId, "owner");
 
   if (!pet) return false;
 

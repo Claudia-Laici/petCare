@@ -1,14 +1,60 @@
 .google-button {
-  min-height: 48px;
-  border-color: #246b5c;
-  border-radius: 10px;
-  background-color: #246b5c;
-  color: #fff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid rgb(255 255 255 / 90%);
+  border-radius: 12px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(255 255 255 / 95%),
+      transparent 55%
+    ),
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #f5f8f5 55%,
+      #edf3ee 100%
+    );
+  color: #344a43;
   font-weight: 700;
-  gap: 2px;
+  box-shadow:
+    0 6px 18px rgb(36 59 49 / 7%),
+    0 2px 5px rgb(36 59 49 / 4%),
+    inset 0 1px 0 #fff;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
 .google-button:hover:not(:disabled) {
-  border-color: #1c574b;
-  background-color: #1c574b;
+  border-color: #dce8df;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      #fff,
+      transparent 55%
+    ),
+    linear-gradient(
+      145deg,
+      #fff 0%,
+      #edf5ef 100%
+    );
+  color: #246b5c;
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 26px rgb(36 59 49 / 10%),
+    inset 0 1px 0 #fff;
+}
+
+.google-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgb(36 59 49 / 6%);
 }

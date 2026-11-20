@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 import MedicalDocument from "./schema.js";
-import Pet from "../pets/schema.js";
 import {
   getPetWithAccess,
   getAccessiblePetIds,
@@ -70,6 +69,83 @@ export const createMedicalDocument = async (data, file, userId) => {
     };
   } catch (saveError) {
     await removeUploadedFile(file);
+    throw saveError;
+  }
+};
+
+export const updateMedicalDocument = async (documentId, data, file, userId) => {
+  const document = await MedicalDocument.findById(documentId);
+
+  if (!document) {
+    if (file) await removeUploadedFile(file);
+
+    return {
+      statusCode: 404,
+      data: {
+        message: "Documento medico non trovato",
+      },
+    };
+  }
+
+  const pet = await getPetWithAccess(document.pet, userId, "editor");
+
+  if (!pet) {
+    if (file) await removeUploadedFile(file);
+
+    return {
+      statusCode: 404,
+      data: {
+        message: "Documento medico non trovato",
+      },
+    };
+  }
+
+  if (data.title !== undefined) {
+    document.title = data.title.trim();
+  }
+
+  if (data.documentType !== undefined) {
+    document.documentType = data.documentType;
+  }
+
+  if (data.documentDate !== undefined) {
+    document.documentDate = data.documentDate || null;
+  }
+
+  if (data.description !== undefined) {
+    document.description = data.description.trim();
+  }
+
+  let oldPublicId;
+
+  if (file) {
+    oldPublicId = document.publicId;
+
+    document.fileUrl = file.path;
+    document.publicId = file.filename;
+    document.format = file.format;
+    document.fileSize = file.size;
+
+    document.summary = "";
+    document.summaryStatus = "not_requested";
+  }
+
+  try {
+    const updatedDocument = await document.save();
+
+    if (oldPublicId) {
+      await removeUploadedFile({ filename: oldPublicId });
+    }
+
+    return {
+      statusCode: 200,
+      data: updatedDocument,
+    };
+  } catch (saveError) {
+    if (file) {
+      await removeUploadedFile(file);
+    }
+
     throw saveError;
   }
 };
@@ -149,10 +225,7 @@ export const deleteMedicalDocument = async (documentId, userId) => {
     };
   }
 
-  const pet = await Pet.findOne({
-    _id: document.pet,
-    owner: userId,
-  });
+  const pet = await getPetWithAccess(document.pet, userId, "owner");
 
   if (!pet) {
     return {
@@ -201,7 +274,7 @@ export const getMedicalDocumentAccessUrl = async (documentId, userId) => {
     };
   }
 
-  const pet = await getPetWithAccess(document.pet, userId, "viewer");
+  const pet = await getPetWithAccess(document.pet, userId, "editor");
 
   if (!pet) {
     return {
@@ -229,6 +302,63 @@ export const getMedicalDocumentAccessUrl = async (documentId, userId) => {
     data: {
       url,
       expiresAt: new Date(expiresAt * 1000).toISOString(),
+    },
+  };
+};
+
+export const getMedicalDocumentPreview = async (documentId, userId) => {
+  const document = await MedicalDocument.findById(documentId);
+
+  if (!document) {
+    return {
+      statusCode: 404,
+      data: { message: "Documento medico non trovato" },
+    };
+  }
+
+  const pet = await getPetWithAccess(document.pet, userId, "viewer");
+
+  if (!pet) {
+    return {
+      statusCode: 404,
+      data: { message: "Documento medico non trovato" },
+    };
+  }
+
+  const expiresAt = Math.floor(Date.now() / 1000) + 60;
+
+  const url = cloudinary.utils.private_download_url(
+    document.publicId,
+    document.format,
+    {
+      resource_type: "image",
+      type: "authenticated",
+      expires_at: expiresAt,
+    },
+  );
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Impossibile recuperare il documento da Cloudinary");
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+
+  const mimeTypes = {
+    pdf: "application/pdf",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    webp: "image/webp",
+  };
+
+  return {
+    statusCode: 200,
+    data: {
+      buffer,
+      contentType: mimeTypes[document.format.toLowerCase()],
+      filename: document.title,
     },
   };
 };

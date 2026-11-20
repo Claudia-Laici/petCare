@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Alert, Col, Form, Row } from "react-bootstrap";
-import { FileEarmarkMedical, FilePdf, Image, Plus } from "react-bootstrap-icons";
+import { FileEarmarkMedical, FilePdf, Image, Plus, } from "react-bootstrap-icons";
 import { useFetch } from "../../hooks/useFetch";
 import { DOCUMENT_TYPES } from "../../utils/documentTypes";
-import { isImageDocument, isPdfDocument } from "../../utils/documentFormats";
+import { isImageDocument, isPdfDocument, } from "../../utils/documentFormats";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
 import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
@@ -35,17 +35,33 @@ const DocumentsPage = () => {
     refetch: refetchDocuments,
   } = useFetch("/medical-documents");
 
-  const { data: pets, isLoading: petsLoading, error: petsError } =
-    useFetch("/pets");
-
-  const { data: currentUser } = useFetch("/auth/me");
+  const {
+    data: pets,
+    isLoading: petsLoading,
+    error: petsError,
+  } = useFetch("/pets");
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPet, setSelectedPet] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
-  const [showUploadModal, setShowUploadModal] = useState(false);
 
-  const openUpload = () => setShowUploadModal(true);
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+
+  const openUpload = () => {
+    setSelectedDocument(null);
+    setShowDocumentModal(true);
+  };
+
+  const openEdit = (document) => {
+    setSelectedDocument(document);
+    setShowDocumentModal(true);
+  };
+
+  const closeDocumentModal = () => {
+    setShowDocumentModal(false);
+    setSelectedDocument(null);
+  };
 
   if (documentsLoading || petsLoading) return <LoadingIndicator />;
 
@@ -70,16 +86,18 @@ const DocumentsPage = () => {
   const uploadablePets = petList.filter((pet) =>
     ["owner", "editor"].includes(pet.role),
   );
-  const canUpload = uploadablePets.length > 0;
 
+  const canUpload = uploadablePets.length > 0;
   const term = searchTerm.trim().toLowerCase();
 
   const filteredDocuments = documentList.filter((doc) => {
     const petId = doc.pet?._id ?? doc.pet;
 
     const matchesPet = selectedPet === "all" || petId === selectedPet;
+
     const matchesType =
       selectedType === "all" || doc.documentType === selectedType;
+
     const matchesSearch =
       !term ||
       [doc.title, doc.description, doc.pet?.name].some((field) =>
@@ -88,9 +106,6 @@ const DocumentsPage = () => {
 
     return matchesPet && matchesType && matchesSearch;
   });
-
-  const isUploadedByMe = (doc) =>
-    (doc.uploadedBy?._id ?? doc.uploadedBy) === currentUser?._id;
 
   const emptyTexts =
     documentList.length === 0 ? EMPTY_TEXTS.none : EMPTY_TEXTS.filtered;
@@ -155,6 +170,7 @@ const DocumentsPage = () => {
               aria-label="Filtra per tipologia"
             >
               <option value="all">Tutte le tipologie</option>
+
               {DOCUMENT_TYPES.map(({ value, plural }) => (
                 <option key={value} value={value}>
                   {plural}
@@ -167,15 +183,32 @@ const DocumentsPage = () => {
     >
       {filteredDocuments.length > 0 ? (
         <Row className="g-4">
-          {filteredDocuments.map((doc) => (
-            <Col key={doc._id} xs={12} sm={6} xl={4}>
-              <DocumentCard
-                document={doc}
-                isOwner={isUploadedByMe(doc)}
-                onDeleted={refetchDocuments}
-              />
-            </Col>
-          ))}
+          {filteredDocuments.map((doc) => {
+            const documentPetId = doc.pet?._id ?? doc.pet;
+
+            const documentPet = petList.find(
+              (pet) => String(pet._id) === String(documentPetId),
+            );
+
+            const role = documentPet?.role;
+
+            const canEdit = ["owner", "editor"].includes(role);
+            const canDelete = role === "owner";
+            const canDownload = ["owner", "editor"].includes(role);
+
+            return (
+              <Col key={doc._id} xs={12} sm={6} xl={4}>
+                <DocumentCard
+                  document={doc}
+                  canEdit={canEdit}
+                  canDelete={canDelete}
+                  canDownload={canDownload}
+                  onEdit={() => openEdit(doc)}
+                  onDeleted={refetchDocuments}
+                />
+              </Col>
+            );
+          })}
         </Row>
       ) : (
         <EmptyState
@@ -194,9 +227,10 @@ const DocumentsPage = () => {
       )}
 
       <MedicalDocumentModal
-        show={showUploadModal}
-        onHide={() => setShowUploadModal(false)}
+        show={showDocumentModal}
+        onHide={closeDocumentModal}
         pets={uploadablePets}
+        document={selectedDocument}
         onUploaded={refetchDocuments}
       />
     </PageLayout>

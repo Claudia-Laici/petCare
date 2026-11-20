@@ -112,4 +112,16 @@ export const validateAndUploadMedicalDocument = async (req, res, next) => {
   }
 };
 
+export const validateAndUploadMedicalDocumentOptional = async (
+  req,
+  res,
+  next,
+) => {
+  if (!req.file) {
+    return next();
+  }
+
+  return validateAndUploadMedicalDocument(req, res, next);
+};
+
 export { cloudinary };

@@ -65,31 +65,6 @@
   color: var(--color-primary);
 }
 
-.document-card-preview-action {
-  position: absolute;
-  right: 0.85rem;
-  bottom: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.8rem;
-  border: 0;
-  border-radius: 30px;
-  background: rgb(255 255 255 / 90%);
-  color: var(--color-primary-dark);
-  font-size: 0.75rem;
-  font-weight: 600;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.2s, transform 0.2s;
-}
-
-.document-card:hover .document-card-preview-action,
-.document-card-preview-action:focus-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .document-card-body {
   display: flex;
   flex: 1;
@@ -103,6 +78,13 @@
   justify-content: space-between;
   gap: 0.6rem;
   margin-bottom: 0.85rem;
+}
+
+.document-card-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .document-card-type {
@@ -180,17 +162,58 @@
   border-top: 1px solid #f0efeb;
 }
 
-.document-card-actions .btn:first-child {
-  flex: 1;
-}
-
-.document-card-delete {
-  display: flex;
+.document-card-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  border: 1px solid rgb(45 74 62 / 7%);
+  background-color: #fff;
+  color: #286e60;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.document-card-btn:hover:not(:disabled) {
+  background-color: #e5f2ed;
+  border-color: #d1e8de;
+  color: #205c4e;
+  transform: translateY(-2px);
+}
+
+.document-card-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.document-card-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(46 123 107 / 20%);
+}
+
+.document-card-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.document-card-btn-pill {
+  flex: 1;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0 1rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.document-card-btn-round {
+  width: 36px;
+  height: 36px;
   padding: 0;
+  flex-shrink: 0;
   border-radius: 50%;
 }
 

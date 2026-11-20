@@ -110,7 +110,7 @@ export const deleteTherapy = async (therapyId, userId) => {
 
   if (!therapy) return false;
 
-  const pet = await getPetWithAccess(therapy.pet, userId, "editor");
+  const pet = await getPetWithAccess(therapy.pet, userId, "owner");
 
   if (!pet) return false;
 

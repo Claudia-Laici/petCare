@@ -158,7 +158,7 @@ const Register = () => {
           </div>
         )}
 
-        <Button type="submit" className="auth-button w-100 mt-2">
+        <Button type="submit" className="auth-button rounded-pill w-100 mt-2">
           Crea account
         </Button>
       </form>

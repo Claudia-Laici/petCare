@@ -30,11 +30,7 @@ export const findAppointment = async (appointmentId, userId, role) => {
   return role === "viewer" && isParticipant ? appointment : null;
 };
 
-export const createAppointment = async (
-  data,
-  userId,
-  idempotencyKey,
-) => {
+export const createAppointment = async (data, userId, idempotencyKey) => {
   const {
     pet,
     title,
@@ -214,7 +210,7 @@ export const updateAppointment = async (appointmentId, userId, data) => {
 };
 
 export const deleteAppointment = async (appointmentId, userId) => {
-  const appointment = await findAppointment(appointmentId, userId, "editor");
+  const appointment = await findAppointment(appointmentId, userId, "owner");
 
   if (!appointment) return null;
 
@@ -235,17 +231,8 @@ export const deleteAppointment = async (appointmentId, userId) => {
   };
 };
 
-
-export const addParticipant = async (
-  appointmentId,
-  userId,
-  data,
-) => {
-  const appointment = await findAppointment(
-    appointmentId,
-    userId,
-    "editor",
-  );
+export const addParticipant = async (appointmentId, userId, data) => {
+  const appointment = await findAppointment(appointmentId, userId, "editor");
 
   if (!appointment) {
     return {
@@ -304,11 +291,7 @@ export const updateParticipantNote = async (
   participantUserId,
   note,
 ) => {
-  const appointment = await findAppointment(
-    appointmentId,
-    userId,
-    "editor",
-  );
+  const appointment = await findAppointment(appointmentId, userId, "editor");
 
   if (!appointment) {
     return {

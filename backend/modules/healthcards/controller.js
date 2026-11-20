@@ -33,6 +33,10 @@ export const updateHealthCard = async (req, res, next) => {
       });
     }
 
+    if (updated.statusCode) {
+      return res.status(updated.statusCode).json(updated.data);
+    }
+
     return res.status(200).json(updated);
   } catch (error) {
     next(error);

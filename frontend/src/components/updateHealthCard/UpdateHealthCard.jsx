@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert, Container } from "react-bootstrap";
-import {
-  HeartPulse,
-  ExclamationTriangle,
-  Save,
-  ArrowLeft,
-} from "react-bootstrap-icons";
+import { HeartPulse, ExclamationTriangle, Save, ArrowLeft, } from "react-bootstrap-icons";
 import { useFetch } from "../../hooks/useFetch";
 import { apiFetch } from "../../utils/apiFetch";
 import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
@@ -89,8 +84,7 @@ const HealthCardForm = ({ petId, card }) => {
             <div>
               <h1>Scheda sanitaria</h1>
               <p>
-                Gestisci le informazioni sanitarie del tuo animale in un unico
-                posto.
+                Gestisci le informazioni sanitarie del tuo animale in un unico posto.
               </p>
             </div>
           </div>

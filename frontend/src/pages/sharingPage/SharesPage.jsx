@@ -14,24 +14,126 @@ import SearchInput from "../../components/shared/pageComponents/searchInput/Sear
 import EmptyState from "../../components/shared/pageComponents/emptyState/EmptyState";
 import ConfirmDeleteModal from "../../components/shared/confirmDeleteModal/ConfirmDeleteModal";
 import ShareModal from "../../components/cards/sharedWith/ShareModal";
+import PageTabs from "../../components/shared/pageComponents/pageTabs/PageTabs";
 import "./SharesPage.css";
 
 const EMPTY_TEXTS = {
-  filtered: {
-    title: "Nessuna condivisione trovata",
-    message: "Prova a cambiare i filtri di ricerca.",
+  shared: {
+    filtered: {
+      title: "Nessuna condivisione trovata",
+      message: "Prova a cambiare i filtri di ricerca.",
+    },
+    empty: {
+      title: "Non hai ancora condiviso i tuoi animali",
+      message:
+        "Invita una persona per permetterle di accedere al profilo di uno dei tuoi animali.",
+    },
   },
-  empty: {
-    title: "Non hai ancora condiviso i tuoi animali",
-    message:
-      "Invita una persona per permetterle di accedere al profilo di uno dei tuoi animali.",
+  received: {
+    filtered: {
+      title: "Nessun animale trovato",
+      message: "Prova a modificare i filtri di ricerca.",
+    },
+    empty: {
+      title: "Nessun animale condiviso con te",
+      message: "Gli animali condivisi con te appariranno qui.",
+    },
   },
 };
 
+const getFullName = (person) =>
+  `${person?.nome || ""} ${person?.cognome || ""}`.trim();
+
 const getPersonName = (share) =>
-  share.status === "pending"
-    ? share.email
-    : `${share.user?.nome || ""} ${share.user?.cognome || ""}`.trim();
+  share.status === "pending" ? share.email : getFullName(share.user);
+
+const getOwnerId = (pet) => (pet.owner?._id ?? pet.owner)?.toString();
+
+const matchesTerm = (values, term) =>
+  !term || values.some((value) => value?.toLowerCase().includes(term));
+
+const RoleBadge = ({ role }) => {
+  const isEditor = role === "editor";
+
+  return (
+    <span
+      className={`share-role ${
+        isEditor ? "share-role-editor" : "share-role-viewer"
+      }`}
+    >
+      {isEditor ? "Editor" : "Lettura"}
+    </span>
+  );
+};
+
+const ShareCard = ({ share, onRevoke }) => (
+  <div className="share-card">
+    <div className="share-card-header">
+      <div className="share-avatar">
+        <Person size={22} />
+      </div>
+
+      <div className="share-person">
+        <h3>{getPersonName(share)}</h3>
+        <p>
+          {share.status === "pending"
+            ? "In attesa di registrazione"
+            : share.user?.email}
+        </p>
+      </div>
+
+      <RoleBadge role={share.role} />
+    </div>
+
+    <div className="share-card-pet">
+      <span>Accesso al profilo di</span>
+      <strong>{share.pet?.name}</strong>
+    </div>
+
+    <div className="share-card-footer">
+      <div className="share-expiration">
+        {share.expiresAt
+          ? `Accesso fino al ${formatDate(share.expiresAt)}`
+          : "Accesso senza scadenza"}
+      </div>
+
+      <Button
+        variant="light"
+        className="share-delete-button"
+        onClick={() => onRevoke(share)}
+        title="Revoca accesso"
+      >
+        <Trash3 size={16} />
+        <span>Revoca</span>
+      </Button>
+    </div>
+  </div>
+);
+
+const ReceivedPetCard = ({ pet }) => (
+  <div className="share-card">
+    <div className="share-card-header">
+      <div className="share-avatar">
+        <People size={22} />
+      </div>
+
+      <div className="share-person">
+        <h3>{pet.name}</h3>
+        <p>
+          Condiviso da{" "}
+          {getFullName(pet.owner) || pet.owner?.email || "Proprietario"}
+        </p>
+      </div>
+
+      <RoleBadge role={pet.role} />
+    </div>
+
+    <div className="share-card-pet">
+      <span>Hai accesso al profilo di</span>
+      <strong>{pet.name}</strong>
+    </div>
+  </div>
+);
 
 const SharesPage = () => {
   const { petId } = useParams();
@@ -44,29 +146,34 @@ const SharesPage = () => {
 
   const { data: currentUser, isLoading: userLoading } = useFetch("/auth/me");
 
+  const [tab, setTab] = useState(petId ? "shared" : "received");
+  const [selectedPet, setSelectedPet] = useState(petId || "all");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [shares, setShares] = useState([]);
   const [sharesStatus, setSharesStatus] = useState("loading");
   const [sharesError, setSharesError] = useState("");
   const [reloadCount, setReloadCount] = useState(0);
   const [notification, setNotification] = useState(null);
 
-  const [selectedPet, setSelectedPet] = useState(petId || "all");
-  const [searchTerm, setSearchTerm] = useState("");
-
   const [invitePet, setInvitePet] = useState(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [shareToDelete, setShareToDelete] = useState(null);
 
+  const reload = () => setReloadCount((count) => count + 1);
+
+  const term = searchTerm.trim().toLowerCase();
+  const userId = currentUser?._id?.toString();
   const petList = Array.isArray(pets) ? pets : [];
 
   const ownedPets = useMemo(
-    () =>
-      petList.filter(
-        (pet) =>
-          (pet.owner?._id ?? pet.owner)?.toString() ===
-          currentUser?._id?.toString(),
-      ),
-    [petList, currentUser],
+    () => petList.filter((pet) => getOwnerId(pet) === userId),
+    [petList, userId],
+  );
+
+  const sharedPets = useMemo(
+    () => (userId ? petList.filter((pet) => getOwnerId(pet) !== userId) : []),
+    [petList, userId],
   );
 
   useEffect(() => {
@@ -77,14 +184,11 @@ const SharesPage = () => {
         const results = await Promise.all(
           ownedPets.map(async (pet) => {
             const data = await apiFetch(`/pets/${pet._id}/shares`);
+            const petInfo = { _id: pet._id, name: pet.name, cover: pet.cover };
 
             return (Array.isArray(data) ? data : []).map((share) => ({
               ...share,
-              pet: {
-                _id: pet._id,
-                name: pet.name,
-                cover: pet.cover,
-              },
+              pet: petInfo,
             }));
           }),
         );
@@ -111,38 +215,59 @@ const SharesPage = () => {
     };
   }, [ownedPets, reloadCount]);
 
-  const filteredShares = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
+  const filteredShares = useMemo(
+    () =>
+      shares.filter(
+        (share) =>
+          (selectedPet === "all" || share.pet?._id === selectedPet) &&
+          matchesTerm(
+            [
+              share.user?.nome,
+              share.user?.cognome,
+              share.user?.email,
+              share.email,
+              share.pet?.name,
+            ],
+            term,
+          ),
+      ),
+    [shares, selectedPet, term],
+  );
 
-    return shares.filter((share) => {
-      const matchesPet =
-        selectedPet === "all" || share.pet?._id === selectedPet;
-
-      const matchesSearch = [
-        share.user?.nome,
-        share.user?.cognome,
-        share.user?.email,
-        share.email,
-        share.pet?.name,
-      ].some((value) => value?.toLowerCase().includes(term));
-
-      return matchesPet && (!term || matchesSearch);
-    });
-  }, [shares, selectedPet, searchTerm]);
+  const filteredSharedPets = useMemo(
+    () =>
+      sharedPets.filter(
+        (pet) =>
+          (selectedPet === "all" || pet._id === selectedPet) &&
+          matchesTerm(
+            [pet.name, getFullName(pet.owner), pet.owner?.email],
+            term,
+          ),
+      ),
+    [sharedPets, selectedPet, term],
+  );
 
   const stats = useMemo(() => {
     const active = shares.filter((share) => share.status !== "pending");
+    const countRole = (role) =>
+      active.filter((share) => share.role === role).length;
 
     return {
       total: active.length,
-      editors: active.filter((share) => share.role === "editor").length,
-      viewers: active.filter((share) => share.role === "viewer").length,
+      editors: countRole("editor"),
+      viewers: countRole("viewer"),
     };
   }, [shares]);
 
+  const changeTab = (nextTab) => {
+    setTab(nextTab);
+    setSelectedPet("all");
+    setSearchTerm("");
+  };
+
   const handleShareSaved = (result) => {
     setNotification(result);
-    setReloadCount((count) => count + 1);
+    reload();
   };
 
   const openInviteModal = (pet = null) => {
@@ -157,15 +282,17 @@ const SharesPage = () => {
   };
 
   const deleteShare = async () => {
-    const isPending = shareToDelete.status === "pending";
+    const { pet, status, _id, user } = shareToDelete;
 
-    const path = isPending
-      ? `/pets/${shareToDelete.pet._id}/invitations/${shareToDelete._id}`
-      : `/pets/${shareToDelete.pet._id}/shares/${shareToDelete.user._id}`;
+    const path =
+      status === "pending"
+        ? `/pets/${pet._id}/invitations/${_id}`
+        : `/pets/${pet._id}/shares/${user._id}`;
 
     await apiFetch(path, { method: "DELETE" });
 
-    setReloadCount((count) => count + 1);
+    setShareToDelete(null);
+    reload();
   };
 
   if (petsLoading || userLoading) return <LoadingIndicator />;
@@ -180,52 +307,71 @@ const SharesPage = () => {
     );
   }
 
-  const hasFilters = Boolean(searchTerm.trim()) || selectedPet !== "all";
+  const isSharedTab = tab === "shared";
+  const items = isSharedTab ? filteredShares : filteredSharedPets;
+  const hasFilters = Boolean(term) || selectedPet !== "all";
   const emptyKey = hasFilters ? "filtered" : "empty";
+
+  const inviteButton = (
+    <ActionButton
+      onClick={() => openInviteModal()}
+      disabled={ownedPets.length === 0}
+    >
+      <PersonPlus size={16} />
+      Invita una persona
+    </ActionButton>
+  );
 
   return (
     <>
       <PageLayout
         title="Condivisioni"
-        description="Gestisci le persone che possono accedere ai profili dei tuoi animali."
+        description="Gestisci gli accessi ai profili dei tuoi animali e visualizza quelli condivisi con te."
         className="shares-page"
-        action={
-          <ActionButton
-            onClick={() => openInviteModal()}
-            disabled={ownedPets.length === 0}
-          >
-            <PersonPlus size={16} />
-            Invita una persona
-          </ActionButton>
-        }
+        action={isSharedTab ? inviteButton : null}
         stats={
-          <PageStats
-            stats={[
-              {
-                id: "total",
-                icon: <People size={22} />,
-                value: stats.total,
-                label: "Persone con accesso",
-              },
-              {
-                id: "editors",
-                icon: <PersonPlus size={22} />,
-                value: stats.editors,
-                label: "Editor",
-              },
-              {
-                id: "viewers",
-                icon: <Person size={22} />,
-                value: stats.viewers,
-                label: "Sola lettura",
-              },
-            ]}
-          />
+          isSharedTab ? (
+            <PageStats
+              stats={[
+                {
+                  id: "total",
+                  icon: <People size={22} />,
+                  value: stats.total,
+                  label: "Persone con accesso",
+                },
+                {
+                  id: "editors",
+                  icon: <PersonPlus size={22} />,
+                  value: stats.editors,
+                  label: "Editor",
+                },
+                {
+                  id: "viewers",
+                  icon: <Person size={22} />,
+                  value: stats.viewers,
+                  label: "Sola lettura",
+                },
+              ]}
+            />
+          ) : null
         }
         toolbar={
           <div className="shares-toolbar">
+            <PageTabs
+              items={[
+                { key: "shared", label: "Condivisi", count: shares.length },
+                {
+                  key: "received",
+                  label: "Condivisi con me",
+                  count: sharedPets.length,
+                },
+              ]}
+              activeKey={tab}
+              onChange={changeTab}
+            />
+
             <PetFilter
-              pets={ownedPets}
+              pets={isSharedTab ? ownedPets : sharedPets}
               selectedPet={selectedPet}
               onChange={setSelectedPet}
             />
@@ -233,7 +379,9 @@ const SharesPage = () => {
             <SearchInput
               value={searchTerm}
               onChange={setSearchTerm}
-              placeholder="Cerca una persona..."
+              placeholder={
+                isSharedTab ? "Cerca una persona..." : "Cerca un animale..."
+              }
             />
           </div>
         }
@@ -247,84 +395,35 @@ const SharesPage = () => {
             {notification.message}
           </Alert>
         )}
+
         {sharesStatus === "loading" ? (
           <LoadingIndicator />
         ) : sharesStatus === "error" ? (
           <Alert variant="danger">
             {sharesError}
-            <Button
-              variant="link"
-              onClick={() => setReloadCount((count) => count + 1)}
-            >
+            <Button variant="link" onClick={reload}>
               Riprova
             </Button>
           </Alert>
-        ) : filteredShares.length === 0 ? (
+        ) : items.length === 0 ? (
           <EmptyState
             icon={<People size={30} />}
-            {...EMPTY_TEXTS[emptyKey]}
+            {...EMPTY_TEXTS[tab][emptyKey]}
             action={
-              !hasFilters && ownedPets.length > 0 ? (
-                <ActionButton onClick={() => openInviteModal()}>
-                  <PersonPlus size={16} />
-                  Invita una persona
-                </ActionButton>
-              ) : null
+              isSharedTab && !hasFilters && ownedPets.length > 0
+                ? inviteButton
+                : null
             }
           />
         ) : (
           <Row className="g-4">
-            {filteredShares.map((share) => (
-              <Col key={share._id} xs={12} lg={6}>
-                <div className="share-card">
-                  <div className="share-card-header">
-                    <div className="share-avatar">
-                      <Person size={22} />
-                    </div>
-
-                    <div className="share-person">
-                      <h3>{getPersonName(share)}</h3>
-                      <p>
-                        {share.status === "pending"
-                          ? "In attesa di registrazione"
-                          : share.user?.email}
-                      </p>
-                    </div>
-
-                    <span
-                      className={`share-role ${
-                        share.role === "editor"
-                          ? "share-role-editor"
-                          : "share-role-viewer"
-                      }`}
-                    >
-                      {share.role === "editor" ? "Editor" : "Lettura"}
-                    </span>
-                  </div>
-
-                  <div className="share-card-pet">
-                    <span>Accesso al profilo di</span>
-                    <strong>{share.pet?.name}</strong>
-                  </div>
-
-                  <div className="share-card-footer">
-                    <div className="share-expiration">
-                      {share.expiresAt
-                        ? `Accesso fino al ${formatDate(share.expiresAt)}`
-                        : "Accesso senza scadenza"}
-                    </div>
-
-                    <Button
-                      variant="light"
-                      className="share-delete-button"
-                      onClick={() => setShareToDelete(share)}
-                      title="Revoca accesso"
-                    >
-                      <Trash3 size={16} />
-                      <span>Revoca</span>
-                    </Button>
-                  </div>
-                </div>
+            {items.map((item) => (
+              <Col key={item._id} xs={12} lg={6}>
+                {isSharedTab ? (
+                  <ShareCard share={item} onRevoke={setShareToDelete} />
+                ) : (
+                  <ReceivedPetCard pet={item} />
+                )}
               </Col>
             ))}
           </Row>

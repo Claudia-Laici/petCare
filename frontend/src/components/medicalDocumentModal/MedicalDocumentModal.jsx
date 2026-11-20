@@ -11,22 +11,34 @@ const DOCUMENT_TYPES = [
   { value: "altro", label: "Altro" },
 ];
 
-const MedicalDocumentModal = (props) => {
-  const { show, onHide, petId, pets = [], onUploaded } = props;
+const MedicalDocumentModalForm = (props) => {
+  const { show, onHide, petId, pets = [], document, onUploaded } = props;
 
-  const [title, setTitle] = useState("");
-  const [documentType, setDocumentType] = useState("altro");
-  const [documentDate, setDocumentDate] = useState("");
-  const [description, setDescription] = useState("");
+  const isEditing = Boolean(document);
+
+  const getInitialPetId = () => petId || (pets.length === 1 ? pets[0]._id : "");
+
+  const [title, setTitle] = useState(() => document?.title || "");
+
+  const [documentType, setDocumentType] = useState(
+    () => document?.documentType || "altro",
+  );
+
+  const [documentDate, setDocumentDate] = useState(() =>
+    document?.documentDate ? String(document.documentDate).slice(0, 10) : "",
+  );
+
+  const [description, setDescription] = useState(
+    () => document?.description || "",
+  );
+
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const getInitialPetId = () =>
-    petId || (pets.length === 1 ? pets[0]._id : "");
-
-  const [selectedPetId, setSelectedPetId] = useState(getInitialPetId);
-
+  const [selectedPetId, setSelectedPetId] = useState(
+    () => document?.pet?._id || document?.pet || getInitialPetId(),
+  );
   const resetForm = () => {
     setTitle("");
     setDocumentType("altro");
@@ -47,44 +59,50 @@ const MedicalDocumentModal = (props) => {
     e.preventDefault();
     setError("");
 
-    if (!selectedPetId) {
+    if (!isEditing && !selectedPetId) {
       setError("Seleziona un animale prima di caricare un documento.");
       return;
     }
 
-    if (!file) {
+    if (!isEditing && !file) {
       setError("Seleziona un file da caricare.");
       return;
     }
 
     const formData = new FormData();
 
-    formData.append("document", file);
-    formData.append("pet", selectedPetId);
+    if (file) {
+      formData.append("document", file);
+    }
+
+    if (!isEditing) {
+      formData.append("pet", selectedPetId);
+    }
+
     formData.append("title", title.trim());
     formData.append("documentType", documentType);
-
-    if (documentDate) {
-      formData.append("documentDate", documentDate);
-    }
-
-    if (description.trim()) {
-      formData.append("description", description.trim());
-    }
+    formData.append("documentDate", documentDate);
+    formData.append("description", description.trim());
 
     try {
       setIsLoading(true);
 
-      await apiFetch("/medical-documents", {
-        method: "POST",
-        body: formData,
-      });
+      await apiFetch(
+        isEditing ? `/medical-documents/${document._id}` : "/medical-documents",
+        {
+          method: isEditing ? "PATCH" : "POST",
+          body: formData,
+        },
+      );
 
       await onUploaded?.();
       resetForm();
       onHide();
     } catch (error) {
-      setError(error.message || "Errore durante il caricamento.");
+      setError(
+        error.message ||
+          `Errore durante ${isEditing ? "la modifica" : "il caricamento"}.`,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +112,11 @@ const MedicalDocumentModal = (props) => {
     <FormModal
       show={show}
       onHide={handleClose}
-      title="Carica documento veterinario"
+      title={
+        isEditing
+          ? "Modifica documento veterinario"
+          : "Carica documento veterinario"
+      }
       className="medical-document-modal"
       closeButton={!isLoading}
       backdrop={isLoading ? "static" : true}
@@ -115,8 +137,10 @@ const MedicalDocumentModal = (props) => {
             {isLoading ? (
               <>
                 <Spinner size="sm" animation="border" className="me-2" />
-                Caricamento...
+                {isEditing ? "Salvataggio..." : "Caricamento..."}
               </>
+            ) : isEditing ? (
+              "Salva modifiche"
             ) : (
               "Carica documento"
             )}
@@ -130,7 +154,7 @@ const MedicalDocumentModal = (props) => {
         </Alert>
       )}
 
-      {!petId && (
+      {!isEditing && !petId && (
         <Form.Group className="mb-3">
           <Form.Label>Animale *</Form.Label>
           <Form.Select
@@ -197,18 +221,39 @@ const MedicalDocumentModal = (props) => {
       </Form.Group>
 
       <Form.Group>
-        <Form.Label>File *</Form.Label>
+        <Form.Label>
+          {isEditing ? "Sostituisci file (facoltativo)" : "File *"}
+        </Form.Label>
+
+        {isEditing && (
+          <Form.Text className="d-block mb-2 text-muted">
+            File attuale: {document.format?.toUpperCase() || "Documento"}
+            {" · "}
+            Se non selezioni un nuovo file, quello attuale verrà mantenuto.
+          </Form.Text>
+        )}
+
         <Form.Control
           type="file"
           accept=".pdf,.jpg,.jpeg,.png,.webp"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          required
+          required={!isEditing}
         />
+
         <Form.Text className="text-muted">
           Formati supportati: PDF, JPG, PNG e WEBP. Dimensione massima: 10 MB.
         </Form.Text>
       </Form.Group>
     </FormModal>
+  );
+};
+
+const MedicalDocumentModal = (props) => {
+  return (
+    <MedicalDocumentModalForm
+      key={`${props.show}-${props.document?._id || "new"}`}
+      {...props}
+    />
   );
 };
 

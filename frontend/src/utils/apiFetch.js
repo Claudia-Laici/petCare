@@ -39,3 +39,33 @@ export const apiFetch = async (path, options = {}) => {
 
   return data;
 };
+
+export const apiFetchBlob = async (path, options = {}) => {
+  const { headers, ...rest } = options;
+  const token = getToken();
+
+  const response = await fetch(`${API_URL}${path}`, {
+    ...rest,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headers,
+    },
+  });
+
+  if (response.status === 401 && token && path !== "/auth/login") {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+    throw new ApiError("Sessione scaduta", 401);
+  }
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+
+    throw new ApiError(
+      data?.message || "Errore durante il recupero del documento",
+      response.status,
+    );
+  }
+
+  return response.blob();
+};

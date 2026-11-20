@@ -104,13 +104,11 @@ const Login = () => {
           </div>
         )}
 
-        <Button type="submit" className="auth-button w-100 mt-2">
+        <Button type="submit" className="auth-button rounded-pill w-100 mt-2">
           Accedi
         </Button>
       </form>
-      <div className="d-flex justify-content-center gap-3 my-3">
-        <span className="text-muted small">oppure</span>
-      </div>
+       
       <GoogleButton label="Accedi con Google" />
     </AuthLayout>
   );

@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Spinner } from "react-bootstrap";
+import { Alert, Spinner } from "react-bootstrap";
 import {
   Calendar3,
+  Download,
   Eye,
   FileEarmarkMedical,
   FilePdf,
-  Trash3,
 } from "react-bootstrap-icons";
-import { apiFetch } from "../../../utils/apiFetch";
+import { apiFetch, apiFetchBlob } from "../../../utils/apiFetch";
 import { isImageDocument, isPdfDocument } from "../../../utils/documentFormats";
 import { DOCUMENT_TYPE_LABELS } from "../../../utils/documentTypes";
 import ConfirmDeleteModal from "../../shared/confirmDeleteModal/ConfirmDeleteModal";
 import DocumentPreviewModal from "../documentPreviewModal/DocumentPreviewModal";
+import IconActionButton from "../../shared/iconActionButton/IconActionButton";
 import "./DocumentCard.css";
 
 const formatDate = (date) => {
@@ -24,18 +25,22 @@ const formatDate = (date) => {
   });
 };
 
-const fetchAccessUrl = async (id) => {
-  const result = await apiFetch(`/medical-documents/${id}/access-url`);
-
-  if (!result?.url) throw new Error("Impossibile recuperare il documento.");
-
-  return result.url;
+const fetchPreviewUrl = async (id) => {
+  const blob = await apiFetchBlob(`/medical-documents/${id}/preview`);
+  return URL.createObjectURL(blob);
 };
 
-const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
+const DocumentCard = ({
+  document: doc,
+  canEdit = false,
+  canDelete = false,
+  canDownload = false,
+  onEdit,
+  onDeleted,
+}) => {
   const isImage = isImageDocument(doc);
   const isPdf = isPdfDocument(doc);
-  const typeKey = doc.documentType;
+  const PlaceholderIcon = isPdf ? FilePdf : FileEarmarkMedical;
 
   const [previewUrl, setPreviewUrl] = useState("");
   const [isLoadingPreview, setIsLoadingPreview] = useState(isImage);
@@ -43,15 +48,22 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [previewError, setPreviewError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const isPreviewBusy = isOpeningPreview || isLoadingPreview;
 
   useEffect(() => {
     if (!isImage) return;
 
     let isMounted = true;
 
-    fetchAccessUrl(doc._id)
+    fetchPreviewUrl(doc._id)
       .then((url) => {
-        if (isMounted) setPreviewUrl(url);
+        if (isMounted) {
+          setPreviewUrl(url);
+        } else {
+          URL.revokeObjectURL(url);
+        }
       })
       .catch((error) => {
         if (isMounted) {
@@ -67,14 +79,23 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
     };
   }, [doc._id, isImage]);
 
+  useEffect(() => {
+    if (!previewUrl) return;
+
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
   const handleOpenPreview = async () => {
-    if (isOpeningPreview) return;
+    if (isPreviewBusy) return;
 
     setPreviewError("");
     setIsOpeningPreview(true);
 
     try {
-      setPreviewUrl(await fetchAccessUrl(doc._id));
+      const url = previewUrl || (await fetchPreviewUrl(doc._id));
+
+      if (!previewUrl) setPreviewUrl(url);
+
       setShowPreview(true);
     } catch (error) {
       setPreviewError(error.message || "Impossibile aprire il documento.");
@@ -83,8 +104,28 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
     }
   };
 
-  const deleteDocument = async () => {
-    await apiFetch(`/medical-documents/${doc._id}`, { method: "DELETE" });
+  const handleDownload = async () => {
+    if (isDownloading) return;
+
+    setIsDownloading(true);
+    setPreviewError("");
+
+    try {
+      const data = await apiFetch(`/medical-documents/${doc._id}/access-url`);
+
+      window.location.href = data.url;
+    } catch (error) {
+      setPreviewError(error.message || "Impossibile scaricare il documento.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    await apiFetch(`/medical-documents/${doc._id}`, {
+      method: "DELETE",
+    });
+
     onDeleted?.();
   };
 
@@ -100,12 +141,12 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
             />
           ) : (
             <div className="document-card-placeholder">
-              {isPdf ? <FilePdf size={48} /> : <FileEarmarkMedical size={48} />}
+              <PlaceholderIcon size={48} />
               <span>{isPdf ? "Documento PDF" : "Documento"}</span>
             </div>
           )}
 
-          {isImage && isLoadingPreview && (
+          {isLoadingPreview && (
             <div className="document-card-loading">
               <Spinner animation="border" size="sm" />
             </div>
@@ -114,14 +155,35 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
 
         <div className="document-card-body">
           <div className="document-card-heading">
-            <span className={`document-card-type document-type-${typeKey}`}>
-              {DOCUMENT_TYPE_LABELS[typeKey] || "Documento"}
-            </span>
-
-            {doc.format && (
-              <span className="document-card-format">
-                {doc.format.toUpperCase()}
+            <div className="document-card-info">
+              <span
+                className={`document-card-type document-type-${doc.documentType}`}
+              >
+                {DOCUMENT_TYPE_LABELS[doc.documentType] || "Documento"}
               </span>
+
+              {doc.format && (
+                <span className="document-card-format">
+                  {doc.format.toUpperCase()}
+                </span>
+              )}
+            </div>
+
+            {canDownload && (
+              <button
+                type="button"
+                className="document-card-btn document-card-btn-round"
+                onClick={handleDownload}
+                disabled={isDownloading}
+                title="Scarica documento"
+                aria-label="Scarica documento"
+              >
+                {isDownloading ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <Download size={17} />
+                )}
+              </button>
             )}
           </div>
 
@@ -149,31 +211,36 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
           )}
 
           <div className="document-card-actions">
-            <Button
-              variant="outline-success"
-              className="rounded-pill"
+            <button
+              type="button"
+              className="document-card-btn document-card-btn-pill"
               onClick={handleOpenPreview}
-              disabled={isOpeningPreview}
+              disabled={isPreviewBusy}
             >
               {isOpeningPreview ? (
                 <Spinner animation="border" size="sm" />
               ) : (
                 <>
-                  <Eye size={15} className="me-2" />
+                  <Eye size={15} />
                   Apri documento
                 </>
               )}
-            </Button>
+            </button>
 
-            {isOwner && (
-              <Button
-                variant="outline-danger"
-                className="document-card-delete"
+            {canEdit && (
+              <IconActionButton
+                action="edit"
+                label="Modifica documento"
+                onClick={onEdit}
+              />
+            )}
+
+            {canDelete && (
+              <IconActionButton
+                action="delete"
+                label="Elimina documento"
                 onClick={() => setShowDeleteModal(true)}
-                aria-label="Elimina documento"
-              >
-                <Trash3 size={16} />
-              </Button>
+              />
             )}
           </div>
         </div>
@@ -186,13 +253,13 @@ const DocumentCard = ({ document: doc, isOwner = false, onDeleted }) => {
         url={previewUrl}
       />
 
-      {isOwner && (
+      {canDelete && (
         <ConfirmDeleteModal
           show={showDeleteModal}
           onHide={() => setShowDeleteModal(false)}
           title="Elimina documento"
           itemName={doc.title}
-          onConfirm={deleteDocument}
+          onConfirm={handleDelete}
         />
       )}
     </>

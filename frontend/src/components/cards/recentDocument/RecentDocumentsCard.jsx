@@ -11,8 +11,9 @@ const RecentDocumentsCard = ({
   documents = [],
   isLoading = false,
   onUploadClick,
+  canEdit = false,
+  canDownload = false,
 }) => {
-
   const handleDownload = async (documentId) => {
     try {
       const data = await apiFetch(
@@ -45,10 +46,13 @@ const RecentDocumentsCard = ({
       maxItems={3}
       className="recent-documents-card"
       headerActions={
-        <ActionButton onClick={onUploadClick}>
-          <Upload size={15} />
-          <span>Carica</span>
-        </ActionButton>
+        canEdit &&
+        onUploadClick && (
+          <ActionButton onClick={onUploadClick}>
+            <Upload size={15} />
+            <span>Carica</span>
+          </ActionButton>
+        )
       }
       footerContent={
         <div className="text-center card-custom-footer pt-2 border-top">
@@ -77,15 +81,17 @@ const RecentDocumentsCard = ({
             </div>
           </div>
 
-          <Button
-            variant="link"
-            className="recent-document-options"
-            onClick={() => handleDownload(doc._id)}
-            title="Scarica referto"
-            aria-label={`Scarica ${doc.title}`}
-          >
-            <Download size={16} />
-          </Button>
+          {canDownload && (
+            <Button
+              variant="link"
+              className="recent-document-options"
+              onClick={() => handleDownload(doc._id)}
+              title="Scarica referto"
+              aria-label={`Scarica ${doc.title}`}
+            >
+              <Download size={16} />
+            </Button>
+          )}
         </ListGroup.Item>
       )}
     />

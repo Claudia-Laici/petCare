@@ -9,12 +9,12 @@ import VaccinationModal from "../cards/vaccinations/VaccinationModal";
 import ShareModal from "../cards/sharedWith/ShareModal";
 import TherapyModal from "../cards/therapies/TherapyModal";
 import { usePetDashboard } from "../../hooks/usePetDashboard";
+import { canEditPet, canManagePetShares, canDownloadPetDocuments, } from "../../utils/petPermissions";
 import "./DashboardCards.css";
 
 const DashboardCards = ({ pet }) => {
   const {
     petId,
-    isOwner,
     petVaccinations,
     petTherapies,
     petDocuments,
@@ -24,6 +24,12 @@ const DashboardCards = ({ pet }) => {
     modals,
     refetches,
   } = usePetDashboard(pet);
+
+  const role = pet?.role;
+
+  const isOwner = canManagePetShares(role);
+  const canEdit = canEditPet(role);
+  const canDownload = canDownloadPetDocuments(role);
 
   const stats = [
     {
@@ -91,6 +97,7 @@ const DashboardCards = ({ pet }) => {
             vaccinations={petVaccinations}
             isLoading={loading.vaccinations}
             petId={petId}
+            canEdit={canEdit}
             onAddClick={() => modals.open("vaccination")}
           />
         </Col>
@@ -100,6 +107,7 @@ const DashboardCards = ({ pet }) => {
             therapies={petTherapies}
             isLoading={loading.therapies}
             petId={petId}
+            canEdit={canEdit}
             onAddClick={() => modals.open("therapy")}
           />
         </Col>
@@ -108,6 +116,8 @@ const DashboardCards = ({ pet }) => {
           <RecentDocumentsCard
             documents={petDocuments}
             isLoading={loading.documents}
+            canEdit={canEdit}
+            canDownload={canDownload}
             onUploadClick={() => modals.open("document")}
           />
         </Col>
@@ -124,33 +134,39 @@ const DashboardCards = ({ pet }) => {
         )}
       </Row>
 
-      <MedicalDocumentModal
-        show={modals.activeModal === "document"}
-        onHide={modals.close}
-        petId={petId}
-        onUploaded={refetches.documents}
-      />
+      {canEdit && (
+        <>
+          <MedicalDocumentModal
+            show={modals.activeModal === "document"}
+            onHide={modals.close}
+            petId={petId}
+            onUploaded={refetches.documents}
+          />
 
-      <VaccinationModal
-        show={modals.activeModal === "vaccination"}
-        onHide={modals.close}
-        petId={petId}
-        onSaved={refetches.vaccinations}
-      />
+          <VaccinationModal
+            show={modals.activeModal === "vaccination"}
+            onHide={modals.close}
+            petId={petId}
+            onSaved={refetches.vaccinations}
+          />
 
-      <TherapyModal
-        show={modals.activeModal === "therapy"}
-        onHide={modals.close}
-        petId={petId}
-        onSaved={refetches.therapies}
-      />
+          <TherapyModal
+            show={modals.activeModal === "therapy"}
+            onHide={modals.close}
+            petId={petId}
+            onSaved={refetches.therapies}
+          />
+        </>
+      )}
 
-      <ShareModal
-        show={modals.activeModal === "share"}
-        onHide={modals.close}
-        petId={petId}
-        onSaved={refetches.shares}
-      />
+      {isOwner && (
+        <ShareModal
+          show={modals.activeModal === "share"}
+          onHide={modals.close}
+          petId={petId}
+          onSaved={refetches.shares}
+        />
+      )}
     </Container>
   );
 };

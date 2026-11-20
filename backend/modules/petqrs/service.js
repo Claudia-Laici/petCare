@@ -240,7 +240,7 @@ export const updateQrSettings = async (petId, userId, body) => {
   }
 
   if (message !== undefined) {
-    if (typeof message !== "string" || message.length > 300) {
+    if (typeof message !== "string" || message.trim().length > 300) {
       return {
         statusCode: 400,
         data: {

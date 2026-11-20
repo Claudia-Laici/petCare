@@ -1,4 +1,3 @@
-
 import { ListGroup } from "react-bootstrap";
 import { CalendarEvent, Capsule } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
@@ -19,6 +18,7 @@ const TherapiesCard = ({
   isLoading = false,
   onAddClick,
   petId,
+  canEdit = false,
 }) => {
   const items = useSortedByStatus(
     therapies,
@@ -36,17 +36,16 @@ const TherapiesCard = ({
       emptyMessage="Non sono ancora presenti terapie per questo animale."
       className="therapies-card"
       headerActions={
+        canEdit &&
         onAddClick && (
-          <ActionButton onClick={onAddClick}>
-            + Aggiungi
-          </ActionButton>
+          <ActionButton onClick={onAddClick}>+ Aggiungi</ActionButton>
         )
       }
       footerContent={
         petId && (
           <div className="text-center card-custom-footer pt-2 border-top">
             <Link
-               to="/therapies"
+              to="/therapies"
               className="d-block py-2 text-decoration-none small fw-medium"
             >
               Vedi tutte le terapie →
@@ -58,9 +57,7 @@ const TherapiesCard = ({
         <ListGroup.Item className="px-0 py-3">
           <div className="d-flex justify-content-between align-items-start gap-2">
             <div className="therapy-info">
-              <h6 className="fw-semibold text-dark mb-1 small">
-                {item.name}
-              </h6>
+              <h6 className="fw-semibold text-dark mb-1 small">{item.name}</h6>
 
               <div className="therapy-dosage d-flex align-items-center text-secondary gap-1 small mb-1">
                 <Capsule size={12} />

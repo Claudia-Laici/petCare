@@ -33,6 +33,15 @@ const HomeContent = () => {
 
   const petList = Array.isArray(pets) ? pets : [];
 
+  const ownedPets = petList.filter(
+    (pet) =>
+      pet.owner === currentUser?._id || pet.owner?._id === currentUser?._id,
+  );
+
+  const sharedPets = petList.filter(
+    (pet) => !ownedPets.some((ownedPet) => ownedPet._id === pet._id),
+  );
+
   const selectedPet =
     petList.find((pet) => pet._id === selectedPetId) ?? petList[0] ?? null;
 
@@ -79,13 +88,37 @@ const HomeContent = () => {
   return (
     <Container>
       <div className="home-layout mt-3">
-        <div className="home-pets">
-          <Sidebar
-            pets={petList}
-            selectedPetId={selectedPet?._id}
-            onSelectPet={setSelectedPetId}
-            onAddPet={openAddPet}
-          />
+        <div className="home-sidebar">
+          <div className="home-owned">
+            <Sidebar
+              pets={ownedPets}
+              title="I miei animali"
+              selectedPetId={selectedPet?._id}
+              onSelectPet={setSelectedPetId}
+              onAddPet={openAddPet}
+            />
+          </div>
+
+          {sharedPets.length > 0 && (
+            <div className="home-shared">
+              <Sidebar
+                pets={sharedPets}
+                title="Condivisi con me"
+                selectedPetId={selectedPet?._id}
+                onSelectPet={setSelectedPetId}
+              />
+            </div>
+          )}
+
+          {selectedPet && (
+            <div className="home-qr">
+              <QrCard
+                petId={selectedPet._id}
+                petName={selectedPet.name}
+                role={selectedPet.role}
+              />
+            </div>
+          )}
         </div>
 
         <div className="home-main">
@@ -116,23 +149,13 @@ const HomeContent = () => {
           </div>
         </div>
 
-        {selectedPet && (
-          <div className="home-qr">
-            <QrCard
-              petId={selectedPet._id}
-              petName={selectedPet.name}
-              role={selectedPet.role}
-            />
-          </div>
-        )}
+        <PetFormModal
+          show={showPetModal}
+          onHide={() => setShowPetModal(false)}
+          pet={petToEdit}
+          onSaved={handlePetSaved}
+        />
       </div>
-
-      <PetFormModal
-        show={showPetModal}
-        onHide={() => setShowPetModal(false)}
-        pet={petToEdit}
-        onSaved={handlePetSaved}
-      />
     </Container>
   );
 };

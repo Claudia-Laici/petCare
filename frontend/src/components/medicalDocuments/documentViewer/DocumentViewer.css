@@ -1,0 +1,119 @@
+.document-viewer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 400px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f6f3ee;
+}
+
+.document-viewer-toolbar {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.document-viewer-navigation,
+.document-viewer-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.document-viewer-toolbar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 50%;
+  background: #fff;
+  color: #246b5c;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.document-viewer-toolbar button:hover:not(:disabled) {
+  background: #edf5f1;
+}
+
+.document-viewer-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.document-viewer-toolbar span {
+  min-width: 42px;
+  color: #555;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.document-viewer-content {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  text-align: center;
+  touch-action: pan-x pan-y;
+}
+
+.document-viewer-content .react-pdf__Document {
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+}
+
+.document-viewer-content .react-pdf__Page {
+  width: fit-content;
+  background: #fff;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 10%);
+}
+
+.document-viewer-content .react-pdf__Page canvas {
+  display: block;
+  max-width: none;
+}
+
+.document-viewer-error {
+  padding: 30px 12px;
+  color: #a94442;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 576px) {
+  .document-viewer {
+    min-height: 350px;
+  }
+
+  .document-viewer-toolbar {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .document-viewer-navigation,
+  .document-viewer-zoom {
+    gap: 7px;
+  }
+
+  .document-viewer-toolbar button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .document-viewer-content {
+    padding: 10px 4px;
+  }
+}
