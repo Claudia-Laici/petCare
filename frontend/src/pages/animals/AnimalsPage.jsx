@@ -8,7 +8,7 @@ import PageLayout from "../../components/shared/pageLayout/PageLayout";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
 import AnimalCard from "../../components/animals/animalCard/AnimalCard";
 import PetFormModal from "../../components/profileCard/PetFormModal";
-import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
 import PageStats from "../../components/shared/pageStats/PageStats";
 import PageTabs from "../../components/shared/pageComponents/pageTabs/PageTabs";
 import SearchInput from "../../components/shared/pageComponents/searchInput/SearchInput";

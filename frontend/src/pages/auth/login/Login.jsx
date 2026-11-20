@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { apiFetch } from "../../../utils/apiFetch";
-import LoadingIndicator from "../../../components/shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
 import AuthLayout from "../AuthLayout";
 import GoogleButton from "../google/GoogleButton";
 

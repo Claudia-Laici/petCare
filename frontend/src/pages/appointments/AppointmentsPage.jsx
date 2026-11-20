@@ -13,7 +13,7 @@ import {
 import { useFetch } from "../../hooks/useFetch";
 import { useAppointments } from "../../hooks/useAppointments";
 import PageLayout from "../../components/shared/pageLayout/PageLayout";
-import LoadingIndicator from "../../components/shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
 import ActionButton from "../../components/shared/actionButton/ActionButton";
 import ConfirmDeleteModal from "../../components/shared/confirmDeleteModal/ConfirmDeleteModal";
 import AppointmentRow from "../../components/appointments/appointmentRow/AppointmentRow";

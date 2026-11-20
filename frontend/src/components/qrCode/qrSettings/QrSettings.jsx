@@ -4,7 +4,7 @@ import { Alert, Container, Card, Form, Row, Col } from "react-bootstrap";
 import { ArrowLeft, Save } from "react-bootstrap-icons";
 import { useFetch } from "../../../hooks/useFetch";
 import { usePetQr } from "../../../hooks/usePetQr";
-import LoadingIndicator from "../../shared/loadingIndicator/LoadingIndicator";
+import LoadingIndicator from "../shared/loadingIndicator/LoadingIndicator";
 import ActionButtontton from "../../shared/actionButton/ActionButton";
 import "./QrSettings.css";
 
