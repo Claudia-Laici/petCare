@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/auth/login/Login";
-import Home from "./pages/home/Homepage";
+import Home from "./pages/home/homePage";
 import Register from "./pages/auth/register/Register";
 import PublicOnlyRoute from "./components/routing/PublicOnlyRoute";
 import ProtectedRoute from "./components/routing/ProtectedRoute";
