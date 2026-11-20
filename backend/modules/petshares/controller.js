@@ -56,3 +56,19 @@ export const revokeInvitation = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateShareRole = async (req, res, next) => {
+  try {
+    const result = await petShareService.updateShareRole(
+      req.params.petId,
+      req.user._id,
+      req.params.userId,
+      req.body.role,
+      req.body.expiresAt,
+    );
+
+    return res.status(result.statusCode).json(result.data);
+  } catch (error) {
+    next(error);
+  }
+};

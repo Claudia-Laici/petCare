@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
-import { People, Person, PersonPlus, Trash3 } from "react-bootstrap-icons";
+import {
+  People,
+  Person,
+  PersonPlus,
+  CheckCircleFill,
+  ExclamationCircleFill,
+  X,
+} from "react-bootstrap-icons";
 import { useParams } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import { apiFetch } from "../../utils/apiFetch";
@@ -15,6 +22,8 @@ import EmptyState from "../../components/shared/pageComponents/emptyState/EmptyS
 import ConfirmDeleteModal from "../../components/shared/confirmDeleteModal/ConfirmDeleteModal";
 import ShareModal from "../../components/cards/sharedWith/ShareModal";
 import PageTabs from "../../components/shared/pageComponents/pageTabs/PageTabs";
+import IconActionButton from "../../components/shared/iconActionButton/IconActionButton";
+import EditShareRoleModal from "../../components/cards/sharedWith/EditShareRoleModal";
 import "./SharesPage.css";
 
 const EMPTY_TEXTS = {
@@ -56,17 +65,13 @@ const RoleBadge = ({ role }) => {
   const isEditor = role === "editor";
 
   return (
-    <span
-      className={`share-role ${
-        isEditor ? "share-role-editor" : "share-role-viewer"
-      }`}
-    >
+    <span className={`share-role share-role-${isEditor ? "editor" : "viewer"}`}>
       {isEditor ? "Editor" : "Lettura"}
     </span>
   );
 };
 
-const ShareCard = ({ share, onRevoke }) => (
+const ShareCard = ({ share, onRevoke, onEdit }) => (
   <div className="share-card">
     <div className="share-card-header">
       <div className="share-avatar">
@@ -97,15 +102,21 @@ const ShareCard = ({ share, onRevoke }) => (
           : "Accesso senza scadenza"}
       </div>
 
-      <Button
-        variant="light"
-        className="share-delete-button"
-        onClick={() => onRevoke(share)}
-        title="Revoca accesso"
-      >
-        <Trash3 size={16} />
-        <span>Revoca</span>
-      </Button>
+      <div className="share-card-actions">
+        {share.status !== "pending" && (
+          <IconActionButton
+            action="edit"
+            label="Modifica permessi"
+            onClick={() => onEdit(share)}
+          />
+        )}
+
+        <IconActionButton
+          action="delete"
+          label="Revoca accesso"
+          onClick={() => onRevoke(share)}
+        />
+      </div>
     </div>
   </div>
 );
@@ -135,6 +146,35 @@ const ReceivedPetCard = ({ pet }) => (
   </div>
 );
 
+const Toast = ({ notification, onClose }) => {
+  const isDanger = notification.type === "danger";
+
+  return (
+    <div
+      className={`shares-toast shares-toast-${isDanger ? "danger" : "success"}`}
+      role="alert"
+      aria-live="assertive"
+    >
+      <span className="shares-toast-icon">
+        {isDanger ? <ExclamationCircleFill /> : <CheckCircleFill />}
+      </span>
+
+      <p className="shares-toast-message">{notification.message}</p>
+
+      {isDanger && (
+        <button
+          type="button"
+          className="shares-toast-close"
+          onClick={onClose}
+          aria-label="Chiudi notifica"
+        >
+          <X size={16} />
+        </button>
+      )}
+    </div>
+  );
+};
+
 const SharesPage = () => {
   const { petId } = useParams();
 
@@ -159,6 +199,7 @@ const SharesPage = () => {
   const [invitePet, setInvitePet] = useState(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [shareToDelete, setShareToDelete] = useState(null);
+  const [shareToEdit, setShareToEdit] = useState(null);
 
   const reload = () => setReloadCount((count) => count + 1);
 
@@ -175,6 +216,14 @@ const SharesPage = () => {
     () => (userId ? petList.filter((pet) => getOwnerId(pet) !== userId) : []),
     [petList, userId],
   );
+
+  useEffect(() => {
+    if (!notification || notification.type === "danger") return;
+
+    const timeout = setTimeout(() => setNotification(null), 4000);
+
+    return () => clearTimeout(timeout);
+  }, [notification]);
 
   useEffect(() => {
     let cancelled = false;
@@ -295,6 +344,35 @@ const SharesPage = () => {
     reload();
   };
 
+  const updateShareRole = async (share, role, expiresAt) => {
+    try {
+      await apiFetch(`/pets/${share.pet._id}/shares/${share.user._id}`, {
+        method: "PATCH",
+        body: {
+          role,
+          expiresAt: expiresAt
+            ? new Date(`${expiresAt}T23:59:59`).toISOString()
+            : null,
+        },
+      });
+
+      setNotification({
+        type: "success",
+        message: "Permessi aggiornati correttamente.",
+      });
+
+      reload();
+      return true;
+    } catch (error) {
+      setNotification({
+        type: "danger",
+        message:
+          error.message || "Errore durante l'aggiornamento dei permessi.",
+      });
+      return false;
+    }
+  };
+
   if (petsLoading || userLoading) return <LoadingIndicator />;
 
   if (petsError) {
@@ -386,16 +464,6 @@ const SharesPage = () => {
           </div>
         }
       >
-        {notification && (
-          <Alert
-            variant="success"
-            dismissible
-            onClose={() => setNotification(null)}
-          >
-            {notification.message}
-          </Alert>
-        )}
-
         {sharesStatus === "loading" ? (
           <LoadingIndicator />
         ) : sharesStatus === "error" ? (
@@ -420,7 +488,11 @@ const SharesPage = () => {
             {items.map((item) => (
               <Col key={item._id} xs={12} lg={6}>
                 {isSharedTab ? (
-                  <ShareCard share={item} onRevoke={setShareToDelete} />
+                  <ShareCard
+                    share={item}
+                    onRevoke={setShareToDelete}
+                    onEdit={setShareToEdit}
+                  />
                 ) : (
                   <ReceivedPetCard pet={item} />
                 )}
@@ -429,6 +501,13 @@ const SharesPage = () => {
           </Row>
         )}
       </PageLayout>
+
+      {notification && (
+        <Toast
+          notification={notification}
+          onClose={() => setNotification(null)}
+        />
+      )}
 
       {showInviteModal && (
         <ShareModal
@@ -440,6 +519,14 @@ const SharesPage = () => {
           onSaved={handleShareSaved}
         />
       )}
+
+      <EditShareRoleModal
+        key={shareToEdit?._id || "edit-share"}
+        show={Boolean(shareToEdit)}
+        onHide={() => setShareToEdit(null)}
+        share={shareToEdit}
+        onSave={updateShareRole}
+      />
 
       <ConfirmDeleteModal
         show={Boolean(shareToDelete)}

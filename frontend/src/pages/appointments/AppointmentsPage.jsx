@@ -15,6 +15,7 @@ import AppointmentShareModal from "../../components/appointments/appointmentShar
 import PageTabs from "../../components/shared/pageComponents/pageTabs/PageTabs";
 import PetFilter from "../../components/shared/pageComponents/petFilter/PetFilter";
 import EmptyState from "../../components/shared/pageComponents/emptyState/EmptyState";
+import GoogleCalendarCard from "../../components/appointments/googleCalendarCard/GoogleCalendarCard";
 import "./AppointmentsPage.css";
 
 const PAGE_SIZE = 8;
@@ -152,6 +153,7 @@ const AppointmentsPage = () => {
           Aggiungi appuntamento
         </ActionButton>
       }
+      stats={<GoogleCalendarCard />}
       toolbar={
         <div className="appointments-toolbar">
           <div className="appointments-tabs">

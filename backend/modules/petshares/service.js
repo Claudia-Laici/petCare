@@ -190,3 +190,68 @@ export const revokeInvitation = async (petId, userId, invitationId) => {
 
   return { statusCode: 200, data: { message: "Invito revocato" } };
 };
+
+export const updateShareRole = async (
+  petId,
+  userId,
+  targetUserId,
+  role,
+  expiresAt,
+) => {
+  if (!["viewer", "editor"].includes(role)) {
+    return {
+      statusCode: 400,
+      data: { message: "Ruolo non valido" },
+    };
+  }
+
+  let parsedExpiresAt = null;
+
+  if (expiresAt) {
+    parsedExpiresAt = new Date(expiresAt);
+
+    if (
+      Number.isNaN(parsedExpiresAt.getTime()) ||
+      parsedExpiresAt <= new Date()
+    ) {
+      return {
+        statusCode: 400,
+        data: { message: "Data di scadenza non valida" },
+      };
+    }
+  }
+
+  const pet = await Pet.findOne({
+    _id: petId,
+    owner: userId,
+  });
+
+  if (!pet) {
+    return {
+      statusCode: 404,
+      data: { message: "Animale non trovato" },
+    };
+  }
+
+  const share = await PetShare.findOneAndUpdate(
+    { pet: pet._id, user: targetUserId },
+    {
+      role,
+      expiresAt: parsedExpiresAt,
+    },
+    { new: true, runValidators: true },
+  );
+
+  if (!share) {
+    return {
+      statusCode: 404,
+      data: { message: "Condivisione non trovata" },
+    };
+  }
+
+  return {
+    statusCode: 200,
+    data: { message: "Permessi aggiornati", share },
+  };
+};
+

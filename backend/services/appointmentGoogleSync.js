@@ -273,6 +273,7 @@ export const deleteAppointmentEverywhere = async (appointment) => {
   }
 };
 
+
 export const queueFutureAppointmentsForSync = (userId) =>
   Appointment.updateMany(
     {
@@ -284,6 +285,7 @@ export const queueFutureAppointmentsForSync = (userId) =>
       $set: {
         googleSyncStatus: "pending",
         googleSyncError: "",
+        lastSyncAttemptAt: null,
       },
     },
     {

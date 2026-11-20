@@ -8,10 +8,10 @@ import {
 import { encryptToken } from "../services/tokenEncryption.js";
 import { revokeGoogleRefreshToken } from "../services/googleCalendarService.js";
 import { queueFutureAppointmentsForSync } from "../services/appointmentGoogleSync.js";
-import { retryAppointmentSync } from "../services/appointmentSyncRetry.js";
+import { retryUserFutureAppointments } from "../services/appointmentSyncRetry.js";
 
 const redirectToFrontend = (res, status) => {
-  const url = new URL("/", process.env.FRONTEND_URL);
+  const url = new URL("/appointments", process.env.FRONTEND_URL);
   url.searchParams.set("googleCalendar", status);
 
   return res.redirect(url.toString());
@@ -36,7 +36,7 @@ export const googleCalendarCallback = async (req, res) => {
         try {
           await consumeCalendarState(state);
         } catch {
-           // State scaduto o non valido: il rifiuto dell'autorizzazione resta valido.
+          // State scaduto o non valido: il rifiuto dell'autorizzazione resta valido.
         }
       }
 
@@ -85,7 +85,10 @@ export const googleCalendarCallback = async (req, res) => {
     await user.save();
 
     await queueFutureAppointmentsForSync(user._id);
-    retryAppointmentSync().catch((e) => console.error(e));
+
+    retryUserFutureAppointments(user._id).catch((error) =>
+      console.error("[Google Calendar] Errore sincronizzazione:", error),
+    );
 
     return redirectToFrontend(res, "connected");
   } catch (error) {
@@ -140,6 +143,31 @@ export const disconnectGoogleCalendar = async (req, res, next) => {
     );
 
     res.status(200).json({ message: "Google Calendar scollegato" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const syncGoogleCalendarAppointments = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      "googleCalendar.connected",
+    );
+
+    if (!user?.googleCalendar?.connected) {
+      return res.status(400).json({
+        message: "Google Calendar non è collegato.",
+      });
+    }
+
+    await queueFutureAppointmentsForSync(user._id);
+
+    const results = await retryUserFutureAppointments(user._id);
+
+    return res.status(200).json({
+      message: "Sincronizzazione completata.",
+      ...results,
+    });
   } catch (error) {
     next(error);
   }

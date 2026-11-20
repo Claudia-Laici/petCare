@@ -132,20 +132,17 @@ const ShareModal = ({
 
       {!petId && (
         <Form.Group className="mb-3">
-          <Form.Label>Animale</Form.Label>
-          <Form.Select
-            name="petId"
-            value={form.petId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleziona un animale</option>
-            {pets.map((pet) => (
-              <option key={pet._id} value={pet._id}>
-                {pet.name}
-              </option>
-            ))}
+          <Form.Label>Livello di accesso</Form.Label>
+
+          <Form.Select name="role" value={form.role} onChange={handleChange}>
+            <option value="viewer">Lettura – sola visualizzazione</option>
+            <option value="editor">Editor – visualizzazione e modifica</option>
           </Form.Select>
+
+          <Form.Text className="text-muted">
+            Il proprietario mantiene sempre il controllo completo del profilo,
+            delle condivisioni e delle autorizzazioni.
+          </Form.Text>
         </Form.Group>
       )}
 

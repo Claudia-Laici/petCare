@@ -17,10 +17,7 @@
   background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: 20px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .share-card:hover {
@@ -53,23 +50,24 @@
   min-width: 0;
 }
 
-.share-person h3 {
+.share-person h3,
+.share-person p {
   overflow: hidden;
-  margin: 0 0 0.2rem;
-  color: var(--color-text-dark);
-  font-size: 0.95rem;
-  font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.share-person h3 {
+  margin: 0 0 0.2rem;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
 .share-person p {
-  overflow: hidden;
   margin: 0;
   color: var(--color-text-muted);
   font-size: 0.8rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .share-role {
@@ -127,27 +125,79 @@
   line-height: 1.4;
 }
 
-.share-delete-button {
-  display: inline-flex;
+.share-card-actions {
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  flex-shrink: 0;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid #f0e4e1;
-  border-radius: 30px;
-  background: #fff;
-  color: #a65d50;
-  font-size: 0.78rem;
-  font-weight: 550;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
+  gap: 0.5rem;
 }
 
-.share-delete-button:hover {
-  border-color: #e7c9c3;
-  background: #fbf1ef;
-  color: #a34d40;
+.shares-toast {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 1080;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 2rem));
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid currentColor;
+  border-radius: 16px;
+  background: var(--color-white);
+  box-shadow: 0 8px 30px rgb(30 50 40 / 12%);
+  animation: toast-slide-in 0.25s ease-out;
+}
+
+.shares-toast-success {
+  color: #39856c;
+}
+
+.shares-toast-danger {
+  color: #c45d52;
+}
+
+.shares-toast-icon {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+
+.shares-toast-message {
+  flex: 1;
+  margin: 0;
+  color: var(--color-text-dark);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.shares-toast-close {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .shares-toast {
+    right: 1rem;
+    bottom: 5.5rem;
+    left: 1rem;
+    width: auto;
+    max-width: none;
+  }
 }
 
 @media (max-width: 767.98px) {

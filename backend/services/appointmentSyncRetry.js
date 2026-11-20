@@ -97,3 +97,43 @@ export const retryAppointmentSync = async () => {
 
   return results;
 };
+
+export const retryUserFutureAppointments = async (userId) => {
+  const appointments = await Appointment.find({
+    createdBy: userId,
+    deletedAt: null,
+    startAt: { $gte: new Date() },
+    googleSyncStatus: "pending",
+  }).sort({ startAt: 1 });
+
+  const results = {
+    total: appointments.length,
+    synced: 0,
+    failed: 0,
+    skipped: 0,
+  };
+
+  for (const appointment of appointments) {
+    try {
+      const syncedAppointment =
+        await syncAppointmentWithGoogle(appointment);
+
+      if (syncedAppointment?.googleSyncStatus === "synced") {
+        results.synced++;
+      } else if (syncedAppointment?.googleSyncStatus === "error") {
+        results.failed++;
+      } else {
+        results.skipped++;
+      }
+    } catch (error) {
+      console.error(
+        `[Google Calendar] Errore sincronizzazione appuntamento ${appointment._id}:`,
+        error,
+      );
+
+      results.failed++;
+    }
+  }
+
+  return results;
+};
